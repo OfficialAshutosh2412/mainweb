@@ -1,0 +1,75 @@
+@import "tailwindcss";
+
+@theme {
+  --color-ambient-blue: #3b82f6;
+  --color-ambient-glow: rgba(59, 130, 246, 0.5);
+  --color-dark-bg: #0a0a0a;
+  --color-dark-surface: #171717;
+}
+
+@layer base {
+  html {
+    overflow-x: hidden;
+    scrollbar-gutter: stable;
+  }
+  body {
+    @apply bg-dark-bg text-gray-100 antialiased overflow-x-hidden selection:bg-ambient-blue selection:text-white;
+  }
+}
+
+/* Hide Lenis inner wrapper's own scrollbar so only the browser's native one shows */
+[data-lenis-prevent], .lenis, .lenis > * {
+  scrollbar-width: none;
+}
+.lenis::-webkit-scrollbar,
+.lenis > *::-webkit-scrollbar {
+  display: none;
+}
+
+/* Custom scrollbar for webkit — applied to the real window scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-dark-bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-ambient-blue);
+}
+
+/* Infinite Marquee Animation */
+@keyframes marquee {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee 35s linear infinite;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+/* Mobile-first base reset */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+/* Prevent text/media overflow globally */
+img, video, iframe {
+  max-width: 100%;
+}
