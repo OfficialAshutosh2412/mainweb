@@ -1,13 +1,23 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, Sparkles } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { useContactDrawer } from '../context/ContactContext';
 
 const Navbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const { openContactDrawer } = useContactDrawer();
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const handleScroll = (e, targetId) => {
     e.preventDefault();
@@ -47,27 +57,40 @@ const Navbar = () => {
   const isPortfolio = location.pathname === '/portfolio';
   const isSubPage = !isHome && !isPortfolio;
 
-  const linkClass = "relative py-1.5 transition-colors text-gray-300 hover:text-ambient-blue after:absolute after:bottom-0 after:left-1/2 after:-translate-x-1/2 after:w-full after:h-[2px] after:bg-ambient-blue after:scale-x-0 hover:after:scale-x-100 after:origin-center after:transition-transform after:duration-300 cursor-pointer";
+  const linkClass = "relative px-3 py-1.5 rounded-lg text-xs md:text-sm font-semibold text-gray-300 hover:text-white transition-all duration-200 hover:bg-white/5 cursor-pointer flex items-center gap-1 group";
   const mobileLinkClass = "block py-3 text-lg font-semibold text-gray-300 hover:text-ambient-blue border-b border-white/5 transition-colors cursor-pointer";
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-dark-bg/60 backdrop-blur-md border-b border-white/10 px-6 py-4">
-      <div className="max-w-6xl mx-auto flex justify-between items-center">
-        <Link to="/" onClick={() => setMobileMenuOpen(false)} className="text-2xl font-black text-white tracking-tighter flex items-center gap-1 group">
-          <span className="text-ambient-blue font-bold group-hover:scale-110 transition-transform">&lt;</span>
-          Dev.io
-          <span className="text-ambient-blue font-bold group-hover:scale-110 transition-transform">/&gt;</span>
+    <header className="fixed top-0 left-0 right-0 z-50 px-4 sm:px-6 py-3 transition-all duration-300">
+      <div 
+        className={`max-w-6xl mx-auto rounded-2xl px-5 py-3 transition-all duration-300 flex justify-between items-center ${
+          scrolled 
+            ? 'bg-dark-bg/80 backdrop-blur-xl border border-white/10 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.8),0_0_20px_rgba(59,130,246,0.15)]'
+            : 'bg-dark-bg/40 backdrop-blur-md border border-white/5 shadow-lg'
+        }`}
+      >
+        <Link 
+          to="/" 
+          onClick={() => setMobileMenuOpen(false)} 
+          className="text-xl md:text-2xl font-black text-white tracking-tighter flex items-center gap-1.5 group"
+        >
+          <span className="text-ambient-blue font-bold group-hover:scale-125 transition-transform duration-300">&lt;</span>
+          <span className="bg-gradient-to-r from-white via-gray-100 to-gray-400 bg-clip-text text-transparent group-hover:to-ambient-blue transition-all">Dev.io</span>
+          <span className="text-ambient-blue font-bold group-hover:scale-125 transition-transform duration-300">/&gt;</span>
         </Link>
         
-        {/* Desktop Menu */}
-        <div className="hidden md:flex gap-6 items-center text-sm font-semibold text-gray-300">
+        {/* Desktop Navigation */}
+        <nav className="hidden md:flex gap-1 items-center text-sm font-semibold text-gray-300">
           {isHome && (
             <>
               <a href="#showcase" onClick={(e) => handleScroll(e, '#showcase')} className={linkClass}>Showcase</a>
               <a href="#store" onClick={(e) => handleScroll(e, '#store')} className={linkClass}>Store</a>
               <Link to="/notes" className={linkClass}>Notes</Link>
               <Link to="/videos" className={linkClass}>Videos</Link>
-              <Link to="/portfolio" className={linkClass}>Portfolio</Link>
+              <Link to="/portfolio" className={linkClass}>
+                <span>Portfolio</span>
+                <Sparkles className="w-3.5 h-3.5 text-ambient-blue opacity-80 group-hover:opacity-100 group-hover:rotate-12 transition-all" />
+              </Link>
               <button onClick={openContactDrawer} className={linkClass}>Contact</button>
             </>
           )}
@@ -80,10 +103,11 @@ const Navbar = () => {
               <a href="#certificates" onClick={(e) => handlePortfolioScroll(e, '#certificates')} className={linkClass}>Certificates</a>
               <a href="#projects" onClick={(e) => handlePortfolioScroll(e, '#projects')} className={linkClass}>Projects</a>
               <a href="#timeline" onClick={(e) => handlePortfolioScroll(e, '#timeline')} className={linkClass}>Education</a>
+              
               {/* Hire Me CTA Button */}
               <button
                 onClick={openContactDrawer}
-                className="px-5 py-2 bg-ambient-blue text-white text-sm font-bold rounded-xl shadow-[0_0_15px_rgba(59,130,246,0.3)] hover:shadow-[0_0_28px_rgba(59,130,246,0.55)] hover:scale-105 transition-all flex items-center gap-2 cursor-pointer"
+                className="ml-2 px-4 py-2 bg-gradient-to-r from-ambient-blue to-blue-600 text-white text-xs md:text-sm font-bold rounded-xl shadow-[0_0_20px_rgba(59,130,246,0.4)] hover:shadow-[0_0_30px_rgba(59,130,246,0.7)] hover:scale-105 active:scale-95 transition-all flex items-center gap-2 cursor-pointer"
               >
                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
@@ -99,24 +123,35 @@ const Navbar = () => {
               <Link to="/notes" className={linkClass}>Notes</Link>
               <Link to="/videos" className={linkClass}>Videos</Link>
               <Link to="/store" className={linkClass}>Store</Link>
-              <button onClick={openContactDrawer} className="text-ambient-blue hover:text-white transition-colors relative py-1.5 after:absolute after:bottom-0 after:left-1/2 after:-translate-x-1/2 after:w-full after:h-[2px] after:bg-ambient-blue after:scale-x-0 hover:after:scale-x-100 after:origin-center after:transition-transform after:duration-300 cursor-pointer">Contact</button>
+              <button 
+                onClick={openContactDrawer} 
+                className="ml-2 px-4 py-1.5 rounded-lg bg-ambient-blue/20 border border-ambient-blue/40 text-ambient-blue hover:bg-ambient-blue hover:text-white transition-all cursor-pointer font-semibold"
+              >
+                Contact
+              </button>
             </>
           )}
-        </div>
+        </nav>
 
         {/* Hamburger Icon */}
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="block md:hidden text-gray-300 hover:text-ambient-blue transition-colors focus:outline-none cursor-pointer"
+          className="block md:hidden p-2 rounded-xl bg-white/5 border border-white/10 text-gray-300 hover:text-ambient-blue transition-colors focus:outline-none cursor-pointer"
+          aria-label="Toggle menu"
         >
-          {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
         </button>
       </div>
 
       {/* Mobile Drawer Menu */}
       {mobileMenuOpen && (
-        <div className="absolute top-[61px] left-0 right-0 bg-dark-bg/95 border-b border-white/10 backdrop-blur-lg px-6 py-6 md:hidden transition-all duration-300">
-          <div className="flex flex-col space-y-2">
+        <motion.div 
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -10 }}
+          className="max-w-6xl mx-auto mt-2 bg-dark-bg/95 border border-white/10 rounded-2xl backdrop-blur-2xl px-6 py-6 md:hidden shadow-2xl transition-all duration-300"
+        >
+          <div className="flex flex-col space-y-1">
             {isHome && (
               <>
                 <a href="#showcase" onClick={(e) => handleScroll(e, '#showcase')} className={mobileLinkClass}>Showcase</a>
@@ -138,7 +173,7 @@ const Navbar = () => {
                 <a href="#timeline" onClick={(e) => handlePortfolioScroll(e, '#timeline')} className={mobileLinkClass}>Education</a>
                 <button
                   onClick={() => { setMobileMenuOpen(false); openContactDrawer(); }}
-                  className="mt-3 flex items-center justify-center gap-2 py-3 px-6 bg-ambient-blue text-white font-bold rounded-xl shadow-[0_0_15px_rgba(59,130,246,0.3)] hover:shadow-[0_0_25px_rgba(59,130,246,0.5)] transition-all cursor-pointer"
+                  className="mt-3 flex items-center justify-center gap-2 py-3 px-6 bg-ambient-blue text-white font-bold rounded-xl shadow-[0_0_20px_rgba(59,130,246,0.4)] transition-all cursor-pointer"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
@@ -158,11 +193,10 @@ const Navbar = () => {
               </>
             )}
           </div>
-        </div>
+        </motion.div>
       )}
-    </nav>
+    </header>
   );
 };
 
 export default Navbar;
-

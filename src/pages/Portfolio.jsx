@@ -1,20 +1,20 @@
-import { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useEffect, useState, useRef } from 'react';
+import { motion, AnimatePresence, useTransform, useMotionValue, useSpring } from 'framer-motion';
 import { Link, useLocation } from 'react-router-dom';
 import { fetchPortfolioData } from '../api';
 import { 
   ArrowLeft, GraduationCap, Award, Briefcase, BookOpen, Layers, Sparkles, 
-  Hexagon, Triangle, Circle, School, Building2, Library, ChevronLeft, ChevronRight,
+  School, Building2, Library, ChevronLeft, ChevronRight,
   UserCheck, Code2, Terminal, Database, Wrench, MapPin, Mail, Phone, CheckCircle2,
-  Atom, ShieldCheck, Radio, FileCode, GitBranch, Cloud, Globe
+  Atom, ShieldCheck, Radio, FileCode, GitBranch, Cloud, Globe, Download
 } from 'lucide-react';
 
 import Footer from '../components/Footer';
 import RevealingCard from '../components/RevealingCard';
+import TiltCard from '../components/TiltCard';
 import SVGRope from '../components/SVGRope';
 import SkillsMarquee from '../components/SkillsMarquee';
 import { useContactDrawer } from '../context/ContactContext';
-
 
 /* ── Social Icon SVG Helpers ── */
 const LinkedInIcon = ({ className = "w-4 h-4" }) => (
@@ -47,32 +47,6 @@ const SkillIcon = ({ name, className = "w-4 h-4" }) => {
   return <Layers className={className} />;
 };
 
-
-/* ── Floating ambient background icons ── */
-const FloatingBgIcons = () => {
-  const icons = [
-    { Icon: Sparkles, top: '10%', left: '5%', delay: 0 },
-    { Icon: Hexagon,  top: '40%', right: '8%', delay: 1 },
-    { Icon: Triangle, top: '70%', left: '12%', delay: 2 },
-    { Icon: Circle,   top: '85%', right: '6%', delay: 1.5 },
-  ];
-  return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-      {icons.map((item, i) => (
-        <motion.div
-          key={i}
-          className="absolute text-ambient-blue/15"
-          style={{ top: item.top, left: item.left, right: item.right }}
-          animate={{ y: [0, -30, 0], rotate: [0, 360], scale: [1, 1.1, 1] }}
-          transition={{ duration: 12, repeat: Infinity, delay: item.delay, ease: 'easeInOut' }}
-        >
-          <item.Icon size={64} />
-        </motion.div>
-      ))}
-    </div>
-  );
-};
-
 /* ── Animated Icon ── */
 const AnimatedIcon = ({ Icon, className }) => (
   <motion.div
@@ -87,9 +61,13 @@ const AnimatedIcon = ({ Icon, className }) => (
 
 /* ── JSX-bracket section heading ── */
 const SectionHeading = ({ icon: Icon, title, id }) => (
-  <div id={id} className="flex items-center gap-3 mb-8 md:mb-12 scroll-mt-24">
-    {Icon && <AnimatedIcon Icon={Icon} className="w-6 h-6 md:w-8 md:h-8 text-ambient-blue shrink-0" />}
-    <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold">
+  <div id={id} className="flex items-center gap-3 mb-8 md:mb-12 scroll-mt-28">
+    {Icon && (
+      <div className="p-2.5 rounded-2xl bg-ambient-blue/10 border border-ambient-blue/30 shadow-[0_0_15px_rgba(59,130,246,0.3)] text-ambient-blue shrink-0">
+        <AnimatedIcon Icon={Icon} className="w-6 h-6 md:w-8 md:h-8" />
+      </div>
+    )}
+    <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight">
       <span className="text-ambient-blue font-black">&lt;</span>
       <span className="text-white">{title}</span>
       <span className="text-ambient-blue font-black ml-1">/&gt;</span>
@@ -119,7 +97,7 @@ const getExpIcon = (role = '', company = '') => {
   return Briefcase;
 };
 
-/* ── Infinite Carousel for Technical Skill Category Cards (2 cards per slide) ── */
+/* ── Infinite 3D Carousel for Technical Skill Category Cards ── */
 const SkillsSlider = ({ categories = [] }) => {
   const cardsPerPage = 2;
   const pages = [];
@@ -161,7 +139,7 @@ const SkillsSlider = ({ categories = [] }) => {
 
   return (
     <div 
-      className="relative w-full mt-6"
+      className="relative w-full mt-8"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
@@ -174,37 +152,36 @@ const SkillsSlider = ({ categories = [] }) => {
             animate={{ opacity: 1, x: 0, scale: 1 }}
             exit={{ opacity: 0, x: direction > 0 ? -100 : 100, scale: 0.98 }}
             transition={{ type: "spring", stiffness: 220, damping: 26 }}
-            className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 w-full"
+            className="grid grid-cols-1 sm:grid-cols-2 gap-5 md:gap-8 w-full"
           >
             {currentCards.map((cat) => (
-              <div
-                key={cat.title}
-                className="h-full w-full p-6 rounded-2xl bg-dark-surface border border-white/10 hover:border-ambient-blue/50 transition-all duration-300 relative z-10 flex flex-col justify-between group shadow-lg"
-              >
-                <div>
-                  <div className="flex items-center gap-3 mb-5">
-                    <div className="p-2.5 rounded-xl bg-ambient-blue/10 text-ambient-blue border border-ambient-blue/20">
-                      <cat.icon className="w-5 h-5" />
-                    </div>
-                    <h3 className="text-xl font-bold text-white group-hover:text-ambient-blue transition-colors">
-                      {cat.title}
-                    </h3>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    {cat.items.map((skill, idx) => (
-                      <div
-                        key={idx}
-                        className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/5 border border-white/5 hover:border-ambient-blue/50 hover:bg-ambient-blue/10 transition-all group/skill cursor-default"
-                      >
-                        <SkillIcon name={skill} className="w-4 h-4 text-ambient-blue shrink-0 group-hover/skill:scale-110 transition-transform" />
-                        <span className="text-xs font-semibold text-gray-300 group-hover/skill:text-white transition-colors whitespace-nowrap">
-                          {skill}
-                        </span>
+              <TiltCard key={cat.title} className="h-full w-full" maxTilt={8}>
+                <div className="h-full w-full p-7 rounded-2xl glass-card border border-white/10 hover:border-ambient-blue/50 transition-all duration-300 relative z-10 flex flex-col justify-between group shadow-xl">
+                  <div>
+                    <div className="flex items-center gap-3.5 mb-6">
+                      <div className="p-3 rounded-xl bg-ambient-blue/15 text-ambient-blue border border-ambient-blue/30 shadow-[0_0_15px_rgba(59,130,246,0.25)] group-hover:scale-110 transition-transform">
+                        <cat.icon className="w-5 h-5" />
                       </div>
-                    ))}
+                      <h3 className="text-xl font-bold text-white group-hover:text-ambient-blue transition-colors">
+                        {cat.title}
+                      </h3>
+                    </div>
+                    <div className="flex flex-wrap gap-2.5">
+                      {cat.items.map((skill, idx) => (
+                        <div
+                          key={idx}
+                          className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/5 border border-white/5 hover:border-ambient-blue/50 hover:bg-ambient-blue/15 transition-all group/skill cursor-default shadow-sm"
+                        >
+                          <SkillIcon name={skill} className="w-4 h-4 text-ambient-blue shrink-0 group-hover/skill:scale-125 transition-transform" />
+                          <span className="text-xs font-semibold text-gray-300 group-hover/skill:text-white transition-colors whitespace-nowrap">
+                            {skill}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
-              </div>
+              </TiltCard>
             ))}
           </motion.div>
         </AnimatePresence>
@@ -215,14 +192,14 @@ const SkillsSlider = ({ categories = [] }) => {
         <div className="flex gap-2">
           <button
             onClick={() => paginate(-1)}
-            className="p-3 rounded-xl bg-dark-surface border border-white/10 hover:border-ambient-blue hover:bg-ambient-blue/10 text-gray-300 hover:text-white transition-all cursor-pointer shadow-md active:scale-95"
+            className="p-3 rounded-xl glass-card border border-white/10 hover:border-ambient-blue hover:bg-ambient-blue/15 text-gray-300 hover:text-white transition-all cursor-pointer shadow-md active:scale-95"
             aria-label="Previous Slide"
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
           <button
             onClick={() => paginate(1)}
-            className="p-3 rounded-xl bg-dark-surface border border-white/10 hover:border-ambient-blue hover:bg-ambient-blue/10 text-gray-300 hover:text-white transition-all cursor-pointer shadow-md active:scale-95"
+            className="p-3 rounded-xl glass-card border border-white/10 hover:border-ambient-blue hover:bg-ambient-blue/15 text-gray-300 hover:text-white transition-all cursor-pointer shadow-md active:scale-95"
             aria-label="Next Slide"
           >
             <ChevronRight className="w-5 h-5" />
@@ -236,7 +213,7 @@ const SkillsSlider = ({ categories = [] }) => {
               onClick={() => paginate(idx > currentPage ? 1 : -1, idx)}
               className={`transition-all duration-300 cursor-pointer ${
                 idx === currentPage
-                  ? "w-8 h-2.5 rounded-full bg-ambient-blue shadow-[0_0_12px_rgba(59,130,246,0.8)]"
+                  ? "w-8 h-2.5 rounded-full bg-ambient-blue shadow-[0_0_15px_rgba(59,130,246,0.9)]"
                   : "w-2.5 h-2.5 rounded-full bg-white/20 hover:bg-white/50"
               }`}
               aria-label={`Go to slide ${idx + 1}`}
@@ -252,7 +229,7 @@ const SkillsSlider = ({ categories = [] }) => {
   );
 };
 
-/* ── Infinite Carousel for Training & Certifications (2 cards per slide) ── */
+/* ── 3D Carousel for Training & Certifications ── */
 const CertificateCarousel = ({ certificates = [] }) => {
   const cardsPerPage = 2;
   const pages = [];
@@ -298,7 +275,6 @@ const CertificateCarousel = ({ certificates = [] }) => {
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
-      {/* Cards Slider Wrapper */}
       <div className="relative overflow-hidden px-1 py-3">
         <AnimatePresence mode="wait" custom={direction}>
           <motion.div
@@ -308,60 +284,60 @@ const CertificateCarousel = ({ certificates = [] }) => {
             animate={{ opacity: 1, x: 0, scale: 1 }}
             exit={{ opacity: 0, x: direction > 0 ? -100 : 100, scale: 0.98 }}
             transition={{ type: "spring", stiffness: 220, damping: 26 }}
-            className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 w-full"
+            className="grid grid-cols-1 sm:grid-cols-2 gap-5 md:gap-8 w-full"
           >
             {currentCards.map((cert) => (
-              <div 
-                key={cert.id} 
-                className="h-full w-full p-7 rounded-2xl bg-dark-surface border border-white/10 relative overflow-hidden z-10 group hover:border-ambient-blue/50 transition-all duration-300 flex flex-col justify-between shadow-lg"
-              >
-                <div className="absolute right-0 bottom-0 opacity-5 group-hover:opacity-15 transition-opacity duration-500 pointer-events-none">
-                  <AnimatedIcon Icon={cert.type === 'Bootcamp' ? BookOpen : Award} className="w-32 h-32 text-ambient-blue" />
-                </div>
-                <div>
-                  <div className="flex justify-between items-center mb-3">
-                    <span className="text-xs font-semibold text-ambient-blue bg-ambient-blue/10 px-3 py-1 rounded-full uppercase tracking-wider border border-ambient-blue/20">
-                      {cert.type}
-                    </span>
-                    <span className="text-ambient-blue font-bold font-mono text-sm">{cert.year}</span>
+              <TiltCard key={cert.id} className="h-full w-full" maxTilt={8}>
+                <div className="h-full w-full p-8 rounded-2xl glass-card border border-white/10 relative overflow-hidden z-10 group hover:border-ambient-blue/50 transition-all duration-300 flex flex-col justify-between shadow-xl min-h-[220px]">
+                  <div className="absolute right-0 bottom-0 opacity-5 group-hover:opacity-15 transition-opacity duration-500 pointer-events-none">
+                    <AnimatedIcon Icon={cert.type === 'Bootcamp' ? BookOpen : Award} className="w-32 h-32 text-ambient-blue" />
                   </div>
-                  <h3 className="text-xl font-bold text-white mb-2 pr-6 group-hover:text-ambient-blue transition-colors">
-                    {cert.title}
-                  </h3>
+                  <div>
+                    <div className="flex justify-between items-center mb-4">
+                      <span className="text-xs font-bold text-ambient-blue bg-ambient-blue/15 px-3.5 py-1 rounded-full uppercase tracking-wider border border-ambient-blue/30 shadow-sm">
+                        {cert.type}
+                      </span>
+                      <span className="text-ambient-blue font-bold font-mono text-sm">{cert.year}</span>
+                    </div>
+                    <h3 className="text-xl font-bold text-white mb-2 pr-6 group-hover:text-ambient-blue transition-colors">
+                      {cert.title}
+                    </h3>
+                  </div>
+                  <div className="flex justify-between items-end text-sm text-gray-400 mt-6 pt-4 border-t border-white/5">
+                    <span className="flex items-center gap-2 font-medium text-gray-300">
+                      <Award className="w-4 h-4 text-ambient-blue" />
+                      {cert.issuer}
+                    </span>
+                    <span className="text-xs text-emerald-400 font-mono flex items-center gap-1">
+                      <CheckCircle2 size={12} /> Verified
+                    </span>
+                  </div>
                 </div>
-                <div className="flex justify-between items-end text-sm text-gray-400 mt-6 pt-3 border-t border-white/5">
-                  <span className="flex items-center gap-1.5 font-medium">
-                    <Award className="w-4 h-4 text-ambient-blue" />
-                    {cert.issuer}
-                  </span>
-                  <span className="text-xs text-gray-500 font-mono">Verified</span>
-                </div>
-              </div>
+              </TiltCard>
             ))}
           </motion.div>
         </AnimatePresence>
       </div>
 
-      {/* Navigation Controls: Dots & Arrows */}
+      {/* Navigation Controls */}
       <div className="flex items-center justify-between mt-8 px-2">
         <div className="flex gap-2">
           <button
             onClick={() => paginate(-1)}
-            className="p-3 rounded-xl bg-dark-surface border border-white/10 hover:border-ambient-blue hover:bg-ambient-blue/10 text-gray-300 hover:text-white transition-all cursor-pointer shadow-md active:scale-95"
+            className="p-3 rounded-xl glass-card border border-white/10 hover:border-ambient-blue hover:bg-ambient-blue/15 text-gray-300 hover:text-white transition-all cursor-pointer shadow-md active:scale-95"
             aria-label="Previous Slide"
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
           <button
             onClick={() => paginate(1)}
-            className="p-3 rounded-xl bg-dark-surface border border-white/10 hover:border-ambient-blue hover:bg-ambient-blue/10 text-gray-300 hover:text-white transition-all cursor-pointer shadow-md active:scale-95"
+            className="p-3 rounded-xl glass-card border border-white/10 hover:border-ambient-blue hover:bg-ambient-blue/15 text-gray-300 hover:text-white transition-all cursor-pointer shadow-md active:scale-95"
             aria-label="Next Slide"
           >
             <ChevronRight className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Clickable Dots */}
         <div className="flex items-center gap-2.5">
           {pages.map((_, idx) => (
             <button
@@ -369,7 +345,7 @@ const CertificateCarousel = ({ certificates = [] }) => {
               onClick={() => paginate(idx > currentPage ? 1 : -1, idx)}
               className={`transition-all duration-300 cursor-pointer ${
                 idx === currentPage
-                  ? "w-8 h-2.5 rounded-full bg-ambient-blue shadow-[0_0_12px_rgba(59,130,246,0.8)]"
+                  ? "w-8 h-2.5 rounded-full bg-ambient-blue shadow-[0_0_15px_rgba(59,130,246,0.9)]"
                   : "w-2.5 h-2.5 rounded-full bg-white/20 hover:bg-white/50"
               }`}
               aria-label={`Go to slide ${idx + 1}`}
@@ -391,6 +367,13 @@ const Portfolio = () => {
   const location = useLocation();
   const { openContactDrawer } = useContactDrawer();
 
+  // Mouse Parallax for Header
+  const headerRef = useRef(null);
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+  const headerRotateX = useSpring(useTransform(mouseY, [-200, 200], [5, -5]), { stiffness: 100, damping: 20 });
+  const headerRotateY = useSpring(useTransform(mouseX, [-400, 400], [-5, 5]), { stiffness: 100, damping: 20 });
+
   useEffect(() => {
     fetchPortfolioData().then(res => setData(res.data));
   }, []);
@@ -406,8 +389,19 @@ const Portfolio = () => {
     }
   }, [location, data, openContactDrawer]);
 
-  if (!data) return <div className="min-h-screen bg-dark-bg" />;
+  const handleHeaderMouseMove = (e) => {
+    if (!headerRef.current) return;
+    const rect = headerRef.current.getBoundingClientRect();
+    mouseX.set(e.clientX - (rect.left + rect.width / 2));
+    mouseY.set(e.clientY - (rect.top + rect.height / 2));
+  };
 
+  const handleHeaderMouseLeave = () => {
+    mouseX.set(0);
+    mouseY.set(0);
+  };
+
+  if (!data) return <div className="min-h-screen bg-dark-bg" />;
 
   const headerInfo = data.header || {};
   const skillsData = data.technicalSkills || {};
@@ -421,21 +415,25 @@ const Portfolio = () => {
   ];
 
   return (
-    <div className="bg-dark-bg text-white flex flex-col min-h-screen selection:bg-ambient-blue relative overflow-hidden">
+    <div className="bg-transparent text-white flex flex-col min-h-screen selection:bg-ambient-blue relative overflow-hidden">
 
       <SVGRope />
-
-      {/* Ambient glows */}
-      <div className="fixed top-0 right-0 w-[700px] h-[700px] bg-ambient-glow rounded-full blur-[150px] opacity-15 pointer-events-none" />
-      <div className="fixed bottom-0 left-0 w-[400px] h-[400px] bg-ambient-glow/30 rounded-full blur-[120px] opacity-10 pointer-events-none" />
-
-      <FloatingBgIcons />
 
       {/* ── Main Content ── */}
       <div className="flex-1 max-w-6xl mx-auto px-4 sm:px-6 pt-24 sm:pt-32 pb-16 sm:pb-24 w-full relative z-10">
 
-        {/* Hero / Header Section */}
-        <div className="flex flex-col mb-20 gap-6">
+        {/* 3D Hero / Header Section */}
+        <motion.div
+          ref={headerRef}
+          onMouseMove={handleHeaderMouseMove}
+          onMouseLeave={handleHeaderMouseLeave}
+          style={{
+            rotateX: headerRotateX,
+            rotateY: headerRotateY,
+            transformStyle: 'preserve-3d',
+          }}
+          className="flex flex-col mb-20 gap-6 perspective-1000 preserve-3d"
+        >
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div>
               <motion.h1
@@ -456,6 +454,7 @@ const Portfolio = () => {
                 className="text-base sm:text-xl md:text-2xl font-bold text-ambient-blue flex items-center gap-2"
               >
                 <span>{headerInfo.role || "C# / .NET Developer"}</span>
+                <Sparkles className="w-5 h-5 text-ambient-blue animate-pulse" />
               </motion.div>
             </div>
           </div>
@@ -465,16 +464,16 @@ const Portfolio = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.3 }}
-            className="flex flex-wrap items-center gap-4 text-xs md:text-sm text-gray-300 pt-4 border-t border-white/10"
+            className="flex flex-wrap items-center gap-3 text-xs md:text-sm text-gray-300 pt-4 border-t border-white/10"
           >
             {headerInfo.location && (
-              <span className="flex items-center gap-1.5 bg-white/5 px-3 py-1.5 rounded-full border border-white/5">
+              <span className="flex items-center gap-1.5 glass-pill px-3.5 py-1.5 rounded-full">
                 <MapPin className="w-4 h-4 text-ambient-blue" />
                 {headerInfo.location}
               </span>
             )}
             {headerInfo.phone && (
-              <a href={`tel:${headerInfo.phone}`} className="flex items-center gap-1.5 bg-white/5 px-3 py-1.5 rounded-full border border-white/5 hover:border-ambient-blue/50 transition-colors">
+              <a href={`tel:${headerInfo.phone}`} className="flex items-center gap-1.5 glass-pill px-3.5 py-1.5 rounded-full hover:border-ambient-blue/50 hover:bg-ambient-blue/10 transition-colors">
                 <Phone className="w-4 h-4 text-ambient-blue" />
                 {headerInfo.phone}
               </a>
@@ -482,47 +481,44 @@ const Portfolio = () => {
             {headerInfo.email && (
               <a 
                 href={`mailto:${headerInfo.email}`} 
-                onClick={(e) => {
-                  window.location.href = `mailto:${headerInfo.email}`;
-                }}
-                className="flex items-center gap-1.5 bg-white/5 px-3 py-1.5 rounded-full border border-white/5 hover:border-ambient-blue/50 transition-colors cursor-pointer"
+                className="flex items-center gap-1.5 glass-pill px-3.5 py-1.5 rounded-full hover:border-ambient-blue/50 hover:bg-ambient-blue/10 transition-colors cursor-pointer"
               >
                 <Mail className="w-4 h-4 text-ambient-blue" />
                 {headerInfo.email}
               </a>
             )}
             {headerInfo.linkedin && (
-              <a href={headerInfo.linkedin} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 bg-ambient-blue/10 text-ambient-blue px-3 py-1.5 rounded-full border border-ambient-blue/30 hover:bg-ambient-blue hover:text-white transition-all">
+              <a href={headerInfo.linkedin} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 bg-ambient-blue/15 text-ambient-blue px-3.5 py-1.5 rounded-full border border-ambient-blue/30 hover:bg-ambient-blue hover:text-white transition-all shadow-sm">
                 <LinkedInIcon className="w-4 h-4" />
                 LinkedIn
               </a>
             )}
             {headerInfo.github && (
-              <a href={headerInfo.github} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 bg-white/10 text-white px-3 py-1.5 rounded-full border border-white/20 hover:bg-white hover:text-black transition-all">
+              <a href={headerInfo.github} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 bg-white/10 text-white px-3.5 py-1.5 rounded-full border border-white/20 hover:bg-white hover:text-black transition-all shadow-sm">
                 <GitHubIcon className="w-4 h-4" />
                 GitHub
               </a>
             )}
           </motion.div>
-        </div>
+        </motion.div>
 
-        {/* Full Page Sections - Maintained in Resume Order */}
+        {/* Full Page Sections */}
         <div className="space-y-20 sm:space-y-28">
 
           {/* 1. PROFESSIONAL SUMMARY */}
-          <section id="summary" className="scroll-mt-24">
+          <section id="summary" className="scroll-mt-28">
             <SectionHeading icon={UserCheck} title="Professional Summary" />
             <RevealingCard delay={0.1}>
-              <div className="p-6 sm:p-8 md:p-10 rounded-3xl bg-gradient-to-br from-dark-surface to-black/80 border border-white/10 relative overflow-hidden group hover:border-ambient-blue/40 transition-all duration-300">
-                <div className="flex gap-5 items-start">
-                  <div className="w-1.5 h-20 rounded-full bg-ambient-blue shadow-[0_0_15px_rgba(59,130,246,0.8)] shrink-0 mt-1" />
+              <div className="p-8 sm:p-10 md:p-12 rounded-3xl glass-card border border-white/10 relative overflow-hidden group hover:border-ambient-blue/40 transition-all duration-300">
+                <div className="flex gap-6 items-start">
+                  <div className="w-1.5 h-24 rounded-full bg-ambient-blue shadow-[0_0_20px_rgba(59,130,246,0.9)] shrink-0 mt-1" />
                   <div>
-                    <p className="text-gray-300 text-base md:text-lg leading-relaxed font-normal">
+                    <p className="text-gray-200 text-base md:text-lg leading-relaxed font-normal">
                       {data.summary}
                     </p>
-                    <div className="mt-6 flex flex-wrap gap-2">
+                    <div className="mt-8 flex flex-wrap gap-2.5">
                       {["C#", "ASP.NET Core Web API", "ASP.NET MVC", "React.js", "SQL Server", "Entity Framework Core", "RESTful APIs"].map((tag, idx) => (
-                        <span key={idx} className="text-xs font-mono px-3 py-1 rounded-full bg-ambient-blue/10 text-ambient-blue border border-ambient-blue/20">
+                        <span key={idx} className="text-xs font-mono px-3.5 py-1.5 rounded-xl bg-ambient-blue/15 text-ambient-blue border border-ambient-blue/30 shadow-sm">
                           #{tag}
                         </span>
                       ))}
@@ -534,14 +530,14 @@ const Portfolio = () => {
           </section>
 
           {/* 2. TECHNICAL SKILLS */}
-          <section id="skills" className="scroll-mt-24">
+          <section id="skills" className="scroll-mt-28">
             <SectionHeading icon={Code2} title="Technical Skills" />
             <SkillsMarquee />
             <SkillsSlider categories={skillCategories} />
           </section>
 
           {/* 3. INTERNSHIP & TRAINING EXPERIENCE */}
-          <section id="experience" className="scroll-mt-24">
+          <section id="experience" className="scroll-mt-28">
             <SectionHeading icon={Briefcase} title="Internship & Training Experience" />
             <div className="flex flex-col space-y-10">
               {(data.experience || []).map((item, i) => {
@@ -550,13 +546,13 @@ const Portfolio = () => {
                 return (
                   <div 
                     key={item.id} 
-                    className={`w-full md:w-[88%] ${isEven ? 'self-start md:mr-auto' : 'self-end md:ml-auto'}`}
+                    className={`w-full md:w-[90%] ${isEven ? 'self-start md:mr-auto' : 'self-end md:ml-auto'}`}
                   >
                     <RevealingCard delay={i * 0.1}>
-                      <div className="p-6 md:p-8 rounded-2xl bg-dark-surface border border-white/10 relative z-10 group hover:border-ambient-blue/50 transition-all duration-300 shadow-lg">
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4 pb-4 border-b border-white/5">
-                          <div className="flex items-start gap-3.5">
-                            <div className="p-3 rounded-xl bg-ambient-blue/10 text-ambient-blue border border-ambient-blue/20 shrink-0 mt-0.5 group-hover:scale-110 transition-transform">
+                      <div className="p-8 md:p-10 rounded-2xl glass-card border border-white/10 relative z-10 group hover:border-ambient-blue/50 transition-all duration-300 shadow-xl">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5 pb-5 border-b border-white/10">
+                          <div className="flex items-start gap-4">
+                            <div className="p-3.5 rounded-xl bg-ambient-blue/15 text-ambient-blue border border-ambient-blue/30 shrink-0 mt-0.5 group-hover:scale-110 transition-transform shadow-[0_0_15px_rgba(59,130,246,0.25)]">
                               <ExpIcon className="w-5 h-5" />
                             </div>
                             <div>
@@ -566,16 +562,16 @@ const Portfolio = () => {
                               <div className="text-ambient-blue font-semibold text-sm sm:text-base flex flex-wrap items-center gap-1 sm:gap-2">
                                 <span>{item.company}</span>
                                 <span className="text-gray-500">•</span>
-                                <span className="text-gray-400 text-sm font-normal">{item.location}</span>
+                                <span className="text-gray-300 text-sm font-normal">{item.location}</span>
                               </div>
                             </div>
                           </div>
-                          <div className="text-ambient-blue text-xs font-bold font-mono bg-ambient-blue/10 px-3.5 py-1.5 rounded-full border border-ambient-blue/20 inline-block shrink-0">
+                          <div className="text-ambient-blue text-xs font-bold font-mono bg-ambient-blue/15 px-4 py-2 rounded-full border border-ambient-blue/30 inline-block shrink-0 shadow-sm">
                             {item.period}
                           </div>
                         </div>
 
-                        <ul className="space-y-3 mt-4 text-gray-300 text-sm leading-relaxed">
+                        <ul className="space-y-3.5 mt-4 text-gray-300 text-sm leading-relaxed">
                           {(item.bullets || []).map((bullet, bIdx) => (
                             <li key={bIdx} className="flex items-start gap-3">
                               <CheckCircle2 className="w-4 h-4 text-ambient-blue shrink-0 mt-1" />
@@ -592,18 +588,18 @@ const Portfolio = () => {
           </section>
 
           {/* 4. TRAINING & CERTIFICATIONS */}
-          <section id="certificates" className="scroll-mt-24">
+          <section id="certificates" className="scroll-mt-28">
             <SectionHeading icon={Award} title="Training & Certifications" />
             <CertificateCarousel certificates={data.certificates} />
           </section>
 
-          {/* 5. ACADEMIC PROJECTS (Spacious & Larger Cards) */}
-          <section id="projects" className="scroll-mt-24">
+          {/* 5. ACADEMIC PROJECTS */}
+          <section id="projects" className="scroll-mt-28">
             <SectionHeading icon={Layers} title="Academic Projects" />
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10">
               {(data.academicProjects || []).map((item, i) => (
                 <RevealingCard key={item.id} delay={i * 0.15}>
-                  <div className="h-full w-full p-8 sm:p-10 md:p-12 min-h-[380px] rounded-3xl bg-dark-surface border border-white/10 relative z-10 group hover:border-ambient-blue/50 transition-all duration-300 flex flex-col justify-between shadow-xl">
+                  <div className="h-full w-full p-8 sm:p-10 md:p-12 min-h-[380px] rounded-3xl glass-card border border-white/10 relative z-10 group hover:border-ambient-blue/50 transition-all duration-300 flex flex-col justify-between shadow-2xl">
                     <div>
                       <h3 className="text-xl sm:text-3xl font-extrabold text-white mb-5 group-hover:text-ambient-blue transition-colors flex items-center justify-between">
                         <span>
@@ -616,7 +612,7 @@ const Portfolio = () => {
                       {/* Tech Stack Pills with Skill Icons */}
                       <div className="flex flex-wrap gap-2.5 mb-8">
                         {(item.techStack || []).map((tech, tIdx) => (
-                          <span key={tIdx} className="text-xs font-mono font-medium px-3.5 py-1.5 rounded-xl bg-ambient-blue/10 text-ambient-blue border border-ambient-blue/20 flex items-center gap-1.5">
+                          <span key={tIdx} className="text-xs font-mono font-medium px-3.5 py-1.5 rounded-xl bg-ambient-blue/15 text-ambient-blue border border-ambient-blue/30 flex items-center gap-1.5 shadow-sm">
                             <SkillIcon name={tech} className="w-4 h-4 text-ambient-blue" />
                             {tech}
                           </span>
@@ -639,27 +635,27 @@ const Portfolio = () => {
             </div>
           </section>
 
-          {/* 6. EDUCATION (With School & College Icons) */}
-          <section id="timeline" className="scroll-mt-24">
+          {/* 6. EDUCATION */}
+          <section id="timeline" className="scroll-mt-28">
             <SectionHeading icon={GraduationCap} title="Education" />
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
               {(data.education || []).map((item, i) => {
                 const SchoolIcon = getSchoolIcon(item.iconType);
                 return (
                   <RevealingCard key={item.id} delay={i * 0.15}>
-                    <div className="h-full w-full p-8 rounded-2xl bg-dark-surface border border-white/5 relative z-10 overflow-hidden flex flex-col justify-between group hover:border-ambient-blue/40 transition-all duration-300">
+                    <div className="h-full w-full p-8 rounded-2xl glass-card border border-white/10 relative z-10 overflow-hidden flex flex-col justify-between group hover:border-ambient-blue/50 transition-all duration-300 shadow-xl">
                       {/* Background Watermark Icon */}
                       <div className="absolute -right-6 -bottom-6 opacity-5 group-hover:opacity-15 transition-opacity duration-500 pointer-events-none">
-                        <SchoolIcon className="w-40 h-40 text-ambient-blue" />
+                        <SchoolIcon className="w-44 h-44 text-ambient-blue" />
                       </div>
 
                       <div>
                         <div className="flex justify-between items-center mb-6">
                           <div className="flex items-center gap-3">
-                            <div className="w-12 h-12 rounded-xl bg-ambient-blue/10 border border-ambient-blue/30 flex items-center justify-center text-ambient-blue shadow-[0_0_15px_rgba(59,130,246,0.2)] group-hover:scale-110 group-hover:bg-ambient-blue group-hover:text-white transition-all duration-300">
+                            <div className="w-12 h-12 rounded-xl bg-ambient-blue/15 border border-ambient-blue/30 flex items-center justify-center text-ambient-blue shadow-[0_0_15px_rgba(59,130,246,0.3)] group-hover:scale-110 group-hover:bg-ambient-blue group-hover:text-white transition-all duration-300">
                               <SchoolIcon className="w-6 h-6" />
                             </div>
-                            <span className="text-xs font-bold font-mono px-3 py-1 rounded-full bg-ambient-blue/10 text-ambient-blue border border-ambient-blue/20">
+                            <span className="text-xs font-bold font-mono px-3.5 py-1.5 rounded-full bg-ambient-blue/15 text-ambient-blue border border-ambient-blue/30">
                               {item.period}
                             </span>
                           </div>
@@ -676,9 +672,9 @@ const Portfolio = () => {
                       </div>
 
                       {item.score && (
-                        <div className="text-xs text-gray-300 bg-white/5 px-4 py-2.5 rounded-xl border border-white/5 mt-4 flex items-center justify-between">
+                        <div className="text-xs text-gray-300 glass-pill px-4 py-2.5 rounded-xl mt-4 flex items-center justify-between">
                           <span className="text-gray-400 font-medium">Academic Score:</span>
-                          <span className="font-semibold text-ambient-blue">{item.score}</span>
+                          <span className="font-bold text-ambient-blue">{item.score}</span>
                         </div>
                       )}
                     </div>
@@ -696,7 +692,7 @@ const Portfolio = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className="mt-16 sm:mt-20 flex flex-col items-center gap-4 py-8 sm:py-10 border-t border-b border-white/10"
+          className="mt-16 sm:mt-20 flex flex-col items-center gap-4 py-10 sm:py-12 border-t border-b border-white/10"
         >
           <h3 className="text-xl sm:text-2xl md:text-3xl font-black text-white text-center">
             <span className="text-ambient-blue">&lt;</span> Get my full resume <span className="text-ambient-blue">/&gt;</span>
@@ -707,20 +703,17 @@ const Portfolio = () => {
             rel="noopener noreferrer"
             whileHover={{ scale: 1.06, boxShadow: "0 0 40px rgba(59,130,246,0.6)" }}
             whileTap={{ scale: 0.97 }}
-            className="inline-flex items-center gap-3 px-10 py-4 bg-ambient-blue text-white font-bold text-lg rounded-2xl shadow-[0_0_25px_rgba(59,130,246,0.35)] hover:shadow-[0_0_45px_rgba(59,130,246,0.65)] transition-all cursor-pointer"
+            className="inline-flex items-center gap-3 px-10 py-4 bg-gradient-to-r from-ambient-blue to-blue-600 text-white font-bold text-lg rounded-2xl shadow-[0_0_25px_rgba(59,130,246,0.4)] hover:shadow-[0_0_45px_rgba(59,130,246,0.7)] transition-all cursor-pointer"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4" />
-            </svg>
+            <Download className="w-5 h-5" />
             Download Resume
           </motion.a>
           <p className="text-xs text-gray-500 font-mono">Opens as PDF in a new tab</p>
 
-          {/* Compact Main Webpage Button immediately below Download Resume */}
           <div className="mt-4">
             <Link 
               to="/" 
-              className="inline-flex items-center gap-2.5 px-6 py-3 rounded-xl bg-dark-surface border border-white/10 hover:border-ambient-blue hover:bg-ambient-blue/10 text-gray-300 hover:text-white transition-all text-sm font-semibold group cursor-pointer shadow-md"
+              className="inline-flex items-center gap-2.5 px-6 py-3 rounded-xl glass-card border border-white/10 hover:border-ambient-blue hover:bg-ambient-blue/15 text-gray-300 hover:text-white transition-all text-sm font-semibold group cursor-pointer shadow-md hover:scale-105 active:scale-95"
             >
               <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
               <span>Back to Main Webpage</span>
@@ -728,32 +721,32 @@ const Portfolio = () => {
           </div>
         </motion.div>
 
-        {/* Contact CTA (Right after Download Resume section) */}
-        <section id="contact" className="mt-16 scroll-mt-24">
-          <RevealingCard delay={0.1}>
-            <div className="p-6 sm:p-10 md:p-14 rounded-3xl bg-gradient-to-r from-ambient-blue/20 via-dark-surface to-black border border-ambient-blue/30 relative overflow-hidden flex flex-col items-center justify-between gap-6 md:flex-row md:gap-8 group hover:border-ambient-blue/60 transition-all duration-300 text-center md:text-left">
-              <div className="space-y-3 max-w-xl">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-ambient-blue/10 text-ambient-blue border border-ambient-blue/20 text-xs font-mono font-semibold">
+        {/* Contact CTA */}
+        <section id="contact" className="mt-16 scroll-mt-28">
+          <TiltCard delay={0.1} maxTilt={6}>
+            <div className="p-8 sm:p-12 md:p-16 rounded-3xl bg-gradient-to-r from-ambient-blue/25 via-dark-surface to-black/90 border border-ambient-blue/40 relative overflow-hidden flex flex-col items-center justify-between gap-8 md:flex-row group hover:border-ambient-blue/70 transition-all duration-300 text-center md:text-left shadow-2xl">
+              <div className="space-y-4 max-w-xl">
+                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-ambient-blue/15 text-ambient-blue border border-ambient-blue/30 text-xs font-mono font-semibold">
                   <Mail className="w-3.5 h-3.5" />
                   Looking for a .NET / Full Stack Developer?
                 </div>
-                <h3 className="text-xl sm:text-2xl md:text-4xl font-bold text-white tracking-tight">
+                <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white tracking-tight">
                   Let's Discuss Opportunities
                 </h3>
                 <p className="text-gray-300 text-sm leading-relaxed">
-                  Click below to open my contact form drawer. Feel free to reach out regarding job offers, consultations, or technical projects.
+                  Available for full-time positions, contractor engagements, and technical collaborations.
                 </p>
               </div>
 
               <button
                 onClick={openContactDrawer}
-                className="px-6 sm:px-8 py-3 sm:py-4 bg-ambient-blue hover:bg-blue-600 text-white font-bold rounded-2xl shadow-[0_0_25px_rgba(59,130,246,0.4)] hover:shadow-[0_0_40px_rgba(59,130,246,0.7)] transition-all flex items-center gap-3 shrink-0 cursor-pointer hover:scale-105 active:scale-95 text-sm sm:text-base"
+                className="px-8 py-4 bg-gradient-to-r from-ambient-blue to-blue-600 hover:from-blue-500 hover:to-blue-700 text-white font-bold rounded-2xl shadow-[0_0_25px_rgba(59,130,246,0.4)] hover:shadow-[0_0_40px_rgba(59,130,246,0.7)] transition-all flex items-center gap-3 shrink-0 cursor-pointer hover:scale-105 active:scale-95 text-base"
               >
-                <Mail className="w-4 h-4 sm:w-5 sm:h-5" />
+                <Mail className="w-5 h-5" />
                 Contact Me Now
               </button>
             </div>
-          </RevealingCard>
+          </TiltCard>
         </section>
 
       </div>

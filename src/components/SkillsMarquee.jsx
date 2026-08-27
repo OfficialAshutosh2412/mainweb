@@ -1,6 +1,6 @@
 import { 
   Atom, ShieldCheck, Radio, FileCode, Code2, GitBranch, Terminal, 
-  Database, Cloud, Wrench, Globe, Layers, Sparkles
+  Database, Cloud, Wrench, Globe, Layers
 } from 'lucide-react';
 
 const techSkills = [

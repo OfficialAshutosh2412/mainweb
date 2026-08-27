@@ -4,7 +4,9 @@
   --color-ambient-blue: #3b82f6;
   --color-ambient-glow: rgba(59, 130, 246, 0.5);
   --color-dark-bg: #0a0a0a;
-  --color-dark-surface: #171717;
+  --color-dark-surface: #121215;
+  --color-glass-surface: rgba(18, 18, 22, 0.7);
+  --color-glass-border: rgba(255, 255, 255, 0.08);
 }
 
 @layer base {
@@ -15,6 +17,80 @@
   body {
     @apply bg-dark-bg text-gray-100 antialiased overflow-x-hidden selection:bg-ambient-blue selection:text-white;
   }
+}
+
+/* 3D Transform Utilities */
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.perspective-2000 {
+  perspective: 2000px;
+}
+
+.preserve-3d {
+  transform-style: preserve-3d;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+}
+
+.translate-z-10 {
+  transform: translateZ(10px);
+}
+
+.translate-z-20 {
+  transform: translateZ(20px);
+}
+
+.translate-z-30 {
+  transform: translateZ(30px);
+}
+
+.translate-z-40 {
+  transform: translateZ(40px);
+}
+
+/* Glassmorphism Classes */
+.glass-card {
+  background: rgba(18, 18, 24, 0.65);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5), 0 0 15px -3px rgba(59, 130, 246, 0.05);
+}
+
+.glass-card-hover {
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.glass-card-hover:hover {
+  border-color: rgba(59, 130, 246, 0.4);
+  box-shadow: 0 20px 40px -15px rgba(59, 130, 246, 0.25), 0 0 25px rgba(59, 130, 246, 0.15);
+}
+
+.glass-pill {
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* 3D Cyber Grid Background Animation */
+@keyframes grid-drift {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(40px);
+  }
+}
+
+.cyber-grid {
+  background-size: 40px 40px;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
 }
 
 /* Hide Lenis inner wrapper's own scrollbar so only the browser's native one shows */
@@ -36,7 +112,7 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #333;
+  background: #26262a;
   border-radius: 4px;
 }
 
@@ -62,6 +138,22 @@
 
 .animate-marquee:hover {
   animation-play-state: paused;
+}
+
+/* Ambient Pulse Glow */
+@keyframes glow-pulse {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.08);
+  }
+}
+
+.animate-glow-pulse {
+  animation: glow-pulse 6s ease-in-out infinite;
 }
 
 /* Mobile-first base reset */

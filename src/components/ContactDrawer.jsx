@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Mail, Phone, MapPin, Send, X, MessageSquare } from 'lucide-react';
+import { Mail, Phone, MapPin, Send, X, MessageSquare, Sparkles } from 'lucide-react';
 import { useContactDrawer } from '../context/ContactContext';
 
 const LinkedInIcon = ({ className = "w-4 h-4" }) => (
@@ -58,11 +58,11 @@ const ContactDrawer = () => {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
             onClick={closeContactDrawer}
-            className="fixed inset-0 bg-black/75 backdrop-blur-md z-50 cursor-pointer"
+            className="fixed inset-0 bg-black/80 backdrop-blur-lg z-50 cursor-pointer"
             aria-label="Close modal overlay"
           />
 
-          {/* Sliding Form Panel */}
+          {/* Sliding Form Panel with Glassmorphic styling */}
           <motion.div
             data-lenis-prevent
             data-lenis-prevent-wheel
@@ -70,15 +70,15 @@ const ContactDrawer = () => {
             initial={{ x: '100%' }}
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
-            transition={{ type: 'spring', damping: 25, stiffness: 220 }}
-            className="fixed top-0 right-0 h-full w-full max-w-xl md:max-w-2xl bg-dark-bg/95 border-l border-white/10 shadow-2xl z-50 overflow-y-auto overscroll-contain backdrop-blur-xl flex flex-col justify-between"
+            transition={{ type: 'spring', damping: 28, stiffness: 240 }}
+            className="fixed top-0 right-0 h-full w-full max-w-xl md:max-w-2xl bg-dark-bg/95 border-l border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.9)] z-50 overflow-y-auto overscroll-contain backdrop-blur-2xl flex flex-col justify-between"
             onWheel={(e) => e.stopPropagation()}
             onTouchMove={(e) => e.stopPropagation()}
           >
             {/* Drawer Header */}
             <div className="sticky top-0 z-20 bg-dark-bg/90 backdrop-blur-md px-6 md:px-8 py-6 border-b border-white/10 flex justify-between items-center">
               <div className="flex items-center gap-3">
-                <div className="p-2.5 rounded-xl bg-ambient-blue/10 text-ambient-blue border border-ambient-blue/20">
+                <div className="p-3 rounded-2xl bg-ambient-blue/15 text-ambient-blue border border-ambient-blue/30 shadow-[0_0_15px_rgba(59,130,246,0.25)]">
                   <Mail className="w-6 h-6" />
                 </div>
                 <div>
@@ -98,7 +98,7 @@ const ContactDrawer = () => {
                 title="Close Contact Form (Esc)"
                 aria-label="Close Contact Form"
               >
-                <X className="w-6 h-6 group-hover:scale-110 group-hover:rotate-90 transition-transform duration-300" />
+                <X className="w-5 h-5 group-hover:scale-110 group-hover:rotate-90 transition-transform duration-300" />
               </button>
             </div>
 
@@ -106,15 +106,14 @@ const ContactDrawer = () => {
             <div className="p-6 md:p-8 space-y-8 flex-1">
               {/* Quick Info Grid */}
               <div className="grid sm:grid-cols-2 gap-4">
-                <div className="p-4 rounded-xl bg-dark-surface border border-white/5 flex items-center gap-3 group hover:border-ambient-blue/40 transition-colors">
-                  <div className="p-2.5 rounded-lg bg-ambient-blue/10 text-ambient-blue shrink-0">
+                <div className="p-4 rounded-xl glass-card border border-white/10 flex items-center gap-3 group hover:border-ambient-blue/50 transition-all">
+                  <div className="p-2.5 rounded-lg bg-ambient-blue/15 text-ambient-blue shrink-0">
                     <Mail className="w-4 h-4" />
                   </div>
                   <div className="overflow-hidden">
                     <div className="text-[10px] text-gray-500 font-mono uppercase tracking-wider">Direct Email</div>
                     <a
                       href="mailto:ashutoshprasad2427@gmail.com"
-                      onClick={() => { window.location.href = 'mailto:ashutoshprasad2427@gmail.com'; }}
                       className="text-xs text-white hover:text-ambient-blue font-semibold transition-colors block truncate cursor-pointer"
                     >
                       ashutoshprasad2427@gmail.com
@@ -122,8 +121,8 @@ const ContactDrawer = () => {
                   </div>
                 </div>
 
-                <div className="p-4 rounded-xl bg-dark-surface border border-white/5 flex items-center gap-3 group hover:border-ambient-blue/40 transition-colors">
-                  <div className="p-2.5 rounded-lg bg-ambient-blue/10 text-ambient-blue shrink-0">
+                <div className="p-4 rounded-xl glass-card border border-white/10 flex items-center gap-3 group hover:border-ambient-blue/50 transition-all">
+                  <div className="p-2.5 rounded-lg bg-ambient-blue/15 text-ambient-blue shrink-0">
                     <Phone className="w-4 h-4" />
                   </div>
                   <div>
@@ -137,8 +136,8 @@ const ContactDrawer = () => {
                   </div>
                 </div>
 
-                <div className="p-4 rounded-xl bg-dark-surface border border-white/5 flex items-center gap-3 group hover:border-ambient-blue/40 transition-colors">
-                  <div className="p-2.5 rounded-lg bg-ambient-blue/10 text-ambient-blue shrink-0">
+                <div className="p-4 rounded-xl glass-card border border-white/10 flex items-center gap-3 group hover:border-ambient-blue/50 transition-all">
+                  <div className="p-2.5 rounded-lg bg-ambient-blue/15 text-ambient-blue shrink-0">
                     <MapPin className="w-4 h-4" />
                   </div>
                   <div>
@@ -147,12 +146,12 @@ const ContactDrawer = () => {
                   </div>
                 </div>
 
-                <div className="p-4 rounded-xl bg-dark-surface border border-white/5 flex items-center gap-3 justify-around">
+                <div className="p-4 rounded-xl glass-card border border-white/10 flex items-center gap-3 justify-around">
                   <a
                     href="https://linkedin.com/in/ashutosh-prasad-0449181ba"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="p-2 rounded-lg bg-ambient-blue/10 text-ambient-blue hover:bg-ambient-blue hover:text-white transition-all flex items-center gap-1.5 text-xs font-semibold"
+                    className="p-2 px-3 rounded-lg bg-ambient-blue/15 text-ambient-blue border border-ambient-blue/30 hover:bg-ambient-blue hover:text-white transition-all flex items-center gap-1.5 text-xs font-semibold shadow-sm"
                   >
                     <LinkedInIcon className="w-4 h-4" />
                     LinkedIn
@@ -161,7 +160,7 @@ const ContactDrawer = () => {
                     href="https://github.com/OfficialAshutosh2412"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="p-2 rounded-lg bg-white/10 text-white hover:bg-white hover:text-black transition-all flex items-center gap-1.5 text-xs font-semibold"
+                    className="p-2 px-3 rounded-lg bg-white/10 text-white border border-white/20 hover:bg-white hover:text-black transition-all flex items-center gap-1.5 text-xs font-semibold shadow-sm"
                   >
                     <GitHubIcon className="w-4 h-4" />
                     GitHub
@@ -169,12 +168,12 @@ const ContactDrawer = () => {
                 </div>
               </div>
 
-
               {/* Form Section */}
-              <div className="p-6 md:p-8 rounded-2xl bg-dark-surface border border-white/5 relative overflow-hidden">
+              <div className="p-6 md:p-8 rounded-2xl glass-card border border-white/10 relative overflow-hidden shadow-xl">
                 <div className="flex items-center gap-2 mb-6 text-ambient-blue">
                   <MessageSquare className="w-5 h-5" />
                   <h3 className="text-lg font-bold text-white">Send Me a Message</h3>
+                  <Sparkles className="w-4 h-4 text-ambient-blue ml-auto opacity-75" />
                 </div>
 
                 {submitted ? (
@@ -183,11 +182,11 @@ const ContactDrawer = () => {
                     animate={{ opacity: 1, scale: 1 }}
                     className="flex flex-col items-center justify-center py-12 text-center space-y-4"
                   >
-                    <div className="w-16 h-16 rounded-full bg-green-500/20 text-green-400 flex items-center justify-center text-3xl font-bold border border-green-500/30">
+                    <div className="w-16 h-16 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-3xl font-bold border border-emerald-500/40 shadow-[0_0_20px_rgba(16,185,129,0.3)]">
                       ✓
                     </div>
                     <h4 className="text-2xl font-bold text-white">Message Sent Successfully!</h4>
-                    <p className="text-gray-400 text-sm max-w-md">
+                    <p className="text-gray-300 text-sm max-w-md">
                       Thank you for reaching out. I have received your message and will respond as soon as possible.
                     </p>
                   </motion.div>
@@ -201,7 +200,7 @@ const ContactDrawer = () => {
                           required
                           value={formData.name}
                           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                          className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-ambient-blue focus:ring-1 focus:ring-ambient-blue transition-colors"
+                          className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none focus:border-ambient-blue focus:ring-1 focus:ring-ambient-blue transition-all shadow-inner"
                           placeholder="e.g. John Doe"
                         />
                       </div>
@@ -213,7 +212,7 @@ const ContactDrawer = () => {
                           required
                           value={formData.email}
                           onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                          className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-ambient-blue focus:ring-1 focus:ring-ambient-blue transition-colors"
+                          className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none focus:border-ambient-blue focus:ring-1 focus:ring-ambient-blue transition-all shadow-inner"
                           placeholder="john@example.com"
                         />
                       </div>
@@ -226,14 +225,14 @@ const ContactDrawer = () => {
                         rows={5}
                         value={formData.message}
                         onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                        className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-ambient-blue focus:ring-1 focus:ring-ambient-blue transition-colors resize-none"
+                        className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none focus:border-ambient-blue focus:ring-1 focus:ring-ambient-blue transition-all resize-none shadow-inner"
                         placeholder="Hi Ashutosh, I'd like to discuss a project..."
                       />
                     </div>
 
                     <button
                       type="submit"
-                      className="w-full py-4 rounded-xl bg-ambient-blue hover:bg-blue-600 text-white font-bold text-sm tracking-wide flex items-center justify-center gap-2 transition-all shadow-[0_0_20px_rgba(59,130,246,0.35)] hover:shadow-[0_0_30px_rgba(59,130,246,0.6)] active:scale-[0.99] cursor-pointer"
+                      className="w-full py-4 rounded-xl bg-gradient-to-r from-ambient-blue to-blue-600 hover:from-blue-500 hover:to-blue-700 text-white font-bold text-sm tracking-wide flex items-center justify-center gap-2 transition-all shadow-[0_0_25px_rgba(59,130,246,0.4)] hover:shadow-[0_0_40px_rgba(59,130,246,0.7)] active:scale-[0.99] cursor-pointer"
                     >
                       <Send className="w-4 h-4" />
                       Send Message

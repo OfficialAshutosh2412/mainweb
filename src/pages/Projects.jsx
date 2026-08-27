@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useLocation } from 'react-router-dom';
 import { fetchMainData } from '../api';
 
 import Footer from '../components/Footer';
-import RevealingCard from '../components/RevealingCard';
+import TiltCard from '../components/TiltCard';
 import { 
-  ArrowLeft, Code, Box, Layers, Cpu, Atom, CheckCircle, Database, ShieldCheck, Radio, FileCode, Terminal, Globe 
+  ArrowLeft, ArrowRight, Code, Layers, Atom, CheckCircle, Database, ShieldCheck, Radio, FileCode, Terminal, Globe, ShoppingCart 
 } from 'lucide-react';
 
 export const getTechIcon = (techName) => {
@@ -47,7 +47,6 @@ const Projects = () => {
 
   if (!data) return <div className="min-h-screen bg-dark-bg" />;
 
-  // Build project list — only minor (no major) after mock data change
   const allProjects = [
     ...data.showcaseProjects.map(p => ({ ...p, category: 'showcase' })),
     ...(data.storeProjects.minor ?? []).map(p => ({
@@ -56,45 +55,42 @@ const Projects = () => {
   ];
 
   const tabs = ['all', 'showcase', 'minor'];
-
   const filteredProjects = allProjects.filter(p => filter === 'all' || p.category === filter);
 
   return (
-    <div className="bg-dark-bg text-white flex flex-col min-h-screen selection:bg-ambient-blue relative overflow-hidden">
-      {/* Ambient glow */}
-      <div className="fixed top-0 left-0 w-[500px] h-[500px] bg-ambient-glow/10 rounded-full blur-[120px] pointer-events-none" />
-
-      <div className="flex-1 max-w-6xl mx-auto px-6 pt-32 pb-24 w-full relative z-10">
+    <div className="bg-transparent text-white flex flex-col min-h-screen selection:bg-ambient-blue relative overflow-hidden">
+      <div className="flex-1 max-w-6xl mx-auto px-4 sm:px-6 pt-28 sm:pt-36 pb-24 w-full relative z-10">
+        
         {/* Page header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="mb-16"
+          className="mb-14"
         >
-          <Link to="/" className="inline-flex items-center gap-2 text-ambient-blue hover:text-white transition-colors mb-6 group">
+          <Link to="/" className="inline-flex items-center gap-2 text-ambient-blue hover:text-white transition-colors mb-6 group glass-pill px-4 py-2 rounded-full w-fit">
             <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" /> Back to Home
           </Link>
-          <h1 className="text-5xl md:text-7xl font-black tracking-tighter">
+          <h1 className="text-4xl sm:text-6xl md:text-7xl font-black tracking-tighter">
             <span className="text-ambient-blue font-black">&lt;</span>
             <span className="text-white">All Projects</span>
             <span className="text-ambient-blue font-black ml-1">/&gt;</span>
           </h1>
-          <p className="text-gray-400 mt-4 max-w-xl">
-            Explore my entire collection of projects — from live showcase items to downloadable premium source-code assets.
+          <p className="text-gray-300 mt-4 max-w-xl text-sm sm:text-base leading-relaxed">
+            Explore my entire collection of projects — from production showcase applications to downloadable premium source code blueprints.
           </p>
         </motion.div>
 
         {/* Filters */}
-        <div className="flex flex-wrap gap-4 mb-12 border-b border-white/5 pb-6">
+        <div className="flex flex-wrap gap-3 mb-12 border-b border-white/10 pb-6">
           {tabs.map((tab) => (
             <button
               key={tab}
               onClick={() => setFilter(tab)}
-              className={`px-6 py-2.5 rounded-full text-sm font-semibold capitalize transition-all border cursor-pointer ${
+              className={`px-6 py-2.5 rounded-full text-xs sm:text-sm font-semibold capitalize transition-all border cursor-pointer active:scale-95 ${
                 filter === tab
-                  ? 'bg-ambient-blue border-ambient-blue text-white shadow-[0_0_15px_rgba(59,130,246,0.4)]'
-                  : 'bg-white/5 border-white/5 text-gray-400 hover:bg-white/10 hover:text-white'
+                  ? 'bg-ambient-blue border-ambient-blue text-white shadow-[0_0_20px_rgba(59,130,246,0.6)]'
+                  : 'glass-pill text-gray-300 hover:bg-white/10 hover:text-white'
               }`}
             >
               {tab === 'showcase' ? 'Showcase & Certified' : tab === 'minor' ? 'Store Projects' : 'All Projects'}
@@ -103,79 +99,93 @@ const Projects = () => {
         </div>
 
         {/* Projects Grid */}
-        <div className="grid md:grid-cols-2 gap-8">
-          {filteredProjects.map((project, i) => (
-            <RevealingCard key={project.id || `${project.category}-${i}`} delay={i * 0.05}>
-              <div className="p-8 h-full rounded-2xl bg-dark-surface border border-white/5 flex flex-col justify-between relative overflow-hidden group">
-                <div>
-                  <div className="flex justify-between items-start mb-4">
-                    <span className={`px-3 py-1 rounded-full text-xs font-bold ${
-                      project.category === 'showcase' ? 'bg-purple-500/20 text-purple-400' : 'bg-gray-500/20 text-gray-400'
-                    }`}>
-                      {project.type || (project.category === 'minor' ? 'Store Asset' : project.category)}
-                    </span>
-                    {project.price && (
-                      <span className="text-xl font-black text-ambient-blue">{project.price}</span>
-                    )}
-                  </div>
-
-                  {/* JSX-bracket title */}
-                  <h3 className="text-2xl font-bold mb-3 group-hover:text-ambient-blue transition-colors">
-                    <span className="text-ambient-blue font-black">&lt;</span>
-                    {project.title}
-                    <span className="text-ambient-blue font-black ml-0.5">/&gt;</span>
-                  </h3>
-                  <p className="text-gray-400 mb-6 text-sm md:text-base leading-relaxed">
-                    {project.description}
-                  </p>
-                </div>
-
-                <div>
-                  {project.tech && (
-                    <div className="flex items-center gap-3 mb-6">
-                      <span className="text-xs text-gray-500">Tech Stack:</span>
-                      <div className="flex gap-2.5">
-                        {project.tech.map((t) => (
-                          <div key={t} title={t} className="p-2 bg-black/40 rounded-lg border border-white/5 hover:border-ambient-blue/40 transition-colors">
-                            {getTechIcon(t)}
-                          </div>
-                        ))}
+        <motion.div layout className="grid md:grid-cols-2 gap-6 sm:gap-8">
+          <AnimatePresence mode="popLayout">
+            {filteredProjects.map((project, i) => (
+              <motion.div
+                key={project.id || `${project.category}-${i}`}
+                layout
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ duration: 0.3 }}
+              >
+                <TiltCard delay={i * 0.05} className="h-full" maxTilt={8}>
+                  <div className="p-8 h-full rounded-2xl glass-card border border-white/10 flex flex-col justify-between relative overflow-hidden group min-h-[380px] shadow-xl">
+                    <div>
+                      <div className="flex justify-between items-start mb-4">
+                        <span className={`px-3 py-1 rounded-full text-xs font-bold ${
+                          project.category === 'showcase' ? 'bg-purple-500/20 text-purple-400 border border-purple-500/30' : 'bg-ambient-blue/20 text-ambient-blue border border-ambient-blue/30'
+                        }`}>
+                          {project.type || (project.category === 'minor' ? 'Store Asset' : project.category)}
+                        </span>
+                        {project.price && (
+                          <span className="text-xl font-black text-ambient-blue">{project.price}</span>
+                        )}
                       </div>
+
+                      {/* JSX-bracket title */}
+                      <h3 className="text-2xl font-bold mb-3 group-hover:text-ambient-blue transition-colors text-white">
+                        <span className="text-ambient-blue font-black">&lt;</span>
+                        {project.title}
+                        <span className="text-ambient-blue font-black ml-0.5">/&gt;</span>
+                      </h3>
+                      <p className="text-gray-300 mb-6 text-sm leading-relaxed">
+                        {project.description}
+                      </p>
                     </div>
-                  )}
 
-                  {(project.hasDoc || project.hasThesis) && (
-                    <ul className="space-y-2 mb-6 text-xs text-gray-500">
-                      <li className="flex items-center gap-2">
-                        <CheckCircle size={14} className="text-green-500" /> Source Code Included
-                      </li>
-                      {project.hasDoc && (
-                        <li className="flex items-center gap-2">
-                          <CheckCircle size={14} className="text-green-500" /> Complete Documentation
-                        </li>
+                    <div>
+                      {project.tech && (
+                        <div className="flex items-center gap-2 mb-6 flex-wrap">
+                          <span className="text-xs text-gray-400 font-mono">Stack:</span>
+                          <div className="flex gap-2 flex-wrap">
+                            {project.tech.map((t) => (
+                              <div key={t} title={t} className="px-2.5 py-1 bg-black/60 rounded-lg border border-white/10 hover:border-ambient-blue/40 transition-colors flex items-center gap-1 text-xs text-gray-300 shadow-sm">
+                                {getTechIcon(t)}
+                                <span>{t}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
                       )}
-                      {project.hasThesis && (
-                        <li className="flex items-center gap-2">
-                          <CheckCircle size={14} className="text-green-500" /> Academic Thesis Included
-                        </li>
-                      )}
-                    </ul>
-                  )}
 
-                  {project.price ? (
-                    <button className="w-full py-3 bg-ambient-blue hover:bg-blue-600 rounded-xl font-bold text-white transition-all shadow-[0_0_15px_rgba(59,130,246,0.2)] hover:shadow-[0_0_25px_rgba(59,130,246,0.4)] cursor-pointer">
-                      Purchase Project
-                    </button>
-                  ) : (
-                    <a href="#" className="inline-flex items-center gap-2 text-sm text-ambient-blue hover:text-white font-semibold transition-colors group/link">
-                      Learn More <ArrowLeft size={14} className="rotate-180 group-hover/link:translate-x-1 transition-transform" />
-                    </a>
-                  )}
-                </div>
-              </div>
-            </RevealingCard>
-          ))}
-        </div>
+                      {(project.hasDoc || project.hasThesis) && (
+                        <ul className="space-y-1.5 mb-6 text-xs text-gray-400">
+                          <li className="flex items-center gap-2">
+                            <CheckCircle size={14} className="text-emerald-400" /> Source Code Included
+                          </li>
+                          {project.hasDoc && (
+                            <li className="flex items-center gap-2">
+                              <CheckCircle size={14} className="text-emerald-400" /> Complete Documentation
+                            </li>
+                          )}
+                          {project.hasThesis && (
+                            <li className="flex items-center gap-2">
+                              <CheckCircle size={14} className="text-emerald-400" /> Academic Thesis Included
+                            </li>
+                          )}
+                        </ul>
+                      )}
+
+                      {project.price ? (
+                        <button className="w-full py-3.5 bg-gradient-to-r from-ambient-blue to-blue-600 hover:from-blue-500 hover:to-blue-700 rounded-xl font-bold text-white transition-all shadow-[0_0_20px_rgba(59,130,246,0.35)] hover:shadow-[0_0_30px_rgba(59,130,246,0.6)] cursor-pointer flex items-center justify-center gap-2 active:scale-95 text-sm">
+                          <ShoppingCart size={15} />
+                          Purchase Blueprint
+                        </button>
+                      ) : (
+                        <div className="inline-flex items-center gap-2 text-sm text-ambient-blue hover:text-white font-semibold transition-colors group/link cursor-pointer">
+                          <span>Explore Project Details</span>
+                          <ArrowRight size={14} className="group-hover/link:translate-x-1 transition-transform" />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </TiltCard>
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </motion.div>
       </div>
 
       <Footer />
