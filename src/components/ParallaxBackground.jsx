@@ -1,9 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { motion, useMotionValue, useSpring, useTransform, useScroll } from 'framer-motion';
 import { Sparkles, Hexagon, Triangle, Circle, Box, Cpu, Atom, Globe } from 'lucide-react';
 
 const ParallaxBackground = () => {
-  const [windowSize, setWindowSize] = useState({ width: 1200, height: 800 });
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
@@ -27,17 +26,7 @@ const ParallaxBackground = () => {
   const mouseNearX = useTransform(smoothMouseX, [-600, 600], [-100, 100]);
   const mouseNearY = useTransform(smoothMouseY, [-400, 400], [-100, 100]);
 
-  // Spotlight position
-  const spotlightX = useTransform(smoothMouseX, (val) => `${val + windowSize.width / 2}px`);
-  const spotlightY = useTransform(smoothMouseY, (val) => `${val + windowSize.height / 2}px`);
-
   useEffect(() => {
-    const handleResize = () => {
-      setWindowSize({ width: window.innerWidth, height: window.innerHeight });
-    };
-    handleResize();
-    window.addEventListener('resize', handleResize);
-
     const handleMouseMove = (e) => {
       mouseX.set(e.clientX - window.innerWidth / 2);
       mouseY.set(e.clientY - window.innerHeight / 2);
@@ -46,7 +35,6 @@ const ParallaxBackground = () => {
     window.addEventListener('mousemove', handleMouseMove, { passive: true });
 
     return () => {
-      window.removeEventListener('resize', handleResize);
       window.removeEventListener('mousemove', handleMouseMove);
     };
   }, [mouseX, mouseY]);
@@ -74,16 +62,6 @@ const ParallaxBackground = () => {
         style={{
           maskImage: 'radial-gradient(ellipse at 50% 50%, black 40%, transparent 80%)',
           WebkitMaskImage: 'radial-gradient(ellipse at 50% 50%, black 40%, transparent 80%)',
-        }}
-      />
-
-      {/* ── Interactive Cursor Spotlight Bloom ── */}
-      <motion.div
-        className="absolute w-[600px] h-[600px] rounded-full -translate-x-1/2 -translate-y-1/2 pointer-events-none opacity-40 blur-[130px]"
-        style={{
-          left: spotlightX,
-          top: spotlightY,
-          background: 'radial-gradient(circle, rgba(59, 130, 246, 0.45) 0%, rgba(99, 102, 241, 0.15) 50%, transparent 70%)',
         }}
       />
 

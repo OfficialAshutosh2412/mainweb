@@ -105,7 +105,7 @@ const Notes = () => {
         {/* Notes Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 md:gap-8">
           {data.notes.map((note, i) => (
-            <TiltCard key={note.id} delay={i * 0.08} className="h-full flex flex-col" maxTilt={10}>
+            <TiltCard key={note.id} delay={i * 0.08} className="h-full flex flex-col" maxTilt={3.5}>
               <div className="p-7 rounded-2xl glass-card border border-white/10 hover:border-ambient-blue/50 flex flex-col justify-between h-full relative group min-h-[320px] shadow-xl">
                 {/* Tech Icon background float */}
                 <div className="absolute right-4 top-4 opacity-10 group-hover:opacity-25 group-hover:scale-110 transition-all duration-500 pointer-events-none">

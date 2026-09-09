@@ -316,67 +316,6 @@ const RoleDial = () => {
           </motion.div>
         </AnimatePresence>
       </div>
-
-      {/* ─────────────────────────────────────────────────────────────
-         Bottom Role Navigation Bar (Transparent Container + Sliding Highlight Box)
-      ─────────────────────────────────────────────────────────────── */}
-      <div 
-        className="w-full max-w-5xl mx-auto px-2 mt-6 relative z-20"
-        onMouseEnter={() => setIsPaused(true)}
-        onMouseLeave={() => setIsPaused(false)}
-      >
-        <div className="flex items-center justify-center flex-nowrap overflow-x-auto no-scrollbar gap-2 sm:gap-3 p-1.5 bg-transparent w-full">
-          {ROLES.map((role, idx) => {
-            const isActive = idx === active;
-            return (
-              <button
-                key={role.id}
-                onClick={() => setActive(idx)}
-                className={`relative px-3.5 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-colors duration-300 cursor-pointer flex items-center gap-2 shrink-0 whitespace-nowrap overflow-hidden ${
-                  isActive ? "text-white" : "text-gray-400 hover:text-gray-200"
-                }`}
-              >
-                {/* Sliding Animated Active Role Box */}
-                {isActive && (
-                  <motion.div
-                    layoutId="activeRoleHighlightBox"
-                    className="absolute inset-0 rounded-xl bg-white/10 border border-white/20 shadow-[0_0_20px_rgba(255,255,255,0.12)] pointer-events-none z-0"
-                    transition={{ type: "spring", stiffness: 350, damping: 30 }}
-                  />
-                )}
-
-                {/* Glowing Active Role Indicator Dot */}
-                <span
-                  className={`w-2 h-2 rounded-full shrink-0 relative z-10 transition-all duration-300 ${
-                    isActive ? "scale-125" : "opacity-40"
-                  }`}
-                  style={{
-                    backgroundColor: role.color,
-                    boxShadow: isActive ? `0 0 10px 2px ${role.color}` : "none",
-                  }}
-                />
-
-                <span className="whitespace-nowrap tracking-wide relative z-10">{role.label}</span>
-
-                {/* Animated Progress Line under Active Role */}
-                {isActive && (
-                  <motion.div
-                    className="absolute bottom-0 left-0 h-[2.5px] rounded-full z-10"
-                    style={{ backgroundColor: role.color }}
-                    initial={{ width: "0%" }}
-                    animate={{ width: "100%" }}
-                    transition={{
-                      duration: DWELL_MS / 1000,
-                      ease: "linear",
-                    }}
-                  />
-                )}
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
     </div>
   );
 };

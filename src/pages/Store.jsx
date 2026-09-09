@@ -44,7 +44,7 @@ const Store = () => {
         {/* Store Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
           {products.map((project, i) => (
-            <TiltCard key={project.id} delay={i * 0.08} maxTilt={8}>
+            <TiltCard key={project.id} delay={i * 0.08} maxTilt={3.5}>
               <div className="rounded-2xl glass-card border border-ambient-blue/30 hover:border-ambient-blue/60 flex flex-col justify-between h-full relative overflow-hidden group min-h-[400px] shadow-xl transition-all duration-300">
                 {/* Theme gradient top border accent */}
                 <div className="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-transparent via-ambient-blue to-transparent opacity-80 group-hover:opacity-100 group-hover:h-[4px] transition-all duration-300" />

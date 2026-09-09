@@ -1,10 +1,12 @@
+import { Link } from 'react-router-dom';
 import { useContactDrawer } from '../context/ContactContext';
+import { User } from 'lucide-react';
 
 const Footer = () => {
   const { openContactDrawer } = useContactDrawer();
 
   return (
-    <footer className="mt-auto border-t border-white/10 bg-dark-bg/60 backdrop-blur-xl py-12 px-6 relative z-10">
+    <footer className="mt-auto border-t border-white/[0.07] bg-[#0a0c12]/95 backdrop-blur-xl py-10 px-6 relative z-10">
       <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center text-gray-400 text-sm gap-4">
         <div className="flex items-center gap-2">
           <p>
@@ -13,7 +15,7 @@ const Footer = () => {
             &nbsp;Crafted with modern 3D depth & precision.
           </p>
         </div>
-        <div className="flex gap-4 items-center">
+        <div className="flex flex-wrap gap-3 items-center">
           <a 
             href="https://github.com/OfficialAshutosh2412" 
             target="_blank" 
@@ -32,10 +34,17 @@ const Footer = () => {
           </a>
           <button 
             onClick={openContactDrawer} 
-            className="px-3 py-1.5 rounded-lg bg-ambient-blue/15 text-ambient-blue border border-ambient-blue/30 hover:bg-ambient-blue hover:text-white transition-all text-xs font-semibold cursor-pointer shadow-sm"
+            className="px-3 py-1.5 rounded-lg bg-ambient-blue/15 text-ambient-blue border border-ambient-blue/30 hover:bg-ambient-blue hover:text-white transition-all text-xs font-semibold cursor-pointer"
           >
             Contact
           </button>
+          <Link
+            to="/portfolio"
+            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-gradient-to-r from-ambient-blue to-blue-600 hover:from-blue-500 hover:to-blue-700 text-white shadow-[0_0_15px_rgba(59,130,246,0.35)] hover:shadow-[0_0_25px_rgba(59,130,246,0.6)] transition-all"
+          >
+            <User size={13} />
+            <span>View My Portfolio</span>
+          </Link>
         </div>
       </div>
     </footer>

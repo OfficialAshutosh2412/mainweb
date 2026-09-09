@@ -110,7 +110,7 @@ const Projects = () => {
                 exit={{ opacity: 0, scale: 0.9 }}
                 transition={{ duration: 0.3 }}
               >
-                <TiltCard delay={i * 0.05} className="h-full" maxTilt={8}>
+                <TiltCard delay={i * 0.05} className="h-full" maxTilt={3.5}>
                   <div className="p-8 h-full rounded-2xl glass-card border border-white/10 flex flex-col justify-between relative overflow-hidden group min-h-[380px] shadow-xl">
                     <div>
                       <div className="flex justify-between items-start mb-4">
@@ -171,7 +171,7 @@ const Projects = () => {
                       {project.price ? (
                         <button className="w-full py-3.5 bg-gradient-to-r from-ambient-blue to-blue-600 hover:from-blue-500 hover:to-blue-700 rounded-xl font-bold text-white transition-all shadow-[0_0_20px_rgba(59,130,246,0.35)] hover:shadow-[0_0_30px_rgba(59,130,246,0.6)] cursor-pointer flex items-center justify-center gap-2 active:scale-95 text-sm">
                           <ShoppingCart size={15} />
-                          Purchase Blueprint
+                          Purchase Thesis and Code
                         </button>
                       ) : (
                         <div className="inline-flex items-center gap-2 text-sm text-ambient-blue hover:text-white font-semibold transition-colors group/link cursor-pointer">

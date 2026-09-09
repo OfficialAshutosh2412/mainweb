@@ -41,7 +41,7 @@ const Videos = () => {
         {/* Video Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
           {data.youtubeVideos.map((video, i) => (
-            <TiltCard key={video.id} delay={i * 0.1} maxTilt={8}>
+            <TiltCard key={video.id} delay={i * 0.1} maxTilt={3.5}>
               <div className="p-5 rounded-2xl glass-card border border-white/10 group relative overflow-hidden hover:border-ambient-blue/50 transition-all shadow-xl flex flex-col justify-between h-full">
                 <div className="aspect-video rounded-xl overflow-hidden bg-black/60 mb-5 border border-white/10 shadow-inner">
                   <iframe

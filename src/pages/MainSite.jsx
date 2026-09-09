@@ -6,7 +6,6 @@ import { fetchMainData } from '../api';
 import Footer from '../components/Footer';
 import RevealingCard from '../components/RevealingCard';
 import TiltCard from '../components/TiltCard';
-import SVGRope from '../components/SVGRope';
 import RoleDial from '../components/RoleDial';
 import { useContactDrawer } from '../context/ContactContext';
 import { getTechIcon } from './Projects';
@@ -14,8 +13,9 @@ import { getTechIcon } from './Projects';
 import {
   ArrowRight, FileText, Play, ShoppingCart, Mail,
   Code, ShieldCheck, CheckCircle, Sparkles, User,
-  Zap
+  Zap, Clock
 } from 'lucide-react';
+import contactParallaxBg from '../assets/contact_parallax_bg.jpg';
 
 /* ─────────── JSX-bracket section heading with 3D glow ─────────── */
 const SectionHeading = ({ icon: Icon, title, id }) => (
@@ -58,50 +58,163 @@ const SeeMoreLink = ({ to, label }) => (
 );
 
 /* ─────────── 3D Store item card ─────────── */
-const StoreItem = ({ project, delay }) => (
-  <TiltCard delay={delay} className="h-full" maxTilt={10}>
-    <div className="p-6 rounded-2xl h-full flex flex-col justify-between glass-card border border-white/10 hover:border-ambient-blue/50 transition-all duration-300 group">
-      <div className="flex-1">
-        <div className="flex justify-between items-start mb-4">
-          <h4 className="text-lg font-bold text-white group-hover:text-ambient-blue transition-colors line-clamp-2">{project.title}</h4>
-          <span className="text-xl font-black text-ambient-blue ml-2 shrink-0">{project.price}</span>
-        </div>
-        <p className="text-gray-400 mb-4 text-xs sm:text-sm leading-relaxed">{project.description}</p>
-        
-        {project.tech && (
-          <div className="flex items-center gap-2 mb-4 flex-wrap">
-            {project.tech.map(t => (
-              <span key={t} className="px-2.5 py-1 rounded-md bg-black/60 border border-white/10 text-[11px] text-gray-300 font-mono flex items-center gap-1.5 shadow-sm">
-                {getTechIcon(t)}
-                {t}
-              </span>
-            ))}
+const StoreItem = ({ project, delay }) => {
+  return (
+    <TiltCard delay={delay} className="h-full">
+      <div className="p-6 rounded-2xl h-full flex flex-col justify-between glass-card border border-white/10 hover:border-ambient-blue/50 transition-all duration-300 group">
+        <div className="flex-1">
+          {/* Title in one line */}
+          <div className="mb-4">
+            <h4
+              className="text-base sm:text-lg font-bold text-white group-hover:text-ambient-blue transition-colors truncate"
+              title={project.title}
+            >
+              {project.title}
+            </h4>
           </div>
-        )}
 
-        <ul className="space-y-2 mb-6 text-xs text-gray-400">
-          <li className="flex items-center gap-2">
-            <CheckCircle className="w-3.5 h-3.5 text-emerald-400 shrink-0" /> Source Code Included
-          </li>
-          {project.hasDocumentation && (
-            <li className="flex items-center gap-2">
-              <CheckCircle className="w-3.5 h-3.5 text-emerald-400 shrink-0" /> Full Architecture Docs
-            </li>
+          {project.tech && (
+            <div className="flex items-center gap-2 mb-4 flex-wrap">
+              {project.tech.map(t => (
+                <span key={t} className="px-2.5 py-1 rounded-md bg-black/60 border border-white/10 text-[11px] text-gray-300 font-mono flex items-center gap-1.5 shadow-sm">
+                  {getTechIcon(t)}
+                  {t}
+                </span>
+              ))}
+            </div>
           )}
-          {project.hasThesis && (
+
+          <ul className="space-y-2 mb-6 text-xs text-gray-400">
             <li className="flex items-center gap-2">
-              <CheckCircle className="w-3.5 h-3.5 text-emerald-400 shrink-0" /> Academic Project Blueprint
+              <CheckCircle className="w-3.5 h-3.5 text-emerald-400 shrink-0" /> Source Code Included
             </li>
-          )}
-        </ul>
+            {project.hasDocumentation && (
+              <li className="flex items-center gap-2">
+                <CheckCircle className="w-3.5 h-3.5 text-emerald-400 shrink-0" /> Full Architecture Docs
+              </li>
+            )}
+            {project.hasThesis && (
+              <li className="flex items-center gap-2">
+                <CheckCircle className="w-3.5 h-3.5 text-emerald-400 shrink-0" /> Academic Project Blueprint
+              </li>
+            )}
+          </ul>
+        </div>
+
+        {/* Repositioned Pricing and Action Button */}
+        <div className="mt-auto pt-4 border-t border-white/10 flex items-center justify-between gap-3">
+          <div className="flex flex-col shrink-0">
+            <span className="text-[10px] uppercase font-mono text-gray-400 tracking-wider">Price</span>
+            <span className="text-xl font-black text-ambient-blue">{project.price}</span>
+          </div>
+          <button className="flex-1 py-3 px-3.5 rounded-xl font-bold transition-all bg-white/10 text-white hover:bg-ambient-blue hover:text-white hover:shadow-[0_0_20px_rgba(59,130,246,0.4)] cursor-pointer text-xs sm:text-sm active:scale-95 flex items-center justify-center gap-2">
+            <ShoppingCart size={15} />
+            <span>Purchase Thesis & Code</span>
+          </button>
+        </div>
       </div>
-      <button className="w-full py-3.5 rounded-xl font-bold transition-all bg-white/10 text-white hover:bg-ambient-blue hover:text-white hover:shadow-[0_0_25px_rgba(59,130,246,0.5)] cursor-pointer text-xs sm:text-sm active:scale-95 flex items-center justify-center gap-2">
-        <ShoppingCart size={15} />
-        Purchase Blueprint
-      </button>
+    </TiltCard>
+  );
+};
+
+/* ─────────── Redesigned 2-Section Contact Banner with Parallax ─────────── */
+const ContactSplitBanner = ({ onOpenContact }) => {
+  const containerRef = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ['start end', 'end start'],
+  });
+  const scrollParallaxY = useTransform(scrollYProgress, [0, 1], [-45, 45]);
+
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+      {/* ── Left Section: Dark Mode with Fixed on Scroll Parallax Background Image & Overlaid Details ── */}
+      <div
+        ref={containerRef}
+        className="lg:col-span-7 rounded-3xl relative overflow-hidden border border-ambient-blue/30 transition-colors duration-500 min-h-[380px] sm:min-h-[440px] flex flex-col justify-between p-8 sm:p-10"
+      >
+        {/* Parallax Background Image (Driven purely by scroll, no hover tracking or hover scale) */}
+        <motion.div
+          style={{ y: scrollParallaxY }}
+          className="absolute -top-12 -bottom-12 inset-x-0 w-full pointer-events-none"
+        >
+          <img
+            src={contactParallaxBg}
+            alt="Futuristic cybernetic city grid"
+            className="w-full h-full object-cover object-center filter brightness-[0.7] contrast-[1.15]"
+          />
+        </motion.div>
+
+        {/* Dark Vignette / Gradient Overlay to ensure text readability */}
+        <div className="absolute inset-0 bg-gradient-to-t from-dark-bg/95 via-dark-bg/75 to-dark-bg/40 backdrop-blur-[1.5px] pointer-events-none" />
+
+        {/* Content Over the Background */}
+        <div className="relative z-10 space-y-4">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-ambient-blue/25 text-ambient-blue border border-ambient-blue/40 text-xs font-mono font-semibold backdrop-blur-md">
+            <Mail className="w-3.5 h-3.5" />
+            <span>Direct Inquiry & Collaboration</span>
+          </div>
+
+          <h3 className="text-2xl sm:text-3xl md:text-4xl font-black text-white tracking-tight leading-snug">
+            Let's Build Something <br className="hidden sm:inline" />
+            <span className="text-ambient-blue">Exceptional</span> Together
+          </h3>
+
+          <p className="text-gray-200 text-xs sm:text-sm md:text-base leading-relaxed max-w-lg font-normal">
+            Available for full-time software engineering roles, technical architecture consulting, full-stack web platforms, and cutting-edge UI engineering.
+          </p>
+        </div>
+
+        {/* Highlights / Details Over the Background */}
+        <div className="relative z-10 pt-6 border-t border-white/15 grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-gray-200">
+          <div className="flex items-center gap-2.5">
+            <Clock className="w-4 h-4 text-emerald-400 shrink-0" />
+            <span>Response time: &lt; 24 hours</span>
+          </div>
+          <div className="flex items-center gap-2.5">
+            <CheckCircle className="w-4 h-4 text-ambient-blue shrink-0" />
+            <span>Open to Remote & Global Work</span>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Right Section: Background Coloured Theme Hub ── */}
+      <div className="lg:col-span-5 rounded-3xl bg-gradient-to-br from-blue-700 via-ambient-blue to-blue-900 border border-blue-400/50 p-8 sm:p-10 flex flex-col justify-between items-center text-center relative overflow-hidden group shadow-[0_20px_50px_-15px_rgba(59,130,246,0.5)] text-white">
+        {/* Subtle glass reflection overlay */}
+        <div className="absolute inset-0 bg-white/[0.04] pointer-events-none" />
+
+        <div className="space-y-4 my-auto py-6 relative z-10">
+          <div className="w-16 h-16 rounded-2xl bg-white/15 border border-white/30 text-white mx-auto flex items-center justify-center shadow-[0_0_25px_rgba(255,255,255,0.25)] group-hover:scale-110 transition-transform duration-300">
+            <Mail className="w-8 h-8 text-white" />
+          </div>
+
+          <h4 className="text-xl sm:text-2xl font-black text-white tracking-tight">
+            Start a Conversation
+          </h4>
+
+          <p className="text-blue-100 text-xs sm:text-sm leading-relaxed max-w-xs mx-auto font-normal">
+            Ready to discuss a new project, technical requirements, or immediate opportunities? Let's connect.
+          </p>
+        </div>
+
+        <div className="w-full pt-4 space-y-3 relative z-10">
+          <button
+            onClick={onOpenContact}
+            className="w-full py-4 px-6 bg-white hover:bg-blue-50 text-blue-950 font-black rounded-2xl shadow-[0_10px_30px_rgba(0,0,0,0.3)] transition-all flex items-center justify-center gap-3 cursor-pointer hover:scale-[1.02] active:scale-95 text-sm sm:text-base group/btn"
+          >
+            <Mail className="w-5 h-5 group-hover/btn:rotate-12 transition-transform duration-300 text-blue-900" />
+            <span>Contact Me Now</span>
+            <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform duration-300 text-blue-900" />
+          </button>
+
+          <p className="text-[11px] text-blue-200 font-mono">
+            Opens instant direct messenger
+          </p>
+        </div>
+      </div>
     </div>
-  </TiltCard>
-);
+  );
+};
 
 /* ─────────────────── Main Component ─────────────────── */
 const MainSite = () => {
@@ -160,8 +273,6 @@ const MainSite = () => {
   return (
     <div className="bg-transparent text-white flex flex-col min-h-screen selection:bg-ambient-blue relative overflow-x-hidden">
 
-      <SVGRope />
-
       {/* ── 3D Parallax Hero Section ── */}
       <motion.section
         ref={heroRef}
@@ -189,37 +300,15 @@ const MainSite = () => {
           </div>
         </motion.div>
 
-        {/* 3D Tilted Hero Interactive Container */}
+        {/* Hero Interactive Container */}
         <motion.div
-          style={{
-            rotateX: heroRotateX,
-            rotateY: heroRotateY,
-            transformStyle: 'preserve-3d',
-          }}
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1.2, ease: 'easeOut' }}
-          className="text-center z-10 w-full max-w-6xl mx-auto preserve-3d"
+          className="text-center z-10 w-full max-w-6xl mx-auto"
         >
           {/* Full-Screen Liquid Typography Role Revealer Carousel */}
           <RoleDial />
-        </motion.div>
-
-        {/* Hero Bottom Scroll Cue */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.2, duration: 0.8 }}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 pointer-events-none"
-        >
-          <span className="text-[11px] font-mono tracking-widest text-gray-400 uppercase">Scroll to explore</span>
-          <div className="w-5 h-9 rounded-full border-2 border-white/20 flex items-start justify-center p-1">
-            <motion.div 
-              animate={{ y: [0, 12, 0] }}
-              transition={{ repeat: Infinity, duration: 1.6, ease: 'easeInOut' }}
-              className="w-1.5 h-1.5 rounded-full bg-ambient-blue shadow-[0_0_8px_#3b82f6]"
-            />
-          </div>
         </motion.div>
       </motion.section>
 
@@ -242,7 +331,11 @@ const MainSite = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
             {data.showcaseProjects.map((project, i) => (
               <RevealingCard key={project.id} delay={i * 0.1}>
-                <div className="p-8 h-full rounded-2xl bg-gradient-to-br from-dark-surface/90 to-black/90 relative overflow-hidden transition-all group flex flex-col justify-between min-h-[380px]">
+                <div className={`p-8 h-full rounded-2xl relative overflow-hidden transition-all group flex flex-col justify-between min-h-[380px] ${
+                  i === 0
+                    ? 'bg-gradient-to-br from-[#0e1118]/95 to-black/95 border border-white/10'
+                    : 'bg-gradient-to-br from-blue-950/70 via-blue-900/30 to-[#0e1118]/95 border border-ambient-blue/50 shadow-[0_10px_35px_-10px_rgba(59,130,246,0.3)]'
+                }`}>
                   {/* Floating 3D Tech Watermark */}
                   <div className="absolute -top-4 -right-4 opacity-5 group-hover:opacity-20 group-hover:scale-110 transition-all duration-700 pointer-events-none">
                     <motion.div
@@ -350,66 +443,10 @@ const MainSite = () => {
           <SeeMoreLink to="/store" label="Browse the Full Vault" />
         </section>
 
-        {/* 3D Contact Banner CTA */}
+        {/* Redesigned Right-Left Contact Section with Parallax */}
         <section id="contact" className="scroll-mt-28">
-          <TiltCard delay={0.1} maxTilt={6}>
-            <div className="p-8 sm:p-12 md:p-16 rounded-3xl bg-gradient-to-r from-ambient-blue/25 via-dark-surface to-black/90 border border-ambient-blue/40 relative overflow-hidden flex flex-col items-center justify-between gap-8 md:flex-row group hover:border-ambient-blue/70 transition-all duration-500 text-center md:text-left shadow-[0_20px_60px_-15px_rgba(59,130,246,0.3)]">
-              {/* Background ambient lighting */}
-              <div className="absolute top-0 right-0 w-80 h-80 bg-ambient-blue/20 rounded-full blur-[100px] pointer-events-none" />
-              
-              <div className="space-y-4 max-w-xl relative z-10">
-                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-ambient-blue/15 text-ambient-blue border border-ambient-blue/30 text-xs font-mono font-semibold">
-                  <Mail className="w-3.5 h-3.5" />
-                  Have a Project or Opportunity?
-                </div>
-                <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white tracking-tight">
-                  Let's Build Something Exceptional Together
-                </h3>
-                <p className="text-gray-300 text-sm leading-relaxed">
-                  Available for full-time roles, freelance projects, technical consulting, and architectural collaboration.
-                </p>
-              </div>
-
-              <button
-                onClick={openContactDrawer}
-                className="px-8 py-4 bg-gradient-to-r from-ambient-blue to-blue-600 hover:from-blue-500 hover:to-blue-700 text-white font-bold rounded-2xl shadow-[0_0_30px_rgba(59,130,246,0.5)] hover:shadow-[0_0_50px_rgba(59,130,246,0.8)] transition-all flex items-center gap-3 shrink-0 cursor-pointer hover:scale-105 active:scale-95 text-base relative z-10"
-              >
-                <Mail className="w-5 h-5" />
-                Contact Me Now
-              </button>
-            </div>
-          </TiltCard>
+          <ContactSplitBanner onOpenContact={openContactDrawer} />
         </section>
-
-        {/* CTA to Portfolio — 3D Parallax Pill Button */}
-        <motion.section
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.7 }}
-          className="pt-6 flex justify-center"
-        >
-          <div className="p-3">
-            <Link
-              to="/portfolio"
-              className="group relative inline-flex items-center"
-            >
-              {/* Outer ambient glow */}
-              <span className="absolute inset-[-10px] rounded-full bg-ambient-blue/50 opacity-0 group-hover:opacity-100 blur-2xl transition-all duration-500 pointer-events-none" />
-
-              {/* Main 3D Pill button */}
-              <span className="relative flex items-center gap-3.5 px-8 py-4 rounded-full bg-gradient-to-r from-ambient-blue to-blue-600 border border-blue-400/40 shadow-[0_0_30px_rgba(59,130,246,0.5)] group-hover:shadow-[0_0_50px_rgba(59,130,246,0.8)] transition-all duration-300 group-hover:scale-105 active:scale-95">
-                <span className="flex items-center justify-center w-8 h-8 rounded-full bg-white/20 shrink-0">
-                  <User className="w-4 h-4 text-white" />
-                </span>
-                <span className="font-bold text-base text-white tracking-wide whitespace-nowrap">View My Portfolio</span>
-                <span className="flex items-center justify-center w-7 h-7 rounded-full bg-white/15 group-hover:bg-white/30 transition-colors duration-300 shrink-0">
-                  <ArrowRight className="w-4 h-4 text-white group-hover:translate-x-1 transition-transform duration-300" />
-                </span>
-              </span>
-            </Link>
-          </div>
-        </motion.section>
       </div>
 
       <Footer />
