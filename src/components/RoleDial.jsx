@@ -47,24 +47,69 @@ const DWELL_MS = 3400;
 /* ─────────────────────────────────────────────────────────────
    Realistic Water Wave Typography Component (Half-Height Water Level)
 ─────────────────────────────────────────────────────────────── */
-const LiquidText = ({ role }) => {
-  const [waveOffset, setWaveOffset] = useState(0);
-  const animRef = useRef(null);
+const generateRealWavePath = (offset, amplitude = 14, frequency = 0.012, yLevel = 126) => {
+  let path = `M 0 ${yLevel}`;
+  for (let x = 0; x <= 1200; x += 8) {
+    const y = yLevel + Math.sin((x + offset) * frequency) * amplitude + Math.cos((x - offset * 0.5) * 0.02) * (amplitude * 0.3);
+    path += ` L ${x} ${y}`;
+  }
+  path += ` L 1200 300 L 0 300 Z`;
+  return path;
+};
 
-  // Smooth real water fluid wave motion loop
+const LiquidText = ({ role }) => {
+  const containerRef = useRef(null);
+  const frontPathRef = useRef(null);
+  const backPathRef = useRef(null);
+  const crestPathRef = useRef(null);
+
+  // High-performance direct DOM wave motion loop (0 React re-renders, desktop only)
   useEffect(() => {
+    const isMobile = typeof window !== 'undefined' && (window.innerWidth < 768 || window.matchMedia('(pointer: coarse)').matches);
+    const prefersReducedMotion = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (isMobile || prefersReducedMotion) return;
+
     let start;
+    let isVisible = true;
+    let animId;
+
+    const observer = new IntersectionObserver(([entry]) => {
+      isVisible = entry.isIntersecting;
+      if (!isVisible && animId) {
+        cancelAnimationFrame(animId);
+        animId = null;
+      } else if (isVisible && !animId) {
+        animId = requestAnimationFrame(step);
+      }
+    }, { threshold: 0.05 });
+
+    if (containerRef.current) {
+      observer.observe(containerRef.current);
+    }
+
     const step = (timestamp) => {
+      if (!isVisible) return;
       if (!start) start = timestamp;
       const progress = timestamp - start;
-      setWaveOffset(progress * 0.14);
-      animRef.current = requestAnimationFrame(step);
+      const offset = progress * 0.14;
+
+      const fWave = generateRealWavePath(offset, 16, 0.012, 126);
+      const bWave = generateRealWavePath(-offset * 0.75 + 100, 12, 0.016, 120);
+
+      if (frontPathRef.current) frontPathRef.current.setAttribute('d', fWave);
+      if (crestPathRef.current) crestPathRef.current.setAttribute('d', fWave);
+      if (backPathRef.current) backPathRef.current.setAttribute('d', bWave);
+
+      animId = requestAnimationFrame(step);
     };
-    animRef.current = requestAnimationFrame(step);
+
+    animId = requestAnimationFrame(step);
+
     return () => {
-      if (animRef.current) cancelAnimationFrame(animRef.current);
+      if (animId) cancelAnimationFrame(animId);
+      observer.disconnect();
     };
-  }, []);
+  }, [role.id]);
 
   const Icon0 = role.icons[0] || Sparkles;
   const Icon1 = role.icons[1] || Code2;
@@ -73,28 +118,18 @@ const LiquidText = ({ role }) => {
   const maskId = `real-water-mask-${role.id}`;
   const gradId = `water-grad-${role.id}`;
 
-  const generateRealWavePath = (offset, amplitude = 14, frequency = 0.012, yLevel = 126) => {
-    let path = `M 0 ${yLevel}`;
-    for (let x = 0; x <= 1200; x += 8) {
-      const y = yLevel + Math.sin((x + offset) * frequency) * amplitude + Math.cos((x - offset * 0.5) * 0.02) * (amplitude * 0.3);
-      path += ` L ${x} ${y}`;
-    }
-    path += ` L 1200 300 L 0 300 Z`;
-    return path;
-  };
-
-  const frontWave = generateRealWavePath(waveOffset, 16, 0.012, 126);
-  const backWave  = generateRealWavePath(-waveOffset * 0.75 + 100, 12, 0.016, 120);
+  const initialFrontWave = generateRealWavePath(0, 16, 0.012, 126);
+  const initialBackWave  = generateRealWavePath(100, 12, 0.016, 120);
 
   const fontSize = role.label.length > 13 ? "80px" : "100px";
 
   return (
-    <div className="relative w-full max-w-[1150px] mx-auto flex flex-col items-center justify-center select-none py-6 px-2 overflow-visible">
+    <div ref={containerRef} className="relative w-full max-w-[1150px] mx-auto flex flex-col items-center justify-center select-none py-3 sm:py-6 px-2 overflow-visible">
       
-      {/* Dynamic Ambient Color Bloom */}
+      {/* Dynamic Ambient Color Bloom (Desktop Only for GPU performance) */}
       <motion.div
         key={`bloom-${role.id}`}
-        className="absolute inset-0 m-auto w-full max-w-[800px] h-[300px] pointer-events-none z-0"
+        className="hidden md:block absolute inset-0 m-auto w-full max-w-[800px] h-[300px] pointer-events-none z-0"
         style={{
           background: `radial-gradient(ellipse at center, ${role.color}45 0%, ${role.color}15 45%, transparent 75%)`,
         }}
@@ -104,7 +139,20 @@ const LiquidText = ({ role }) => {
         transition={{ duration: 0.8 }}
       />
 
-      {/* ── Floating Tech Icons Surrounding the Role Text ── */}
+      {/* ── Mobile View: High-contrast, large, bold crisp typography (Zero lag & high visibility) ── */}
+      <div className="md:hidden flex flex-col items-center justify-center py-4 px-2 text-center w-full z-10">
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-ambient-blue/15 border border-ambient-blue/30 text-ambient-blue text-xs font-mono font-bold mb-3 shadow-sm">
+          <Sparkles className="w-3.5 h-3.5" />
+          <span>SPECIALIZATION</span>
+        </div>
+        <h2 className="text-3xl sm:text-5xl font-black text-white tracking-tight leading-tight">
+          <span className="text-ambient-blue font-bold mr-1">&lt;</span>
+          {role.label}
+          <span className="text-ambient-blue font-bold ml-1">/&gt;</span>
+        </h2>
+      </div>
+
+      {/* ── Desktop View Floating Tech Icons (Desktop Only) ── */}
       {/* Icon 0: Top-Left Floating */}
       <motion.div
         key={`icon-tl-${role.id}`}
@@ -115,7 +163,7 @@ const LiquidText = ({ role }) => {
           scale: { type: "spring", stiffness: 220, damping: 18, delay: 0.1 },
           y: { duration: 3.2, repeat: Infinity, ease: "easeInOut" }
         }}
-        className="absolute -top-4 left-4 sm:left-12 md:left-20 z-20 pointer-events-none p-3 rounded-2xl bg-white/[0.04] border border-white/10 backdrop-blur-md shadow-2xl"
+        className="hidden md:block absolute -top-4 left-4 sm:left-12 md:left-20 z-20 pointer-events-none p-3 rounded-2xl bg-white/[0.04] border border-white/10 backdrop-blur-md shadow-2xl"
         style={{
           borderColor: `${role.color}40`,
           boxShadow: `0 0 25px ${role.color}30`,
@@ -134,7 +182,7 @@ const LiquidText = ({ role }) => {
           scale: { type: "spring", stiffness: 220, damping: 18, delay: 0.2 },
           y: { duration: 3.6, repeat: Infinity, ease: "easeInOut", delay: 0.4 }
         }}
-        className="absolute -top-4 right-4 sm:right-12 md:right-20 z-20 pointer-events-none p-3 rounded-2xl bg-white/[0.04] border border-white/10 backdrop-blur-md shadow-2xl"
+        className="hidden md:block absolute -top-4 right-4 sm:right-12 md:right-20 z-20 pointer-events-none p-3 rounded-2xl bg-white/[0.04] border border-white/10 backdrop-blur-md shadow-2xl"
         style={{
           borderColor: `${role.color}40`,
           boxShadow: `0 0 25px ${role.color}30`,
@@ -153,7 +201,7 @@ const LiquidText = ({ role }) => {
           scale: { type: "spring", stiffness: 220, damping: 18, delay: 0.3 },
           y: { duration: 4, repeat: Infinity, ease: "easeInOut", delay: 0.8 }
         }}
-        className="absolute -bottom-4 right-8 sm:right-24 z-20 pointer-events-none p-2.5 rounded-2xl bg-white/[0.04] border border-white/10 backdrop-blur-md shadow-xl"
+        className="hidden md:block absolute -bottom-4 right-8 sm:right-24 z-20 pointer-events-none p-2.5 rounded-2xl bg-white/[0.04] border border-white/10 backdrop-blur-md shadow-xl"
         style={{
           borderColor: `${role.color}30`,
         }}
@@ -161,10 +209,10 @@ const LiquidText = ({ role }) => {
         <Icon2 className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10" style={{ color: role.color }} />
       </motion.div>
 
-      {/* ── Real Water Wave Typography SVG (Half-Height Water Fill) ── */}
+      {/* ── Real Water Wave Typography SVG (Desktop Only) ── */}
       <svg
         viewBox="0 0 1200 240"
-        className="w-full max-w-[1100px] h-auto overflow-visible relative z-10 pointer-events-none filter drop-shadow-[0_10px_30px_rgba(0,0,0,0.85)] py-2"
+        className="hidden md:block w-full max-w-[1100px] h-auto overflow-visible relative z-10 pointer-events-none filter drop-shadow-[0_10px_30px_rgba(0,0,0,0.85)] py-2"
         style={{ maxHeight: "45vh" }}
       >
         <defs>
@@ -215,7 +263,8 @@ const LiquidText = ({ role }) => {
 
         {/* 2. Secondary Back Real Water Wave Path */}
         <path
-          d={backWave}
+          ref={backPathRef}
+          d={initialBackWave}
           fill={role.color}
           opacity="0.4"
           mask={`url(#${maskId})`}
@@ -223,14 +272,16 @@ const LiquidText = ({ role }) => {
 
         {/* 3. Primary Front Real Water Wave Fill Path */}
         <path
-          d={frontWave}
+          ref={frontPathRef}
+          d={initialFrontWave}
           fill={`url(#${gradId})`}
           mask={`url(#${maskId})`}
         />
 
         {/* 4. Real Water Surface White Reflection Crest Line */}
         <path
-          d={frontWave}
+          ref={crestPathRef}
+          d={initialFrontWave}
           fill="none"
           stroke="#ffffff"
           strokeWidth="3.5"
@@ -269,24 +320,36 @@ const LiquidText = ({ role }) => {
    Main Role Revealer Component
 ─────────────────────────────────────────────────────────────── */
 const RoleDial = () => {
+  const containerRef = useRef(null);
   const [active, setActive] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+  const [isInView, setIsInView] = useState(true);
 
   const total = ROLES.length;
 
-  // Infinite Autoplay Loop
+  // Track viewport visibility to pause autoplay when scrolled away
   useEffect(() => {
-    if (isPaused) return;
+    const observer = new IntersectionObserver(([entry]) => {
+      setIsInView(entry.isIntersecting);
+    }, { threshold: 0.05 });
+
+    if (containerRef.current) observer.observe(containerRef.current);
+    return () => observer.disconnect();
+  }, []);
+
+  // Infinite Autoplay Loop - runs only when visible in viewport
+  useEffect(() => {
+    if (isPaused || !isInView) return;
     const interval = setInterval(() => {
       setActive((prev) => (prev + 1) % total);
     }, DWELL_MS);
     return () => clearInterval(interval);
-  }, [isPaused, total]);
+  }, [isPaused, isInView, total]);
 
   const activeRole = ROLES[active];
 
   return (
-    <div className="relative w-full min-h-[48vh] sm:min-h-[54vh] flex flex-col items-center justify-between py-2 select-none overflow-visible">
+    <div ref={containerRef} className="relative w-full min-h-[220px] sm:min-h-[300px] md:min-h-[48vh] flex flex-col items-center justify-between py-2 select-none overflow-visible">
 
       {/* Center Cinematic Role Typography Display */}
       <div className="w-full flex-1 flex flex-col items-center justify-center relative z-10 px-2 my-auto">

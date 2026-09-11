@@ -74,6 +74,8 @@ const StoreItem = ({ project, delay }) => {
           <img
             src={project.thumbnail}
             alt={project.title}
+            loading="lazy"
+            decoding="async"
             className="w-full h-full object-cover object-center filter brightness-[0.75] contrast-[1.1] group-hover:scale-105 transition-transform duration-700 ease-out"
           />
           {/* Dark vignette overlay for crisp text contrast */}
@@ -209,12 +211,14 @@ const ContactSplitBanner = ({ onOpenContact }) => {
       >
         {/* Parallax Background Image (Driven purely by scroll, no hover tracking or hover scale) */}
         <motion.div
-          style={{ y: scrollParallaxY }}
-          className="absolute -top-12 -bottom-12 inset-x-0 w-full pointer-events-none"
+          style={{ y: scrollParallaxY, willChange: 'transform' }}
+          className="absolute -top-12 -bottom-12 inset-x-0 w-full pointer-events-none gpu-layer"
         >
           <img
             src={contactParallaxBg}
             alt="Futuristic cybernetic city grid"
+            loading="lazy"
+            decoding="async"
             className="w-full h-full object-cover object-center filter brightness-[0.7] contrast-[1.15]"
           />
         </motion.div>
@@ -363,7 +367,7 @@ const MainSite = () => {
           style={{ x: heroParallaxX, y: heroParallaxY }}
           className="mb-8 z-20"
         >
-          <div className="glass-pill px-4 py-2 rounded-full flex items-center gap-2.5 border border-white/10 shadow-[0_0_20px_rgba(59,130,246,0.25)] hover:border-ambient-blue/50 transition-all duration-300 group cursor-pointer"
+          <div className="glass-pill modern-shimmer px-4 py-2 rounded-full flex items-center gap-2.5 border border-white/10 shadow-[0_0_20px_rgba(59,130,246,0.25)] hover:border-ambient-blue/50 transition-all duration-300 group cursor-pointer"
                onClick={openContactDrawer}>
             <span className="relative flex h-2.5 w-2.5">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>

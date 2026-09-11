@@ -27,15 +27,26 @@ const ParallaxBackground = () => {
   const mouseNearY = useTransform(smoothMouseY, [-400, 400], [-100, 100]);
 
   useEffect(() => {
+    // Skip mouse tracking entirely on touch devices or reduced motion
+    const isTouch = typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches;
+    const prefersReduced = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (isTouch || prefersReduced) return;
+
+    let rafId = null;
     const handleMouseMove = (e) => {
-      mouseX.set(e.clientX - window.innerWidth / 2);
-      mouseY.set(e.clientY - window.innerHeight / 2);
+      if (rafId) return;
+      rafId = requestAnimationFrame(() => {
+        mouseX.set(e.clientX - window.innerWidth / 2);
+        mouseY.set(e.clientY - window.innerHeight / 2);
+        rafId = null;
+      });
     };
 
     window.addEventListener('mousemove', handleMouseMove, { passive: true });
 
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
+      if (rafId) cancelAnimationFrame(rafId);
     };
   }, [mouseX, mouseY]);
 
@@ -65,76 +76,71 @@ const ParallaxBackground = () => {
         }}
       />
 
-      {/* ── Deep Parallax Layer ── */}
+      {/* ── Deep Parallax Layer (Hardware Accelerated - Desktop Only) ── */}
       <motion.div
         style={{
           x: mouseDeepX,
           y: mouseDeepY,
           translateY: scrollParallaxDeep,
+          willChange: 'transform',
         }}
-        className="absolute inset-0"
+        className="hidden md:block absolute inset-0 gpu-layer"
       >
         {deepShapes.map((item, idx) => (
-          <motion.div
+          <div
             key={`deep-${idx}`}
             className="absolute text-ambient-blue/15"
-            style={{ top: item.top, left: item.left, right: item.right }}
-            animate={{
-              y: [0, -25, 0],
-              rotate: [0, 360],
-              scale: [1, 1.1, 1],
-            }}
-            transition={{
-              duration: item.rotateSpeed,
-              repeat: Infinity,
-              delay: item.delay,
-              ease: 'easeInOut',
+            style={{
+              top: item.top,
+              left: item.left,
+              right: item.right,
+              animation: `float-rotate-cw ${item.rotateSpeed}s ease-in-out infinite`,
+              animationDelay: `${item.delay}s`,
+              willChange: 'transform',
             }}
           >
             <item.Icon size={item.size} />
-          </motion.div>
+          </div>
         ))}
       </motion.div>
 
-      {/* ── Mid Parallax Layer ── */}
+      {/* ── Mid Parallax Layer (Hardware Accelerated - Desktop Only) ── */}
       <motion.div
         style={{
           x: mouseMidX,
           y: mouseMidY,
           translateY: scrollParallaxMid,
+          willChange: 'transform',
         }}
-        className="absolute inset-0"
+        className="hidden md:block absolute inset-0 gpu-layer"
       >
         {midShapes.map((item, idx) => (
-          <motion.div
+          <div
             key={`mid-${idx}`}
             className="absolute text-ambient-blue/20"
-            style={{ top: item.top, left: item.left, right: item.right }}
-            animate={{
-              y: [0, -35, 0],
-              rotate: [0, -360],
-              scale: [1, 1.15, 1],
-            }}
-            transition={{
-              duration: item.rotateSpeed,
-              repeat: Infinity,
-              delay: item.delay,
-              ease: 'easeInOut',
+            style={{
+              top: item.top,
+              left: item.left,
+              right: item.right,
+              animation: `float-rotate-ccw ${item.rotateSpeed}s ease-in-out infinite`,
+              animationDelay: `${item.delay}s`,
+              willChange: 'transform',
             }}
           >
             <item.Icon size={item.size} />
-          </motion.div>
+          </div>
         ))}
       </motion.div>
 
-      {/* ── Foreground Floating Micro Dust / Particles ── */}
+      {/* ── Foreground Floating Micro Dust / Particles (Desktop Only) ── */}
       <motion.div
         style={{
           x: mouseNearX,
           y: mouseNearY,
           translateY: scrollParallaxFast,
+          willChange: 'transform',
         }}
-        className="absolute inset-0"
+        className="hidden md:block absolute inset-0 gpu-layer"
       >
         <div className="absolute top-[20%] left-[30%] w-1.5 h-1.5 rounded-full bg-ambient-blue/40 blur-[1px]" />
         <div className="absolute top-[50%] right-[25%] w-2 h-2 rounded-full bg-purple-400/40 blur-[1px]" />

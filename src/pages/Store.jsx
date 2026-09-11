@@ -24,6 +24,8 @@ const StoreCard = ({ project, delay }) => {
           <img
             src={project.thumbnail}
             alt={project.title}
+            loading="lazy"
+            decoding="async"
             className="w-full h-full object-cover object-center filter brightness-[0.75] contrast-[1.1] group-hover:scale-105 transition-transform duration-700 ease-out"
           />
           {/* Dark vignette overlay */}

@@ -13,6 +13,9 @@
   html {
     overflow-x: hidden;
     scrollbar-gutter: stable;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
   body {
     @apply bg-dark-bg text-gray-100 antialiased overflow-x-hidden selection:bg-ambient-blue selection:text-white;
@@ -212,3 +215,96 @@ img, video, iframe {
 .btn-slide-white:hover::before {
   transform: scaleX(1);
 }
+
+/* GPU Hardware Acceleration */
+.gpu-layer {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  will-change: transform;
+}
+
+/* Mobile Smartphone Performance: Disable laggy animations & blurs, optimize small-screen visibility */
+@media (max-width: 768px) {
+  /* Disable expensive continuous animations on mobile smartphones */
+  .animate-marquee,
+  .animate-glow-pulse,
+  .animate-ping,
+  .anim-float-1,
+  .anim-float-2,
+  .modern-shimmer::after {
+    animation: none !important;
+  }
+
+  /* Eliminate expensive GPU backdrop blurs on mobile for 60/120fps butter-smooth scroll */
+  .glass-card {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    background: #0e111a !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  }
+  .glass-pill {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    background: rgba(255, 255, 255, 0.08) !important;
+  }
+
+  /* Disable sticky hover transforms on touch screens */
+  .glass-card-hover:hover {
+    transform: none !important;
+    border-color: rgba(255, 255, 255, 0.12) !important;
+    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5) !important;
+  }
+
+  /* Prevent elements from feeling microscopic on mobile devices */
+  body {
+    font-size: 15px;
+  }
+}
+
+/* Prefers Reduced Motion / Battery Saver */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+  .animate-marquee {
+    animation: none !important;
+  }
+  .animate-glow-pulse {
+    animation: none !important;
+  }
+}
+
+/* GPU-accelerated Compositor Keyframes for Background Floating Shapes */
+@keyframes float-rotate-cw {
+  0% { transform: translateY(0px) rotate(0deg) scale(1); }
+  50% { transform: translateY(-24px) rotate(180deg) scale(1.08); }
+  100% { transform: translateY(0px) rotate(360deg) scale(1); }
+}
+
+@keyframes float-rotate-ccw {
+  0% { transform: translateY(0px) rotate(0deg) scale(1); }
+  50% { transform: translateY(-28px) rotate(-180deg) scale(1.1); }
+  100% { transform: translateY(0px) rotate(-360deg) scale(1); }
+}
+
+/* Modern shimmer effect for cards and badges */
+.modern-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+.modern-shimmer::after {
+  content: '';
+  position: absolute;
+  top: 0; right: 0; bottom: 0; left: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.06), transparent);
+  animation: shimmer-slide 3.5s infinite;
+  pointer-events: none;
+}
+
+@keyframes shimmer-slide {
+  100% { transform: translateX(100%); }
+}
+
