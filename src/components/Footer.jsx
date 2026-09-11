@@ -12,7 +12,6 @@ const Footer = () => {
           <p>
             &copy; {new Date().getFullYear()}&nbsp;
             <span className="text-ambient-blue font-bold">&lt;Dev.io /&gt;</span>
-            &nbsp;Crafted with modern 3D depth & precision.
           </p>
         </div>
         <div className="flex flex-wrap gap-3 items-center">

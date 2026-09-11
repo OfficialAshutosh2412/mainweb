@@ -57,8 +57,8 @@ const Navbar = () => {
   const isPortfolio = location.pathname === '/portfolio';
   const isSubPage = !isHome && !isPortfolio;
 
-  const linkClass = "relative px-3 py-1.5 rounded-lg text-xs md:text-sm font-semibold text-gray-300 hover:text-white transition-all duration-200 hover:bg-white/5 cursor-pointer flex items-center gap-1 group";
-  const mobileLinkClass = "block py-3 text-lg font-semibold text-gray-300 hover:text-ambient-blue border-b border-white/5 transition-colors cursor-pointer";
+  const linkClass = "relative px-3.5 py-1.5 rounded-xl text-xs md:text-sm font-semibold text-gray-300 hover:text-white transition-all duration-300 hover:scale-105 hover:-translate-y-0.5 hover:bg-ambient-blue/20 hover:border-ambient-blue/40 border border-transparent hover:shadow-[0_0_15px_rgba(29,78,216,0.35)] cursor-pointer flex items-center gap-1.5 group";
+  const mobileLinkClass = "block py-3 px-3 text-lg font-semibold text-gray-300 hover:text-white hover:bg-ambient-blue/15 hover:translate-x-1 rounded-xl border-b border-white/5 transition-all duration-300 cursor-pointer";
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 px-4 sm:px-6 py-3 transition-all duration-300">

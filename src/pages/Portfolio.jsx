@@ -596,6 +596,14 @@ const Portfolio = () => {
                 GitHub
               </a>
             )}
+            <a
+              href="#"
+              onClick={(e) => { e.preventDefault(); alert("Downloading Resume..."); }}
+              className="btn-slide-blue flex items-center gap-1.5 text-white px-4 py-1.5 rounded-full border border-ambient-blue/50 hover:border-ambient-blue transition-all shadow-[0_0_15px_rgba(29,78,216,0.35)] cursor-pointer text-xs font-bold"
+            >
+              <Download className="w-4 h-4 text-blue-200" />
+              <span>Resume</span>
+            </a>
           </motion.div>
         </motion.div>
 

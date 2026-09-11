@@ -9,35 +9,35 @@ const ROLES = [
     id: "fullstack", 
     label: "FULLSTACK DEV",   
     sub: "End-to-End Web & Cloud Systems",             
-    color: "#fb923c",
+    color: "#1d4ed8",
     icons: [Layers, Globe, Cpu]
   },
   { 
     id: "backend",   
     label: "BACKEND DEV",     
     sub: "Scalable RESTful APIs & Microservices",     
-    color: "#34d399",
+    color: "#1d4ed8",
     icons: [Terminal, Code2, ShieldCheck]
   },
   { 
     id: "frontend",  
     label: "FRONTEND DEV",    
     sub: "Interactive React.js & Modern UIs",          
-    color: "#a78bfa",
+    color: "#1d4ed8",
     icons: [Atom, FileCode, Sparkles]
   },
   { 
     id: "api",       
     label: "API ARCHITECT",   
     sub: "Secure JWT Auth & SignalR Services",        
-    color: "#f472b6",
+    color: "#1d4ed8",
     icons: [Globe, ShieldCheck, Radio]
   },
   { 
     id: "database",  
     label: "DATABASE DEV",    
     sub: "SQL Server & Entity Framework Core",        
-    color: "#facc15",
+    color: "#1d4ed8",
     icons: [Database, Layers, Wrench]
   },
 ];

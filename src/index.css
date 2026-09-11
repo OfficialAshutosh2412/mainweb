@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 @theme {
-  --color-ambient-blue: #3b82f6;
-  --color-ambient-glow: rgba(59, 130, 246, 0.5);
+  --color-ambient-blue: #1d4ed8;
+  --color-ambient-glow: rgba(29, 78, 216, 0.5);
   --color-dark-bg: #0a0a0a;
   --color-dark-surface: #121215;
   --color-glass-surface: rgba(18, 18, 22, 0.7);
@@ -58,15 +58,15 @@
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5), 0 0 15px -3px rgba(59, 130, 246, 0.05);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5), 0 0 15px -3px rgba(29, 78, 216, 0.08);
 }
 
 .glass-card-hover {
   transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .glass-card-hover:hover {
-  border-color: rgba(59, 130, 246, 0.4);
-  box-shadow: 0 20px 40px -15px rgba(59, 130, 246, 0.25), 0 0 25px rgba(59, 130, 246, 0.15);
+  border-color: rgba(29, 78, 216, 0.5);
+  box-shadow: 0 20px 40px -15px rgba(29, 78, 216, 0.3), 0 0 25px rgba(29, 78, 216, 0.2);
 }
 
 .glass-pill {
@@ -164,4 +164,51 @@
 /* Prevent text/media overflow globally */
 img, video, iframe {
   max-width: 100%;
+}
+
+/* Background Color Sliding Button Animations */
+.btn-slide-blue {
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-slide-blue::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #1d4ed8, #1e3a8a);
+  z-index: -1;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  border-radius: inherit;
+}
+
+.btn-slide-blue:hover::before {
+  transform: scaleX(1);
+}
+
+.btn-slide-white {
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-slide-white::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #ffffff, #dbeafe);
+  z-index: -1;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  border-radius: inherit;
+}
+
+.btn-slide-white:hover::before {
+  transform: scaleX(1);
 }

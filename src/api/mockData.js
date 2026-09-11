@@ -1,3 +1,7 @@
+import qmsThumb from '../assets/qms_thumb.png';
+import ctsThumb from '../assets/cts_thumb.png';
+import sisThumb from '../assets/sis_thumb.png';
+
 export const mainWebsiteData = {
   hero: {
     title: "Hi, I'm a Creator.",
@@ -47,6 +51,12 @@ export const mainWebsiteData = {
         title: "Quality Management System (QMS)", 
         description: "Full-stack QMS with role-based JWT auth, real-time SignalR analytics, ASP.NET Core Web API, React.js, and SQL Server/PostgreSQL database integration.", 
         price: "$25", 
+        thumbnail: qmsThumb,
+        features: [
+          "JWT Auth & Role-Based Security",
+          "Real-Time SignalR Analytics & Notifications",
+          "Complete Source Code & Architectural Blueprint"
+        ],
         tech: ["ASP.NET Core", "React.js", "C#", "SQL Server", "SignalR"],
         hasDocumentation: true, 
         hasThesis: true 
@@ -56,6 +66,12 @@ export const mainWebsiteData = {
         title: "Crime Tracking System (CTS)", 
         description: "Role-based crime reporting & management portal using ASP.NET MVC, C#, Entity Framework, LINQ, SQL Server, and AJAX-based async retrieval.", 
         price: "$20", 
+        thumbnail: ctsThumb,
+        features: [
+          "Role-Based Incident & Crime Reporting",
+          "AJAX Asynchronous Data Retrieval Modules",
+          "Entity Framework & SQL Server Database Schema"
+        ],
         tech: ["ASP.NET MVC", "C#", "SQL Server", "Bootstrap"],
         hasDocumentation: true, 
         hasThesis: true 
@@ -65,6 +81,12 @@ export const mainWebsiteData = {
         title: "SIS Institute Academy Portal", 
         description: "Academy management portal for student enrollment, record management, certificate generation, and status tracking using ASP.NET Web Forms & ADO.NET.", 
         price: "$18", 
+        thumbnail: sisThumb,
+        features: [
+          "Student Enrollment & Transcript Management",
+          "Automated Certificate Generation Engine",
+          "ADO.NET Data Layer & Stored Procedures"
+        ],
         tech: ["ASP.NET Web Forms", "C#", "SQL Server", "ADO.NET"],
         hasDocumentation: true, 
         hasThesis: false 

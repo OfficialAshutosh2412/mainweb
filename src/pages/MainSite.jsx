@@ -49,68 +49,142 @@ const SeeMoreLink = ({ to, label }) => (
   >
     <Link
       to={to}
-      className="group inline-flex items-center gap-3 px-8 py-3.5 rounded-full border border-white/10 hover:border-ambient-blue/60 bg-white/5 hover:bg-ambient-blue/15 text-white font-semibold shadow-lg hover:shadow-[0_0_25px_rgba(59,130,246,0.35)] transition-all duration-300 hover:scale-105 active:scale-95"
+      className="btn-slide-blue group inline-flex items-center gap-3 px-8 py-3.5 rounded-full border border-ambient-blue/40 hover:border-ambient-blue text-white font-semibold shadow-lg hover:shadow-[0_0_25px_rgba(29,78,216,0.5)] transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer"
     >
       <span>{label}</span>
-      <ArrowRight size={16} className="group-hover:translate-x-1.5 transition-transform duration-300 text-ambient-blue group-hover:text-white" />
+      <ArrowRight size={16} className="group-hover:translate-x-1.5 transition-transform duration-300 text-blue-200 group-hover:text-white" />
     </Link>
   </motion.div>
 );
 
 /* ─────────── 3D Store item card ─────────── */
 const StoreItem = ({ project, delay }) => {
+  const [mobileActive, setMobileActive] = useState(false);
+
   return (
     <TiltCard delay={delay} className="h-full">
-      <div className="p-6 rounded-2xl h-full flex flex-col justify-between glass-card border border-white/10 hover:border-ambient-blue/50 transition-all duration-300 group">
-        <div className="flex-1">
-          {/* Title in one line */}
-          <div className="mb-4">
-            <h4
-              className="text-base sm:text-lg font-bold text-white group-hover:text-ambient-blue transition-colors truncate"
-              title={project.title}
-            >
-              {project.title}
-            </h4>
-          </div>
-
-          {project.tech && (
-            <div className="flex items-center gap-2 mb-4 flex-wrap">
-              {project.tech.map(t => (
-                <span key={t} className="px-2.5 py-1 rounded-md bg-black/60 border border-white/10 text-[11px] text-gray-300 font-mono flex items-center gap-1.5 shadow-sm">
-                  {getTechIcon(t)}
-                  {t}
-                </span>
-              ))}
-            </div>
-          )}
-
-          <ul className="space-y-2 mb-6 text-xs text-gray-400">
-            <li className="flex items-center gap-2">
-              <CheckCircle className="w-3.5 h-3.5 text-emerald-400 shrink-0" /> Source Code Included
-            </li>
-            {project.hasDocumentation && (
-              <li className="flex items-center gap-2">
-                <CheckCircle className="w-3.5 h-3.5 text-emerald-400 shrink-0" /> Full Architecture Docs
-              </li>
-            )}
-            {project.hasThesis && (
-              <li className="flex items-center gap-2">
-                <CheckCircle className="w-3.5 h-3.5 text-emerald-400 shrink-0" /> Academic Project Blueprint
-              </li>
-            )}
-          </ul>
+      <div 
+        onClick={() => setMobileActive(!mobileActive)}
+        className={`group relative rounded-2xl h-[420px] overflow-hidden border border-white/10 hover:border-ambient-blue/60 transition-all duration-400 ease-out cursor-pointer shadow-xl hover:shadow-[0_20px_40px_rgba(29,78,216,0.35)] hover:-translate-y-1.5 ${
+          mobileActive ? '-translate-y-1.5 border-ambient-blue/60 shadow-[0_20px_40px_rgba(29,78,216,0.35)]' : ''
+        }`}
+      >
+        {/* 1. Background Thumbnail Image */}
+        <div className="absolute inset-0 z-0 overflow-hidden bg-dark-surface">
+          <img
+            src={project.thumbnail}
+            alt={project.title}
+            className="w-full h-full object-cover object-center filter brightness-[0.75] contrast-[1.1] group-hover:scale-105 transition-transform duration-700 ease-out"
+          />
+          {/* Dark vignette overlay for crisp text contrast */}
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0a0c12] via-[#0a0c12]/60 to-transparent" />
         </div>
 
-        {/* Repositioned Pricing and Action Button */}
-        <div className="mt-auto pt-4 border-t border-white/10 flex items-center justify-between gap-3">
-          <div className="flex flex-col shrink-0">
-            <span className="text-[10px] uppercase font-mono text-gray-400 tracking-wider">Price</span>
-            <span className="text-xl font-black text-ambient-blue">{project.price}</span>
+        {/* 2. Default State Content (Visible when NOT hovering / inactive) */}
+        <div className={`absolute inset-0 z-10 p-6 flex flex-col justify-between transition-opacity duration-300 ${
+          mobileActive ? 'opacity-0 pointer-events-none' : 'group-hover:opacity-0 group-hover:pointer-events-none'
+        }`}>
+          {/* Top Badge area */}
+          <div className="flex justify-between items-start">
+            <span className="px-3 py-1 rounded-full text-[11px] font-mono font-bold bg-black/60 text-ambient-blue border border-ambient-blue/30 backdrop-blur-md shadow-sm">
+              Blueprint
+            </span>
+            <span className="px-3.5 py-1 rounded-full text-xs font-mono font-black text-white bg-ambient-blue shadow-[0_0_15px_rgba(29,78,216,0.5)]">
+              {project.price}
+            </span>
           </div>
-          <button className="flex-1 py-3 px-3.5 rounded-xl font-bold transition-all bg-white/10 text-white hover:bg-ambient-blue hover:text-white hover:shadow-[0_0_20px_rgba(59,130,246,0.4)] cursor-pointer text-xs sm:text-sm active:scale-95 flex items-center justify-center gap-2">
-            <ShoppingCart size={15} />
-            <span>Purchase Thesis & Code</span>
-          </button>
+
+          {/* Bottom Default Info */}
+          <div>
+            <h4 className="text-xl font-bold text-white mb-3 tracking-tight line-clamp-1">
+              {project.title}
+            </h4>
+
+            {project.tech && (
+              <div className="flex items-center gap-1.5 flex-wrap">
+                {project.tech.slice(0, 3).map(t => (
+                  <span key={t} className="px-2.5 py-1 rounded-lg bg-black/70 border border-white/10 text-[10px] text-gray-200 font-mono flex items-center gap-1 backdrop-blur-sm shadow-sm">
+                    {getTechIcon(t)}
+                    {t}
+                  </span>
+                ))}
+                {project.tech.length > 3 && (
+                  <span className="text-[10px] font-mono text-gray-400">+{project.tech.length - 3}</span>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* 3. Hover / Touch Revealed Semi-Transparent Gradient Details Panel (300-450ms Ease-Out) */}
+        <div className={`absolute inset-0 z-20 p-6 bg-[#0a0c14]/90 backdrop-blur-md border-t border-white/15 flex flex-col justify-between transition-all duration-400 ease-out transform ${
+          mobileActive ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0 group-hover:translate-y-0 group-hover:opacity-100'
+        }`}>
+          <div>
+            {/* Header in Panel */}
+            <div className="flex justify-between items-start mb-2">
+              <h4 className="text-lg font-bold text-white tracking-tight line-clamp-1">
+                {project.title}
+              </h4>
+              <span className="px-2.5 py-0.5 rounded-lg text-xs font-mono font-black text-blue-200 bg-ambient-blue/40 border border-ambient-blue/60 shrink-0 ml-2">
+                {project.price}
+              </span>
+            </div>
+
+            <p className="text-gray-300 text-xs leading-relaxed mb-4 line-clamp-2">
+              {project.description}
+            </p>
+
+            {/* 3 Key Features */}
+            <div className="space-y-2 mb-4">
+              <div className="text-[10px] font-mono font-bold text-ambient-blue uppercase tracking-wider">Key Features</div>
+              {(project.features || [
+                "Full Source Code & Database Scripts",
+                "Architectural Documentation & Setup Guide",
+                "Academic Thesis Blueprint & Diagrams"
+              ]).slice(0, 3).map((feat, fIdx) => (
+                <div key={fIdx} className="flex items-center gap-2 text-xs text-gray-200">
+                  <CheckCircle className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                  <span className="truncate">{feat}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* Tech Badges */}
+            {project.tech && (
+              <div className="flex items-center gap-1.5 flex-wrap mb-3">
+                {project.tech.map(t => (
+                  <span key={t} className="px-2 py-0.5 rounded-md bg-black/60 border border-white/10 text-[10px] text-gray-300 font-mono flex items-center gap-1">
+                    {getTechIcon(t)}
+                    {t}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div>
+            {/* Small note indicating thumbnail is AI generated */}
+            <div className="text-[10px] font-mono text-gray-400/90 italic flex items-center justify-center gap-1 mb-2">
+              <Sparkles className="w-3 h-3 text-ambient-blue shrink-0 animate-pulse" />
+              <span>* Preview thumbnail AI-generated</span>
+            </div>
+
+            {/* Action CTA Button */}
+            <Link
+              to="/store"
+              className="btn-slide-blue w-full py-3 px-4 rounded-xl font-bold text-white text-xs sm:text-sm flex items-center justify-between gap-2 shadow-lg border border-ambient-blue/50 cursor-pointer active:scale-95 transition-all"
+            >
+              <div className="flex items-center gap-2">
+                <ShoppingCart size={15} />
+                <span>Get Bundle</span>
+              </div>
+              <div className="flex items-center gap-1 text-blue-200 font-mono text-xs">
+                <span>{project.price}</span>
+                <ArrowRight size={13} />
+              </div>
+            </Link>
+          </div>
         </div>
       </div>
     </TiltCard>
@@ -200,7 +274,7 @@ const ContactSplitBanner = ({ onOpenContact }) => {
         <div className="w-full pt-4 space-y-3 relative z-10">
           <button
             onClick={onOpenContact}
-            className="w-full py-4 px-6 bg-white hover:bg-blue-50 text-blue-950 font-black rounded-2xl shadow-[0_10px_30px_rgba(0,0,0,0.3)] transition-all flex items-center justify-center gap-3 cursor-pointer hover:scale-[1.02] active:scale-95 text-sm sm:text-base group/btn"
+            className="btn-slide-white w-full py-4 px-6 bg-white hover:bg-blue-50 text-blue-950 hover:text-blue-950 font-black rounded-2xl shadow-[0_10px_30px_rgba(0,0,0,0.3)] transition-all flex items-center justify-center gap-3 cursor-pointer hover:scale-[1.02] active:scale-95 text-sm sm:text-base group/btn"
           >
             <Mail className="w-5 h-5 group-hover/btn:rotate-12 transition-transform duration-300 text-blue-900" />
             <span>Contact Me Now</span>
