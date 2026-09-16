@@ -6,7 +6,7 @@ import { fetchMainData } from '../api';
 import Footer from '../components/Footer';
 import RevealingCard from '../components/RevealingCard';
 import TiltCard from '../components/TiltCard';
-import RoleDial from '../components/RoleDial';
+import HeroSection from '../components/HeroSection';
 import { useContactDrawer } from '../context/ContactContext';
 import { getTechIcon } from './Projects';
 
@@ -297,21 +297,7 @@ const ContactSplitBanner = ({ onOpenContact }) => {
 /* ─────────────────── Main Component ─────────────────── */
 const MainSite = () => {
   const [data, setData] = useState(null);
-  const heroRef = useRef(null);
-
-  // Smooth mouse tracking for Hero 3D Parallax
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-  const heroRotateX = useSpring(useTransform(mouseY, [-300, 300], [7, -7]), { stiffness: 120, damping: 20 });
-  const heroRotateY = useSpring(useTransform(mouseX, [-500, 500], [-7, 7]), { stiffness: 120, damping: 20 });
-  const heroParallaxX = useSpring(useTransform(mouseX, [-500, 500], [-15, 15]), { stiffness: 120, damping: 20 });
-  const heroParallaxY = useSpring(useTransform(mouseY, [-300, 300], [-15, 15]), { stiffness: 120, damping: 20 });
-
-  const { scrollY } = useScroll();
-  const heroY       = useTransform(scrollY, [0, 1000], [0, 220]);
-  const heroOpacity = useTransform(scrollY, [0, 600], [1, 0]);
   const location    = useLocation();
-
   const { openContactDrawer } = useContactDrawer();
 
   useEffect(() => {
@@ -329,18 +315,6 @@ const MainSite = () => {
     }
   }, [location, data, openContactDrawer]);
 
-  const handleHeroMouseMove = (e) => {
-    if (!heroRef.current) return;
-    const rect = heroRef.current.getBoundingClientRect();
-    mouseX.set(e.clientX - (rect.left + rect.width / 2));
-    mouseY.set(e.clientY - (rect.top + rect.height / 2));
-  };
-
-  const handleHeroMouseLeave = () => {
-    mouseX.set(0);
-    mouseY.set(0);
-  };
-
   if (!data) return <div className="min-h-screen bg-dark-bg" />;
 
   // Limit items shown on home page
@@ -351,44 +325,8 @@ const MainSite = () => {
   return (
     <div className="bg-transparent text-white flex flex-col min-h-screen selection:bg-ambient-blue relative overflow-x-hidden">
 
-      {/* ── 3D Parallax Hero Section ── */}
-      <motion.section
-        ref={heroRef}
-        onMouseMove={handleHeroMouseMove}
-        onMouseLeave={handleHeroMouseLeave}
-        style={{ y: heroY, opacity: heroOpacity }}
-        className="min-h-screen flex flex-col items-center justify-center relative px-4 sm:px-6 pt-24 sm:pt-28 pb-12 perspective-1000"
-      >
-        {/* Floating 3D Status Radar Pill */}
-        <motion.div
-          initial={{ opacity: 0, y: -20, scale: 0.9 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          style={{ x: heroParallaxX, y: heroParallaxY }}
-          className="mb-8 z-20"
-        >
-          <div className="glass-pill modern-shimmer px-4 py-2 rounded-full flex items-center gap-2.5 border border-white/10 shadow-[0_0_20px_rgba(59,130,246,0.25)] hover:border-ambient-blue/50 transition-all duration-300 group cursor-pointer"
-               onClick={openContactDrawer}>
-            <span className="relative flex h-2.5 w-2.5">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500 shadow-[0_0_8px_#10b981]"></span>
-            </span>
-            <span className="text-xs font-semibold text-gray-200 tracking-wide">Available for Full-Time & Freelance Projects</span>
-            <Sparkles className="w-3.5 h-3.5 text-ambient-blue group-hover:rotate-12 transition-transform" />
-          </div>
-        </motion.div>
-
-        {/* Hero Interactive Container */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1.2, ease: 'easeOut' }}
-          className="text-center z-10 w-full max-w-6xl mx-auto"
-        >
-          {/* Full-Screen Liquid Typography Role Revealer Carousel */}
-          <RoleDial />
-        </motion.div>
-      </motion.section>
+      {/* ── Split-Screen Darkfolio Hero Section ── */}
+      <HeroSection />
 
       {/* ── Main Content Sections ── */}
       <div className="flex-1 relative z-10 pb-20 md:pb-32 max-w-6xl mx-auto px-4 sm:px-6 space-y-24 sm:space-y-36 md:space-y-48 w-full">

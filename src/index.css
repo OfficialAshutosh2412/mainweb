@@ -18,8 +18,28 @@
     -moz-osx-font-smoothing: grayscale;
   }
   body {
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
     @apply bg-dark-bg text-gray-100 antialiased overflow-x-hidden selection:bg-ambient-blue selection:text-white;
   }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Attention-Grabbing Custom Typography Classes
+─────────────────────────────────────────────────────────────── */
+.font-name {
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+.font-intro {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+}
+
+.font-nav {
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+.font-body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
 /* 3D Transform Utilities */
@@ -306,5 +326,52 @@ img, video, iframe {
 
 @keyframes shimmer-slide {
   100% { transform: translateX(100%); }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Animated Bottom-to-Top Background for Navbar Links & Items
+─────────────────────────────────────────────────────────────── */
+.nav-link-bottom-to-top {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  border: none !important;
+  transition: color 0.3s ease, transform 0.25s ease, box-shadow 0.3s ease;
+}
+
+.nav-link-bottom-to-top::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 100%;
+  background: linear-gradient(to top, rgba(29, 78, 216, 0.45) 0%, rgba(59, 130, 246, 0.15) 100%);
+  border-radius: inherit;
+  transform: translateY(100%);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: -1;
+  pointer-events: none;
+}
+
+.nav-link-bottom-to-top:hover::before {
+  transform: translateY(0);
+}
+
+.nav-link-bottom-to-top:hover {
+  box-shadow: 0 0 20px rgba(29, 78, 216, 0.25);
+}
+
+.nav-link-bottom-to-top:active::before {
+  background: linear-gradient(to top, rgba(29, 78, 216, 0.6) 0%, rgba(59, 130, 246, 0.35) 100%);
+}
+
+/* Light theme overrides when activated */
+html.light-theme {
+  filter: invert(0.92) hue-rotate(180deg);
+}
+html.light-theme img,
+html.light-theme video {
+  filter: invert(1) hue-rotate(180deg);
 }
 
