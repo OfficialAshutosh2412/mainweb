@@ -124,7 +124,7 @@ const Navbar = () => {
             className="text-xl sm:text-2xl font-black text-white tracking-tighter flex items-center gap-1 group"
           >
             <span className="text-ambient-blue font-bold group-hover:scale-125 transition-transform duration-300">&lt;</span>
-            <span className="bg-gradient-to-r from-white via-gray-100 to-gray-400 bg-clip-text text-transparent group-hover:to-blue-300 transition-all">
+            <span className="text-white">
               Dev.io
             </span>
             <span className="text-ambient-blue font-bold group-hover:scale-125 transition-transform duration-300">/&gt;</span>
@@ -133,20 +133,20 @@ const Navbar = () => {
           {/* Right Header Controls: Contact + Light/Dark Theme + Hamburger Menu */}
           <div className="flex items-center gap-2 sm:gap-3">
             
-            {/* Contact Button with Bottom-to-Top background animation (Borderless) */}
+            {/* Contact Button */}
             <button
               onClick={openContactDrawer}
-              className="nav-link-bottom-to-top px-3.5 py-2 sm:px-4 sm:py-2 rounded-xl text-xs sm:text-sm font-semibold text-gray-200 hover:text-white bg-white/[0.04] hover:bg-white/[0.08] backdrop-blur-md transition-all duration-300 flex items-center gap-2 cursor-pointer shadow-sm"
+              className="nav-link-bottom-to-top px-3.5 py-2 sm:px-4 sm:py-2 text-xs sm:text-sm font-semibold text-gray-200 hover:text-white bg-white/[0.04] hover:bg-white/[0.08] transition-all duration-300 flex items-center gap-2 cursor-pointer"
               title="Get in touch"
             >
               <Mail className="w-3.5 h-3.5 text-ambient-blue" />
               <span>Contact</span>
             </button>
 
-            {/* Light/Dark Theme Toggle Icon Button with Bottom-to-Top background animation (Borderless) */}
+            {/* Light/Dark Theme Toggle Icon Button */}
             <button
               onClick={toggleTheme}
-              className="nav-link-bottom-to-top p-2 sm:p-2.5 rounded-xl text-gray-300 hover:text-white bg-white/[0.04] hover:bg-white/[0.08] backdrop-blur-md cursor-pointer flex items-center justify-center transition-all duration-300 shadow-sm"
+              className="nav-link-bottom-to-top p-2 sm:p-2.5 text-gray-300 hover:text-white bg-white/[0.04] hover:bg-white/[0.08] cursor-pointer flex items-center justify-center transition-all duration-300"
               aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
               title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
             >
@@ -158,17 +158,17 @@ const Navbar = () => {
                 transition={{ duration: 0.3 }}
               >
                 {theme === 'dark' ? (
-                  <Sun className="w-4 h-4 text-amber-300" />
+                  <Sun className="w-4 h-4 text-white" />
                 ) : (
-                  <Moon className="w-4 h-4 text-blue-400" />
+                  <Moon className="w-4 h-4 text-black" />
                 )}
               </motion.div>
             </button>
 
-            {/* Hamburger Menu Button with Bottom-to-Top background animation (Borderless) */}
+            {/* Hamburger Menu Button */}
             <button
               onClick={() => setSlideMenuOpen(true)}
-              className="nav-link-bottom-to-top p-2 sm:px-3.5 sm:py-2 rounded-xl text-gray-200 hover:text-white bg-white/[0.04] hover:bg-white/[0.08] backdrop-blur-md flex items-center gap-2 cursor-pointer transition-all duration-300 shadow-sm group"
+              className="nav-link-bottom-to-top p-2 sm:px-3.5 sm:py-2 text-gray-200 hover:text-white bg-white/[0.04] hover:bg-white/[0.08] flex items-center gap-2 cursor-pointer transition-all duration-300 group"
               aria-label="Open menu"
               title="Open menu"
             >

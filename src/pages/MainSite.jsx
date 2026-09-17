@@ -63,11 +63,10 @@ const StoreItem = ({ project, delay }) => {
 
   return (
     <TiltCard delay={delay} className="h-full">
-      <div 
+      <div
         onClick={() => setMobileActive(!mobileActive)}
-        className={`group relative rounded-2xl h-[420px] overflow-hidden border border-white/10 hover:border-ambient-blue/60 transition-all duration-400 ease-out cursor-pointer shadow-xl hover:shadow-[0_20px_40px_rgba(29,78,216,0.35)] hover:-translate-y-1.5 ${
-          mobileActive ? '-translate-y-1.5 border-ambient-blue/60 shadow-[0_20px_40px_rgba(29,78,216,0.35)]' : ''
-        }`}
+        className={`group relative rounded-2xl h-[420px] overflow-hidden border border-white/10 hover:border-ambient-blue/60 transition-all duration-400 ease-out cursor-pointer shadow-xl hover:shadow-[0_20px_40px_rgba(29,78,216,0.35)] hover:-translate-y-1.5 ${mobileActive ? '-translate-y-1.5 border-ambient-blue/60 shadow-[0_20px_40px_rgba(29,78,216,0.35)]' : ''
+          }`}
       >
         {/* 1. Background Thumbnail Image */}
         <div className="absolute inset-0 z-0 overflow-hidden bg-dark-surface">
@@ -78,14 +77,13 @@ const StoreItem = ({ project, delay }) => {
             decoding="async"
             className="w-full h-full object-cover object-center filter brightness-[0.75] contrast-[1.1] group-hover:scale-105 transition-transform duration-700 ease-out"
           />
-          {/* Dark vignette overlay for crisp text contrast */}
-          <div className="absolute inset-0 bg-gradient-to-t from-[#0a0c12] via-[#0a0c12]/60 to-transparent" />
+          {/* Overlay for text contrast */}
+          <div className="absolute inset-0 bg-black/60" />
         </div>
 
         {/* 2. Default State Content (Visible when NOT hovering / inactive) */}
-        <div className={`absolute inset-0 z-10 p-6 flex flex-col justify-between transition-opacity duration-300 ${
-          mobileActive ? 'opacity-0 pointer-events-none' : 'group-hover:opacity-0 group-hover:pointer-events-none'
-        }`}>
+        <div className={`absolute inset-0 z-10 p-6 flex flex-col justify-between transition-opacity duration-300 ${mobileActive ? 'opacity-0 pointer-events-none' : 'group-hover:opacity-0 group-hover:pointer-events-none'
+          }`}>
           {/* Top Badge area */}
           <div className="flex justify-between items-start">
             <span className="px-3 py-1 rounded-full text-[11px] font-mono font-bold bg-black/60 text-ambient-blue border border-ambient-blue/30 backdrop-blur-md shadow-sm">
@@ -119,9 +117,8 @@ const StoreItem = ({ project, delay }) => {
         </div>
 
         {/* 3. Hover / Touch Revealed Semi-Transparent Gradient Details Panel (300-450ms Ease-Out) */}
-        <div className={`absolute inset-0 z-20 p-6 bg-[#0a0c14]/90 backdrop-blur-md border-t border-white/15 flex flex-col justify-between transition-all duration-400 ease-out transform ${
-          mobileActive ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0 group-hover:translate-y-0 group-hover:opacity-100'
-        }`}>
+        <div className={`absolute inset-0 z-20 p-6 bg-[#0a0c14]/90 backdrop-blur-md border-t border-white/15 flex flex-col justify-between transition-all duration-400 ease-out transform ${mobileActive ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0 group-hover:translate-y-0 group-hover:opacity-100'
+          }`}>
           <div>
             {/* Header in Panel */}
             <div className="flex justify-between items-start mb-2">
@@ -223,8 +220,8 @@ const ContactSplitBanner = ({ onOpenContact }) => {
           />
         </motion.div>
 
-        {/* Dark Vignette / Gradient Overlay to ensure text readability */}
-        <div className="absolute inset-0 bg-gradient-to-t from-dark-bg/95 via-dark-bg/75 to-dark-bg/40 backdrop-blur-[1.5px] pointer-events-none" />
+        {/* Overlay to ensure text readability */}
+        <div className="absolute inset-0 bg-black/75 pointer-events-none" />
 
         {/* Content Over the Background */}
         <div className="relative z-10 space-y-4">
@@ -257,12 +254,12 @@ const ContactSplitBanner = ({ onOpenContact }) => {
       </div>
 
       {/* ── Right Section: Background Coloured Theme Hub ── */}
-      <div className="lg:col-span-5 rounded-3xl bg-gradient-to-br from-blue-700 via-ambient-blue to-blue-900 border border-blue-400/50 p-8 sm:p-10 flex flex-col justify-between items-center text-center relative overflow-hidden group shadow-[0_20px_50px_-15px_rgba(59,130,246,0.5)] text-white">
+      <div className="lg:col-span-5 rounded-3xl bg-[#1F150C] border border-[#412D15] p-8 sm:p-10 flex flex-col justify-between items-center text-center relative overflow-hidden group text-white">
         {/* Subtle glass reflection overlay */}
         <div className="absolute inset-0 bg-white/[0.04] pointer-events-none" />
 
         <div className="space-y-4 my-auto py-6 relative z-10">
-          <div className="w-16 h-16 rounded-2xl bg-white/15 border border-white/30 text-white mx-auto flex items-center justify-center shadow-[0_0_25px_rgba(255,255,255,0.25)] group-hover:scale-110 transition-transform duration-300">
+          <div className="w-16 h-16 rounded-2xl bg-white/10 border border-white/20 text-white mx-auto flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
             <Mail className="w-8 h-8 text-white" />
           </div>
 
@@ -270,7 +267,7 @@ const ContactSplitBanner = ({ onOpenContact }) => {
             Start a Conversation
           </h4>
 
-          <p className="text-blue-100 text-xs sm:text-sm leading-relaxed max-w-xs mx-auto font-normal">
+          <p className="text-gray-300 text-xs sm:text-sm leading-relaxed max-w-xs mx-auto font-normal">
             Ready to discuss a new project, technical requirements, or immediate opportunities? Let's connect.
           </p>
         </div>
@@ -278,14 +275,14 @@ const ContactSplitBanner = ({ onOpenContact }) => {
         <div className="w-full pt-4 space-y-3 relative z-10">
           <button
             onClick={onOpenContact}
-            className="btn-slide-white w-full py-4 px-6 bg-white hover:bg-blue-50 text-blue-950 hover:text-blue-950 font-black rounded-2xl shadow-[0_10px_30px_rgba(0,0,0,0.3)] transition-all flex items-center justify-center gap-3 cursor-pointer hover:scale-[1.02] active:scale-95 text-sm sm:text-base group/btn"
+            className="btn-slide-white w-full py-4 px-6 rounded-2xl shadow-lg transition-all flex items-center justify-center gap-3 cursor-pointer hover:scale-[1.02] active:scale-95 text-sm sm:text-base group/btn font-black"
           >
-            <Mail className="w-5 h-5 group-hover/btn:rotate-12 transition-transform duration-300 text-blue-900" />
+            <Mail className="w-5 h-5 group-hover/btn:rotate-12 transition-transform duration-300" />
             <span>Contact Me Now</span>
-            <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform duration-300 text-blue-900" />
+            <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform duration-300" />
           </button>
 
-          <p className="text-[11px] text-blue-200 font-mono">
+          <p className="text-[11px] text-gray-400 font-mono">
             Opens instant direct messenger
           </p>
         </div>
@@ -297,7 +294,7 @@ const ContactSplitBanner = ({ onOpenContact }) => {
 /* ─────────────────── Main Component ─────────────────── */
 const MainSite = () => {
   const [data, setData] = useState(null);
-  const location    = useLocation();
+  const location = useLocation();
   const { openContactDrawer } = useContactDrawer();
 
   useEffect(() => {
@@ -318,9 +315,9 @@ const MainSite = () => {
   if (!data) return <div className="min-h-screen bg-dark-bg" />;
 
   // Limit items shown on home page
-  const previewNotes  = data.notes.slice(0, 3);
+  const previewNotes = data.notes.slice(0, 3);
   const previewVideos = data.youtubeVideos.slice(0, 3);
-  const previewStore  = data.storeProjects.minor.slice(0, 3);
+  const previewStore = data.storeProjects.minor.slice(0, 3);
 
   return (
     <div className="bg-transparent text-white flex flex-col min-h-screen selection:bg-ambient-blue relative overflow-x-hidden">
@@ -347,11 +344,7 @@ const MainSite = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
             {data.showcaseProjects.map((project, i) => (
               <RevealingCard key={project.id} delay={i * 0.1}>
-                <div className={`p-8 h-full rounded-2xl relative overflow-hidden transition-all group flex flex-col justify-between min-h-[380px] ${
-                  i === 0
-                    ? 'bg-gradient-to-br from-[#0e1118]/95 to-black/95 border border-white/10'
-                    : 'bg-gradient-to-br from-blue-950/70 via-blue-900/30 to-[#0e1118]/95 border border-ambient-blue/50 shadow-[0_10px_35px_-10px_rgba(59,130,246,0.3)]'
-                }`}>
+                <div className="p-8 h-full rounded-2xl relative overflow-hidden transition-all group flex flex-col justify-between min-h-[380px] bg-[#1F150C] border border-[#412D15]">
                   {/* Floating 3D Tech Watermark */}
                   <div className="absolute -top-4 -right-4 opacity-5 group-hover:opacity-20 group-hover:scale-110 transition-all duration-700 pointer-events-none">
                     <motion.div
@@ -369,11 +362,7 @@ const MainSite = () => {
                   <div className="relative z-10 flex flex-col justify-between h-full">
                     <div>
                       <div className="flex items-center justify-between mb-4">
-                        <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold ${
-                          project.type === 'Certified' 
-                            ? 'bg-purple-500/20 text-purple-400 border border-purple-500/30' 
-                            : 'bg-ambient-blue/20 text-ambient-blue border border-ambient-blue/30'
-                        }`}>
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-ambient-blue/15 text-ambient-blue border border-ambient-blue/30">
                           <Zap size={12} />
                           {project.type}
                         </span>

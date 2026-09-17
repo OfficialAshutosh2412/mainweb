@@ -11,21 +11,21 @@ import {
 
 export const getTechIcon = (techName) => {
   const name = (techName || '').toLowerCase();
-  if (name.includes('react')) return <Atom size={18} className="text-[#61dafb] opacity-80 group-hover:opacity-100 transition-opacity" />;
+  if (name.includes('react')) return <Atom size={18} className="text-ambient-blue opacity-80 group-hover:opacity-100 transition-opacity" />;
   if (name.includes('c#') || name.includes('.net') || name.includes('asp') || name.includes('ef') || name.includes('ado')) 
-    return <Code size={18} className="text-[#38bdf8] opacity-80 group-hover:opacity-100 transition-opacity" />;
+    return <Code size={18} className="text-ambient-blue opacity-80 group-hover:opacity-100 transition-opacity" />;
   if (name.includes('sql') || name.includes('db') || name.includes('postgres')) 
-    return <Database size={18} className="text-[#f59e0b] opacity-80 group-hover:opacity-100 transition-opacity" />;
+    return <Database size={18} className="text-ambient-blue opacity-80 group-hover:opacity-100 transition-opacity" />;
   if (name.includes('jwt') || name.includes('auth') || name.includes('security')) 
-    return <ShieldCheck size={18} className="text-[#10b981] opacity-80 group-hover:opacity-100 transition-opacity" />;
+    return <ShieldCheck size={18} className="text-ambient-blue opacity-80 group-hover:opacity-100 transition-opacity" />;
   if (name.includes('signalr')) 
-    return <Radio size={18} className="text-[#c084fc] opacity-80 group-hover:opacity-100 transition-opacity" />;
+    return <Radio size={18} className="text-ambient-blue opacity-80 group-hover:opacity-100 transition-opacity" />;
   if (name.includes('tailwind') || name.includes('css') || name.includes('bootstrap') || name.includes('html')) 
-    return <FileCode size={18} className="text-[#38bdf8] opacity-80 group-hover:opacity-100 transition-opacity" />;
+    return <FileCode size={18} className="text-ambient-blue opacity-80 group-hover:opacity-100 transition-opacity" />;
   if (name.includes('js') || name.includes('javascript')) 
-    return <Terminal size={18} className="text-[#facc15] opacity-80 group-hover:opacity-100 transition-opacity" />;
+    return <Terminal size={18} className="text-ambient-blue opacity-80 group-hover:opacity-100 transition-opacity" />;
   if (name.includes('api') || name.includes('rest')) 
-    return <Globe size={18} className="text-[#14b8a6] opacity-80 group-hover:opacity-100 transition-opacity" />;
+    return <Globe size={18} className="text-ambient-blue opacity-80 group-hover:opacity-100 transition-opacity" />;
   return <Layers size={18} className="text-ambient-blue opacity-80 group-hover:opacity-100 transition-opacity" />;
 };
 
@@ -114,9 +114,7 @@ const Projects = () => {
                   <div className="p-8 h-full rounded-2xl glass-card border border-white/10 flex flex-col justify-between relative overflow-hidden group min-h-[380px] shadow-xl">
                     <div>
                       <div className="flex justify-between items-start mb-4">
-                        <span className={`px-3 py-1 rounded-full text-xs font-bold ${
-                          project.category === 'showcase' ? 'bg-purple-500/20 text-purple-400 border border-purple-500/30' : 'bg-ambient-blue/20 text-ambient-blue border border-ambient-blue/30'
-                        }`}>
+                        <span className="px-3 py-1 rounded-full text-xs font-bold bg-ambient-blue/15 text-ambient-blue border border-ambient-blue/30">
                           {project.type || (project.category === 'minor' ? 'Store Asset' : project.category)}
                         </span>
                         {project.price && (
@@ -169,7 +167,7 @@ const Projects = () => {
                       )}
 
                       {project.price ? (
-                        <button className="w-full py-3.5 bg-gradient-to-r from-ambient-blue to-blue-600 hover:from-blue-500 hover:to-blue-700 rounded-xl font-bold text-white transition-all shadow-[0_0_20px_rgba(59,130,246,0.35)] hover:shadow-[0_0_30px_rgba(59,130,246,0.6)] cursor-pointer flex items-center justify-center gap-2 active:scale-95 text-sm">
+                        <button className="btn-slide-blue w-full py-3.5 rounded-xl font-bold transition-all cursor-pointer flex items-center justify-center gap-2 active:scale-95 text-sm">
                           <ShoppingCart size={15} />
                           Purchase Thesis and Code
                         </button>

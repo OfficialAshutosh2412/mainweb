@@ -68,13 +68,7 @@ const ParallaxBackground = () => {
   return (
     <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
       {/* ── Background Cyber Grid Plane with Perspective ── */}
-      <div 
-        className="absolute inset-0 cyber-grid opacity-[0.14] perspective-1000"
-        style={{
-          maskImage: 'radial-gradient(ellipse at 50% 50%, black 40%, transparent 80%)',
-          WebkitMaskImage: 'radial-gradient(ellipse at 50% 50%, black 40%, transparent 80%)',
-        }}
-      />
+      <div className="absolute inset-0 cyber-grid opacity-[0.1] perspective-1000" />
 
       {/* ── Deep Parallax Layer (Hardware Accelerated - Desktop Only) ── */}
       <motion.div
@@ -143,9 +137,9 @@ const ParallaxBackground = () => {
         className="hidden md:block absolute inset-0 gpu-layer"
       >
         <div className="absolute top-[20%] left-[30%] w-1.5 h-1.5 rounded-full bg-ambient-blue/40 blur-[1px]" />
-        <div className="absolute top-[50%] right-[25%] w-2 h-2 rounded-full bg-purple-400/40 blur-[1px]" />
+        <div className="absolute top-[50%] right-[25%] w-2 h-2 rounded-full bg-ambient-blue/30 blur-[1px]" />
         <div className="absolute top-[70%] left-[60%] w-1 h-1 rounded-full bg-ambient-blue/50 blur-[0.5px]" />
-        <div className="absolute top-[85%] left-[20%] w-2 h-2 rounded-full bg-cyan-400/30 blur-[1px]" />
+        <div className="absolute top-[85%] left-[20%] w-2 h-2 rounded-full bg-ambient-blue/40 blur-[1px]" />
       </motion.div>
     </div>
   );

@@ -29,17 +29,17 @@ const techSkills = [
 
 const SkillIcon = ({ name, className = "w-9 h-9" }) => {
   const n = (name || '').toLowerCase();
-  if (n.includes('react')) return <Atom className={`${className} text-cyan-400`} />;
-  if (n.includes('sql') || n.includes('database') || n.includes('postgres') || n.includes('mysql')) return <Database className={`${className} text-amber-400`} />;
-  if (n.includes('jwt') || n.includes('security') || n.includes('auth')) return <ShieldCheck className={`${className} text-emerald-400`} />;
-  if (n.includes('signalr')) return <Radio className={`${className} text-purple-400`} />;
-  if (n.includes('html') || n.includes('css') || n.includes('bootstrap') || n.includes('tailwind')) return <FileCode className={`${className} text-sky-400`} />;
-  if (n.includes('git')) return <GitBranch className={`${className} text-orange-400`} />;
-  if (n.includes('python')) return <Terminal className={`${className} text-yellow-400`} />;
-  if (n.includes('c#') || n.includes('.net') || n.includes('asp') || n.includes('entity') || n.includes('ado')) return <Code2 className={`${className} text-blue-400`} />;
-  if (n.includes('vercel') || n.includes('render') || n.includes('supabase') || n.includes('cloud')) return <Cloud className={`${className} text-indigo-400`} />;
-  if (n.includes('postman') || n.includes('swagger')) return <Wrench className={`${className} text-rose-400`} />;
-  if (n.includes('restful') || n.includes('api')) return <Globe className={`${className} text-teal-400`} />;
+  if (n.includes('react')) return <Atom className={`${className} text-ambient-blue`} />;
+  if (n.includes('sql') || n.includes('database') || n.includes('postgres') || n.includes('mysql')) return <Database className={`${className} text-ambient-blue`} />;
+  if (n.includes('jwt') || n.includes('security') || n.includes('auth')) return <ShieldCheck className={`${className} text-ambient-blue`} />;
+  if (n.includes('signalr')) return <Radio className={`${className} text-ambient-blue`} />;
+  if (n.includes('html') || n.includes('css') || n.includes('bootstrap') || n.includes('tailwind')) return <FileCode className={`${className} text-ambient-blue`} />;
+  if (n.includes('git')) return <GitBranch className={`${className} text-ambient-blue`} />;
+  if (n.includes('python')) return <Terminal className={`${className} text-ambient-blue`} />;
+  if (n.includes('c#') || n.includes('.net') || n.includes('asp') || n.includes('entity') || n.includes('ado')) return <Code2 className={`${className} text-ambient-blue`} />;
+  if (n.includes('vercel') || n.includes('render') || n.includes('supabase') || n.includes('cloud')) return <Cloud className={`${className} text-ambient-blue`} />;
+  if (n.includes('postman') || n.includes('swagger')) return <Wrench className={`${className} text-ambient-blue`} />;
+  if (n.includes('restful') || n.includes('api')) return <Globe className={`${className} text-ambient-blue`} />;
   return <Layers className={`${className} text-ambient-blue`} />;
 };
 
@@ -49,14 +49,8 @@ const SkillsMarquee = () => {
 
   return (
     <div className="w-full py-2 my-2 relative overflow-hidden group">
-      {/* Infinite Scrolling Track with Native CSS Mask */}
-      <div 
-        className="flex overflow-hidden select-none"
-        style={{
-          maskImage: 'linear-gradient(to right, transparent, black 6%, black 94%, transparent)',
-          WebkitMaskImage: 'linear-gradient(to right, transparent, black 6%, black 94%, transparent)'
-        }}
-      >
+      {/* Infinite Scrolling Track */}
+      <div className="flex overflow-hidden select-none">
         <div className="animate-marquee flex items-center gap-5 py-3 shrink-0">
           {marqueeItems.map((skill, index) => (
             <div

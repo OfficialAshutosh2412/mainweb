@@ -50,7 +50,7 @@ const SlidingRoleRevealer = () => {
             animate={{ x: '0%', opacity: 1 }}
             exit={{ x: '100%', opacity: 0 }}
             transition={{ duration: 0.5, ease: [0.25, 1, 0.5, 1] }}
-            className="text-blue-400 font-bold inline-block whitespace-nowrap font-name select-none"
+            className="text-ambient-blue font-bold inline-block whitespace-nowrap font-name select-none"
           >
             {ROLES[roleIndex]}
           </motion.span>
@@ -83,9 +83,9 @@ const HeroSection = () => {
   };
 
   return (
-    <section className="relative w-full min-h-screen lg:h-screen flex flex-col lg:flex-row items-stretch overflow-hidden bg-[#0a0a0a]">
+    <section className="relative w-full min-h-screen lg:h-screen flex flex-col lg:flex-row items-stretch overflow-hidden bg-dark-bg">
 
-      {/* ── Left 50%: Clean portrait photo fitted with face centered ── */}
+      {/* ── Left 50%: Clean portrait photo with theme background color overlay ── */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -98,14 +98,14 @@ const HeroSection = () => {
           className="w-full h-full object-cover object-[50%_28%] filter grayscale contrast-[1.08] brightness-[0.93]"
         />
 
-        {/* Desktop right edge vignette blending into dark theme */}
-        <div className="hidden lg:block absolute inset-y-0 right-0 w-36 bg-gradient-to-r from-transparent to-[#0a0a0a] pointer-events-none" />
+        {/* Theme background color overlay to colorize user image according to theme */}
+        <div className="absolute inset-0 bg-[#1F150C]/65 mix-blend-color pointer-events-none" />
+        <div className="absolute inset-0 bg-[#412D15]/35 mix-blend-multiply pointer-events-none" />
+        <div className="absolute inset-0 bg-ambient-blue/20 mix-blend-overlay pointer-events-none" />
 
-        {/* Mobile bottom edge vignette blending downwards */}
-        <div className="lg:hidden absolute inset-x-0 bottom-0 h-36 bg-gradient-to-t from-[#0a0a0a] to-transparent pointer-events-none" />
-
-        {/* Top edge vignette for transparent navbar text contrast */}
-        <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-black/80 via-black/35 to-transparent pointer-events-none" />
+        {/* Edge overlays without gradients */}
+        <div className="hidden lg:block absolute inset-y-0 right-0 w-8 bg-dark-bg pointer-events-none" />
+        <div className="lg:hidden absolute inset-x-0 bottom-0 h-8 bg-dark-bg pointer-events-none" />
       </motion.div>
 
       {/* ── Right 50%: 3-Line Header (I'm / Name / Role) + Short Bio + Buttons ── */}
@@ -138,20 +138,20 @@ const HeroSection = () => {
           Full-stack software engineer crafting robust .NET architectures, scalable APIs, and modern React experiences.
         </p>
 
-        {/* Both Action Buttons */}
+        {/* Both Action Buttons (Sharp Square Edges) */}
         <div className="flex flex-wrap items-center gap-4 pt-1 font-nav">
           <button
             onClick={openContactDrawer}
-            className="btn-slide-blue group px-7 py-3.5 rounded-full bg-ambient-blue hover:bg-blue-600 text-white font-semibold text-sm sm:text-base shadow-lg shadow-blue-600/30 hover:shadow-blue-600/50 hover:scale-[1.03] active:scale-95 transition-all duration-300 flex items-center gap-2.5 cursor-pointer"
+            className="btn-slide-blue group px-7 py-3.5 font-semibold text-sm sm:text-base hover:scale-[1.03] active:scale-95 transition-all duration-300 flex items-center gap-2.5 cursor-pointer"
           >
             <span>Get in touch</span>
-            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300 text-white" />
+            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
           </button>
 
           <a
             href="#showcase"
             onClick={handleScrollToProjects}
-            className="px-6 py-3.5 rounded-full bg-white/[0.05] hover:bg-white/[0.1] text-gray-200 hover:text-white font-medium text-sm sm:text-base transition-all duration-300 hover:scale-[1.02] active:scale-95 cursor-pointer"
+            className="px-6 py-3.5 glass-pill text-gray-200 hover:text-white font-medium text-sm sm:text-base transition-all duration-300 hover:scale-[1.02] active:scale-95 cursor-pointer"
           >
             Explore Work
           </a>
@@ -165,7 +165,7 @@ const HeroSection = () => {
             rel="noopener noreferrer"
             className="hover:text-white flex items-center gap-1.5 transition-colors group"
           >
-            <GitHubIcon className="w-4 h-4 group-hover:text-blue-400 transition-colors" />
+            <GitHubIcon className="w-4 h-4 group-hover:text-ambient-blue transition-colors" />
             <span>GitHub</span>
           </a>
           <a
@@ -174,7 +174,7 @@ const HeroSection = () => {
             rel="noopener noreferrer"
             className="hover:text-white flex items-center gap-1.5 transition-colors group"
           >
-            <LinkedInIcon className="w-4 h-4 group-hover:text-blue-400 transition-colors" />
+            <LinkedInIcon className="w-4 h-4 group-hover:text-ambient-blue transition-colors" />
             <span>LinkedIn</span>
           </a>
         </div>

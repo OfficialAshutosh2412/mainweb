@@ -9,35 +9,35 @@ const ROLES = [
     id: "fullstack", 
     label: "FULLSTACK DEV",   
     sub: "End-to-End Web & Cloud Systems",             
-    color: "#1d4ed8",
+    color: "var(--ambient-accent)",
     icons: [Layers, Globe, Cpu]
   },
   { 
     id: "backend",   
     label: "BACKEND DEV",     
     sub: "Scalable RESTful APIs & Microservices",     
-    color: "#1d4ed8",
+    color: "var(--ambient-accent)",
     icons: [Terminal, Code2, ShieldCheck]
   },
   { 
     id: "frontend",  
     label: "FRONTEND DEV",    
     sub: "Interactive React.js & Modern UIs",          
-    color: "#1d4ed8",
+    color: "var(--ambient-accent)",
     icons: [Atom, FileCode, Sparkles]
   },
   { 
     id: "api",       
     label: "API ARCHITECT",   
     sub: "Secure JWT Auth & SignalR Services",        
-    color: "#1d4ed8",
+    color: "var(--ambient-accent)",
     icons: [Globe, ShieldCheck, Radio]
   },
   { 
     id: "database",  
     label: "DATABASE DEV",    
     sub: "SQL Server & Entity Framework Core",        
-    color: "#1d4ed8",
+    color: "var(--ambient-accent)",
     icons: [Database, Layers, Wrench]
   },
 ];
@@ -126,18 +126,7 @@ const LiquidText = ({ role }) => {
   return (
     <div ref={containerRef} className="relative w-full max-w-[1150px] mx-auto flex flex-col items-center justify-center select-none py-3 sm:py-6 px-2 overflow-visible">
       
-      {/* Dynamic Ambient Color Bloom (Desktop Only for GPU performance) */}
-      <motion.div
-        key={`bloom-${role.id}`}
-        className="hidden md:block absolute inset-0 m-auto w-full max-w-[800px] h-[300px] pointer-events-none z-0"
-        style={{
-          background: `radial-gradient(ellipse at center, ${role.color}45 0%, ${role.color}15 45%, transparent 75%)`,
-        }}
-        initial={{ opacity: 0, scale: 0.85 }}
-        animate={{ opacity: 1, scale: 1 }}
-        exit={{ opacity: 0, scale: 0.95 }}
-        transition={{ duration: 0.8 }}
-      />
+
 
       {/* ── Mobile View: High-contrast, large, bold crisp typography (Zero lag & high visibility) ── */}
       <div className="md:hidden flex flex-col items-center justify-center py-4 px-2 text-center w-full z-10">
@@ -274,7 +263,7 @@ const LiquidText = ({ role }) => {
         <path
           ref={frontPathRef}
           d={initialFrontWave}
-          fill={`url(#${gradId})`}
+          fill={role.color}
           mask={`url(#${maskId})`}
         />
 

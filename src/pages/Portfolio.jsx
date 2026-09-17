@@ -837,12 +837,8 @@ const Portfolio = () => {
             href="/resume.pdf"
             target="_blank"
             rel="noopener noreferrer"
-            whileHover={{
-              scale: 1.06,
-              boxShadow: "0 0 40px rgba(59,130,246,0.6)",
-            }}
             whileTap={{ scale: 0.97 }}
-            className="inline-flex items-center gap-3 px-10 py-4 bg-gradient-to-r from-ambient-blue to-blue-600 text-white font-bold text-lg rounded-2xl shadow-[0_0_25px_rgba(59,130,246,0.4)] hover:shadow-[0_0_45px_rgba(59,130,246,0.7)] transition-all cursor-pointer"
+            className="btn-slide-blue inline-flex items-center gap-3 px-10 py-4 font-bold text-lg rounded-2xl transition-all cursor-pointer"
           >
             <Download className="w-5 h-5" />
             Download Resume
@@ -854,7 +850,7 @@ const Portfolio = () => {
           <div className="mt-4">
             <Link
               to="/"
-              className="inline-flex items-center gap-2.5 px-6 py-3 rounded-xl glass-card border border-white/10 hover:border-ambient-blue hover:bg-ambient-blue/15 text-gray-300 hover:text-white transition-all text-sm font-semibold group cursor-pointer shadow-md hover:scale-105 active:scale-95"
+              className="inline-flex items-center gap-2.5 px-6 py-3 rounded-xl glass-card border border-white/10 hover:border-ambient-blue hover:bg-ambient-blue/15 text-gray-300 hover:text-white transition-all text-sm font-semibold group cursor-pointer active:scale-95"
             >
               <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
               <span>Back to Main Webpage</span>
@@ -865,7 +861,7 @@ const Portfolio = () => {
         {/* Contact CTA */}
         <section id="contact" className="mt-16 scroll-mt-28">
           <TiltCard delay={0.1} maxTilt={3.5}>
-            <div className="p-8 sm:p-12 md:p-16 rounded-3xl bg-linear-to-r from-ambient-blue/25 via-dark-surface to-black/90 border border-ambient-blue/40 relative overflow-hidden flex flex-col items-center justify-between gap-8 md:flex-row group hover:border-ambient-blue/70 transition-all duration-300 text-center md:text-left shadow-2xl">
+            <div className="p-8 sm:p-12 md:p-16 rounded-3xl bg-[#1F150C] border border-[#412D15] relative overflow-hidden flex flex-col items-center justify-between gap-8 md:flex-row group transition-all duration-300 text-center md:text-left">
               <div className="space-y-4 max-w-xl">
                 <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-ambient-blue/15 text-ambient-blue border border-ambient-blue/30 text-xs font-mono font-semibold">
                   <Mail className="w-3.5 h-3.5" />
@@ -882,7 +878,7 @@ const Portfolio = () => {
 
               <button
                 onClick={openContactDrawer}
-                className="px-8 py-4 bg-linear-to-r from-ambient-blue to-blue-600 hover:from-blue-500 hover:to-blue-700 text-white font-bold rounded-2xl shadow-[0_0_25px_rgba(59,130,246,0.4)] hover:shadow-[0_0_40px_rgba(59,130,246,0.7)] transition-all flex items-center gap-3 shrink-0 cursor-pointer hover:scale-105 active:scale-95 text-base"
+                className="btn-slide-blue px-8 py-4 font-bold rounded-2xl transition-all flex items-center gap-3 shrink-0 cursor-pointer text-base"
               >
                 <Mail className="w-5 h-5" />
                 Contact Me Now

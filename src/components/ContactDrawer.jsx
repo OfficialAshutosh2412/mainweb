@@ -232,9 +232,9 @@ const ContactDrawer = () => {
 
                     <button
                       type="submit"
-                      className="btn-slide-blue w-full py-4 rounded-xl text-white font-bold text-sm tracking-wide flex items-center justify-center gap-2 transition-all shadow-[0_0_25px_rgba(29,78,216,0.4)] hover:shadow-[0_0_40px_rgba(29,78,216,0.7)] active:scale-[0.99] cursor-pointer border border-ambient-blue/50"
+                      className="btn-slide-blue w-full py-4 rounded-xl font-bold text-sm tracking-wide flex items-center justify-center gap-2 transition-all shadow-md active:scale-[0.99] cursor-pointer border border-ambient-blue/30"
                     >
-                      <Send className="w-4 h-4 text-blue-200" />
+                      <Send className="w-4 h-4" />
                       Send Message
                     </button>
                   </form>

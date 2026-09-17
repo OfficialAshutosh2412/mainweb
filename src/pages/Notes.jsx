@@ -9,11 +9,11 @@ import { ArrowLeft, Download, Atom, Wind, Code, Sparkles, Cpu, Layers } from 'lu
 
 const getNoteIcon = (tech) => {
   const name = tech.toLowerCase();
-  if (name.includes('react')) return <Atom size={42} className="text-[#61dafb] opacity-80 group-hover:opacity-100 transition-opacity" />;
-  if (name.includes('tailwind')) return <Wind size={42} className="text-[#38bdf8] opacity-80 group-hover:opacity-100 transition-opacity" />;
-  if (name.includes('typescript')) return <Code size={42} className="text-[#3178c6] opacity-80 group-hover:opacity-100 transition-opacity" />;
-  if (name.includes('motion') || name.includes('framer')) return <Sparkles size={42} className="text-[#f43f5e] opacity-80 group-hover:opacity-100 transition-opacity" />;
-  if (name.includes('node')) return <Cpu size={42} className="text-[#539e43] opacity-80 group-hover:opacity-100 transition-opacity" />;
+  if (name.includes('react')) return <Atom size={42} className="text-ambient-blue opacity-80 group-hover:opacity-100 transition-opacity" />;
+  if (name.includes('tailwind')) return <Wind size={42} className="text-ambient-blue opacity-80 group-hover:opacity-100 transition-opacity" />;
+  if (name.includes('typescript')) return <Code size={42} className="text-ambient-blue opacity-80 group-hover:opacity-100 transition-opacity" />;
+  if (name.includes('motion') || name.includes('framer')) return <Sparkles size={42} className="text-ambient-blue opacity-80 group-hover:opacity-100 transition-opacity" />;
+  if (name.includes('node')) return <Cpu size={42} className="text-ambient-blue opacity-80 group-hover:opacity-100 transition-opacity" />;
   return <Layers size={42} className="text-ambient-blue opacity-80 group-hover:opacity-100 transition-opacity" />;
 };
 

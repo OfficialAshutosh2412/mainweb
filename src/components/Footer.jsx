@@ -39,7 +39,7 @@ const Footer = () => {
           </button>
           <Link
             to="/portfolio"
-            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-gradient-to-r from-ambient-blue to-blue-600 hover:from-blue-500 hover:to-blue-700 text-white shadow-[0_0_15px_rgba(59,130,246,0.35)] hover:shadow-[0_0_25px_rgba(59,130,246,0.6)] transition-all"
+            className="btn-slide-blue flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold shadow-md transition-all"
           >
             <User size={13} />
             <span>View My Portfolio</span>

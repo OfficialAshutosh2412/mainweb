@@ -137,7 +137,7 @@ const ContactSection = () => {
 
                 <button
                   type="submit"
-                  className="w-full bg-ambient-blue hover:bg-blue-600 text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-[0_0_20px_rgba(59,130,246,0.3)] hover:shadow-[0_0_30px_rgba(59,130,246,0.5)]"
+                  className="btn-slide-blue w-full font-bold py-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-md cursor-pointer"
                 >
                   <Send size={18} />
                   Send Message

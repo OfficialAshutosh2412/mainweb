@@ -35,13 +35,7 @@ const RevealingCard = ({
           className="absolute bottom-0 right-0 border-b-2 border-r-2 border-ambient-blue/70 rounded-2xl pointer-events-none z-20"
         />
 
-        {/* Ambient Hover Glow behind card */}
-        <div
-          className="absolute -inset-1 rounded-2xl opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-500 pointer-events-none -z-10"
-          style={{
-            background: `radial-gradient(circle at center, ${glowColor}, transparent 70%)`,
-          }}
-        />
+
 
         {/* Card Content */}
         <div className="w-full h-full relative">

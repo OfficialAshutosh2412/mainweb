@@ -28,8 +28,8 @@ const StoreCard = ({ project, delay }) => {
             decoding="async"
             className="w-full h-full object-cover object-center filter brightness-[0.75] contrast-[1.1] group-hover:scale-105 transition-transform duration-700 ease-out"
           />
-          {/* Dark vignette overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-[#0a0c12] via-[#0a0c12]/60 to-transparent" />
+          {/* Dark overlay */}
+          <div className="absolute inset-0 bg-black/60" />
         </div>
 
         {/* 2. Default State Content */}
