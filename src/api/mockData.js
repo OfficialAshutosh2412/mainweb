@@ -90,6 +90,21 @@ export const mainWebsiteData = {
         tech: ["ASP.NET Web Forms", "C#", "SQL Server", "ADO.NET"],
         hasDocumentation: true, 
         hasThesis: false 
+      },
+      { 
+        id: 4, 
+        title: "Digital Diary & Cloud Note Vault", 
+        description: "Minimalist encrypted note taking & diary web application built with React.js, Tailwind CSS, PostgreSQL, and Supabase Authentication.", 
+        price: "$15", 
+        thumbnail: qmsThumb,
+        features: [
+          "Client-Side Note Encryption & Secure Vault",
+          "Supabase Auth & Cloud Database Sync",
+          "Clean Modern UI & Markdown Support"
+        ],
+        tech: ["React.js", "Tailwind CSS", "Supabase", "PostgreSQL"],
+        hasDocumentation: true, 
+        hasThesis: false 
       }
     ]
   }

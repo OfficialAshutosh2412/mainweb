@@ -3,11 +3,11 @@ import { ReactLenis } from 'lenis/react';
 import ScrollProgress from './ScrollProgress';
 import Navbar from './Navbar';
 import ContactDrawer from './ContactDrawer';
-import ParallaxBackground from './ParallaxBackground';
 import { ContactProvider } from '../context/ContactContext';
 
 const Layout = ({ children }) => {
   const [isMobile, setIsMobile] = useState(false);
+  const [reducedMotion, setReducedMotion] = useState(false);
 
   useEffect(() => {
     const check = () => {
@@ -22,15 +22,16 @@ const Layout = ({ children }) => {
   }, []);
 
   const pageContent = (
-    <>
+    <div className={`portfolio-shell ${reducedMotion ? 'motion-reduced' : ''}`}>
+      <div className="ambient ambient-one" aria-hidden="true" />
+      <div className="ambient ambient-two" aria-hidden="true" />
       <ScrollProgress />
-      <ParallaxBackground />
-      <Navbar />
+      <Navbar reducedMotion={reducedMotion} setReducedMotion={setReducedMotion} />
       <div className="flex flex-col min-h-screen w-full relative overflow-x-hidden z-10">
         {children}
       </div>
       <ContactDrawer />
-    </>
+    </div>
   );
 
   return (
@@ -49,3 +50,4 @@ const Layout = ({ children }) => {
 };
 
 export default Layout;
+

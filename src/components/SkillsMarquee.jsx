@@ -1,77 +1,115 @@
-import { 
-  Atom, ShieldCheck, Radio, FileCode, Code2, GitBranch, Terminal, 
-  Database, Cloud, Wrench, Globe, Layers
+import {
+  Atom, ShieldCheck, Radio, FileCode, Code2, GitBranch, Terminal,
+  Database, Cloud, Wrench, Globe, Layers, Server
 } from 'lucide-react';
 
-const techSkills = [
-  { name: 'C#', category: 'Language' },
-  { name: 'ASP.NET Core', category: 'Backend' },
-  { name: 'ASP.NET MVC', category: 'Backend' },
-  { name: 'React.js', category: 'Frontend' },
-  { name: 'SQL Server', category: 'Database' },
-  { name: 'Entity Framework', category: 'Backend' },
-  { name: 'JavaScript', category: 'Language' },
-  { name: 'RESTful APIs', category: 'Backend' },
-  { name: 'JWT Auth', category: 'Security' },
-  { name: 'SignalR', category: 'Backend' },
-  { name: 'Python', category: 'Language' },
-  { name: 'Tailwind CSS', category: 'Frontend' },
-  { name: 'PostgreSQL', category: 'Database' },
-  { name: 'MySQL', category: 'Database' },
-  { name: 'ADO.NET', category: 'Backend' },
-  { name: 'Git & GitHub', category: 'Tools' },
-  { name: 'Postman', category: 'Tools' },
-  { name: 'Swagger / OpenAPI', category: 'Tools' },
-  { name: 'Bootstrap', category: 'Frontend' },
-  { name: 'Vercel / Render', category: 'Tools' },
-  { name: 'Supabase', category: 'Database' },
+const row1 = [
+  { name: 'C#',              icon: Code2,       color: '#9c87ff' },
+  { name: 'ASP.NET Core',   icon: Server,      color: '#22d3ee' },
+  { name: 'React.js',       icon: Atom,        color: '#61dafb' },
+  { name: 'SQL Server',     icon: Database,    color: '#e07b3f' },
+  { name: 'Entity Framework', icon: Layers,   color: '#9c87ff' },
+  { name: 'JavaScript',     icon: Code2,       color: '#f7df1e' },
+  { name: 'RESTful APIs',   icon: Globe,       color: '#22d3ee' },
+  { name: 'JWT Auth',       icon: ShieldCheck, color: '#31d39a' },
+  { name: 'SignalR',        icon: Radio,       color: '#ff6b6b' },
+  { name: 'Python',         icon: Terminal,    color: '#3572a5' },
 ];
 
-const SkillIcon = ({ name, className = "w-9 h-9" }) => {
-  const n = (name || '').toLowerCase();
-  if (n.includes('react')) return <Atom className={`${className} text-ambient-blue`} />;
-  if (n.includes('sql') || n.includes('database') || n.includes('postgres') || n.includes('mysql')) return <Database className={`${className} text-ambient-blue`} />;
-  if (n.includes('jwt') || n.includes('security') || n.includes('auth')) return <ShieldCheck className={`${className} text-ambient-blue`} />;
-  if (n.includes('signalr')) return <Radio className={`${className} text-ambient-blue`} />;
-  if (n.includes('html') || n.includes('css') || n.includes('bootstrap') || n.includes('tailwind')) return <FileCode className={`${className} text-ambient-blue`} />;
-  if (n.includes('git')) return <GitBranch className={`${className} text-ambient-blue`} />;
-  if (n.includes('python')) return <Terminal className={`${className} text-ambient-blue`} />;
-  if (n.includes('c#') || n.includes('.net') || n.includes('asp') || n.includes('entity') || n.includes('ado')) return <Code2 className={`${className} text-ambient-blue`} />;
-  if (n.includes('vercel') || n.includes('render') || n.includes('supabase') || n.includes('cloud')) return <Cloud className={`${className} text-ambient-blue`} />;
-  if (n.includes('postman') || n.includes('swagger')) return <Wrench className={`${className} text-ambient-blue`} />;
-  if (n.includes('restful') || n.includes('api')) return <Globe className={`${className} text-ambient-blue`} />;
-  return <Layers className={`${className} text-ambient-blue`} />;
+const row2 = [
+  { name: 'Tailwind CSS',   icon: FileCode,    color: '#38bdf8' },
+  { name: 'PostgreSQL',     icon: Database,    color: '#336791' },
+  { name: 'MySQL',          icon: Database,    color: '#4479a1' },
+  { name: 'ADO.NET',        icon: Server,      color: '#9c87ff' },
+  { name: 'Git & GitHub',   icon: GitBranch,   color: '#f97316' },
+  { name: 'Postman',        icon: Wrench,      color: '#ef5f1d' },
+  { name: 'Swagger / OpenAPI', icon: Globe,   color: '#31d39a' },
+  { name: 'Bootstrap',      icon: FileCode,    color: '#7952b3' },
+  { name: 'Vercel / Render', icon: Cloud,     color: '#22d3ee' },
+  { name: 'Supabase',       icon: Database,    color: '#3ecf8e' },
+  { name: 'ASP.NET MVC',   icon: Layers,      color: '#9c87ff' },
+];
+
+/* Gradient separator dot between items */
+const Dot = () => (
+  <span
+    className="shrink-0 w-2.5 h-2.5 rounded-full mx-3"
+    style={{
+      background: 'radial-gradient(circle, rgba(156,135,255,0.9) 0%, rgba(34,211,238,0.6) 60%, transparent 100%)',
+      boxShadow: '0 0 8px rgba(156,135,255,0.8)',
+    }}
+    aria-hidden="true"
+  />
+);
+
+/* Single skill pill — icon + label, no boxy border */
+const SkillPill = ({ skill }) => {
+  const Icon = skill.icon;
+  return (
+    <div className="flex items-center gap-2.5 shrink-0 group/pill cursor-default">
+      <div
+        className="flex items-center justify-center w-8 h-8 rounded-full transition-transform duration-300 group-hover/pill:scale-110"
+        style={{
+          background: `radial-gradient(circle, ${skill.color}25 0%, ${skill.color}08 100%)`,
+          boxShadow: `0 0 12px ${skill.color}30`,
+        }}
+      >
+        <Icon
+          className="w-4 h-4"
+          style={{ color: skill.color }}
+        />
+      </div>
+      <span className="text-sm font-semibold text-gray-300 group-hover/pill:text-white transition-colors duration-200 whitespace-nowrap tracking-tight">
+        {skill.name}
+      </span>
+    </div>
+  );
 };
 
-const SkillsMarquee = () => {
-  // Duplicate array twice to ensure smooth infinite seamless scroll loop
-  const marqueeItems = [...techSkills, ...techSkills];
+/* One scrolling track */
+const MarqueeTrack = ({ items, reverse = false, speed = 45 }) => {
+  // Triplicate for guaranteed seamless loop
+  const track = [...items, ...items, ...items];
+  const animName = reverse ? 'skills-marquee-rtl' : 'skills-marquee-ltr';
+  const duration = `${speed}s`;
 
   return (
-    <div className="w-full py-2 my-2 relative overflow-hidden group">
-      {/* Infinite Scrolling Track */}
-      <div className="flex overflow-hidden select-none">
-        <div className="animate-marquee flex items-center gap-5 py-3 shrink-0">
-          {marqueeItems.map((skill, index) => (
-            <div
-              key={`${skill.name}-${index}`}
-              className="flex flex-col items-center justify-center p-4 min-w-[110px] rounded-2xl bg-transparent border border-ambient-blue/40 hover:border-ambient-blue backdrop-blur-sm transition-all duration-300 shadow-[0_0_15px_rgba(59,130,246,0.25)] hover:shadow-[0_0_30px_rgba(59,130,246,0.6)] group/pill shrink-0 cursor-default space-y-2.5"
-            >
-              {/* Icon Container */}
-              <div className="p-3 rounded-2xl bg-transparent border border-ambient-blue/30 group-hover/pill:border-ambient-blue group-hover/pill:scale-110 transition-all duration-300 flex items-center justify-center">
-                <SkillIcon name={skill.name} className="w-9 h-9" />
-              </div>
-              
-              {/* Small Compact Title */}
-              <span className="text-[11px] font-semibold text-gray-200 group-hover/pill:text-white transition-colors tracking-tight text-center whitespace-nowrap">
-                {skill.name}
-              </span>
-            </div>
-          ))}
-        </div>
+    <div className="flex overflow-hidden select-none w-full">
+      <div
+        className="flex items-center shrink-0"
+        style={{
+          animation: `${animName} ${duration} linear infinite`,
+          willChange: 'transform',
+        }}
+      >
+        {track.map((skill, i) => (
+          <span key={`${skill.name}-${i}`} className="flex items-center">
+            <SkillPill skill={skill} />
+            <Dot />
+          </span>
+        ))}
       </div>
     </div>
   );
 };
+
+const SkillsMarquee = () => (
+  <div className="w-full py-6 relative overflow-hidden">
+    {/* Edge fade masks */}
+    <div
+      className="absolute inset-y-0 left-0 w-24 z-10 pointer-events-none"
+      style={{ background: 'linear-gradient(to right, var(--void) 0%, transparent 100%)' }}
+    />
+    <div
+      className="absolute inset-y-0 right-0 w-24 z-10 pointer-events-none"
+      style={{ background: 'linear-gradient(to left, var(--void) 0%, transparent 100%)' }}
+    />
+
+    <div className="flex flex-col gap-5">
+      <MarqueeTrack items={row1} reverse={false} speed={50} />
+      <MarqueeTrack items={row2} reverse={true}  speed={40} />
+    </div>
+  </div>
+);
 
 export default SkillsMarquee;

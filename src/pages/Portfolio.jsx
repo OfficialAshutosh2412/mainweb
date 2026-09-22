@@ -38,6 +38,8 @@ import {
   Cloud,
   Globe,
   Download,
+  ExternalLink,
+  ArrowUpRight,
 } from "lucide-react";
 
 import Footer from "../components/Footer";
@@ -45,6 +47,37 @@ import RevealingCard from "../components/RevealingCard";
 import TiltCard from "../components/TiltCard";
 import SkillsMarquee from "../components/SkillsMarquee";
 import { useContactDrawer } from "../context/ContactContext";
+import { downloadResume } from "../components/Navbar";
+import { portfolioData } from "../api/mockData";
+import avatarPhoto from "../assets/photo_one.png";
+
+/* ── Random gradient pool for academic project cards ── */
+const projectGradients = [
+  {
+    bg: 'linear-gradient(135deg, rgba(118,84,232,0.14) 0%, rgba(34,211,238,0.10) 100%)',
+    border: '1px solid rgba(118,84,232,0.32)',
+    accent: '#9c87ff',
+    eyebrowColor: '#9c87ff',
+  },
+  {
+    bg: 'linear-gradient(135deg, rgba(34,211,238,0.12) 0%, rgba(16,185,129,0.14) 100%)',
+    border: '1px solid rgba(34,211,238,0.30)',
+    accent: '#22d3ee',
+    eyebrowColor: '#22d3ee',
+  },
+  {
+    bg: 'linear-gradient(135deg, rgba(168,85,247,0.12) 0%, rgba(236,72,153,0.14) 100%)',
+    border: '1px solid rgba(168,85,247,0.30)',
+    accent: '#c084fc',
+    eyebrowColor: '#c084fc',
+  },
+  {
+    bg: 'linear-gradient(135deg, rgba(245,158,11,0.10) 0%, rgba(239,68,68,0.14) 100%)',
+    border: '1px solid rgba(245,158,11,0.28)',
+    accent: '#fbbf24',
+    eyebrowColor: '#fbbf24',
+  },
+];
 
 /* ── Social Icon SVG Helpers ── */
 const LinkedInIcon = ({ className = "w-4 h-4" }) => (
@@ -449,7 +482,7 @@ const CertificateCarousel = ({ certificates = [] }) => {
 
 /* ══════════════════════════════════════════════ */
 const Portfolio = () => {
-  const [data, setData] = useState(null);
+  const [data, setData] = useState(portfolioData);
   const location = useLocation();
   const { openContactDrawer } = useContactDrawer();
 
@@ -467,11 +500,13 @@ const Portfolio = () => {
   });
 
   useEffect(() => {
-    fetchPortfolioData().then((res) => setData(res.data));
+    fetchPortfolioData().then((res) => {
+      if (res?.data) setData(res.data);
+    });
   }, []);
 
   useEffect(() => {
-    if (data && location.hash) {
+    if (location.hash) {
       if (location.hash === "#contact") {
         openContactDrawer();
       } else {
@@ -480,7 +515,7 @@ const Portfolio = () => {
           setTimeout(() => el.scrollIntoView({ behavior: "smooth" }), 100);
       }
     }
-  }, [location, data, openContactDrawer]);
+  }, [location, openContactDrawer]);
 
   const handleHeaderMouseMove = (e) => {
     if (!headerRef.current) return;
@@ -494,10 +529,9 @@ const Portfolio = () => {
     mouseY.set(0);
   };
 
-  if (!data) return <div className="min-h-screen bg-dark-bg" />;
-
-  const headerInfo = data.header || {};
-  const skillsData = data.technicalSkills || {};
+  const activeData = data || portfolioData;
+  const headerInfo = activeData.header || {};
+  const skillsData = activeData.technicalSkills || {};
 
   const skillCategories = [
     { title: "Languages", icon: Terminal, items: skillsData.languages || [] },
@@ -508,386 +542,445 @@ const Portfolio = () => {
   ];
 
   return (
-    <div className="bg-transparent text-white flex flex-col min-h-screen selection:bg-ambient-blue relative overflow-hidden">
+    <div className="portfolio-shell">
+      <div className="ambient ambient-one" aria-hidden="true" />
+      <div className="ambient ambient-two" aria-hidden="true" />
 
-      {/* ── Main Content ── */}
-      <div className="flex-1 max-w-6xl mx-auto px-4 sm:px-6 pt-24 sm:pt-32 pb-16 sm:pb-24 w-full relative z-10">
-        {/* Hero / Header Section */}
-        <motion.div
-          className="flex flex-col mb-20 gap-6"
-        >
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-            <div>
-              <motion.h1
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8 }}
-                className="text-3xl sm:text-5xl md:text-7xl font-black tracking-tighter mb-2"
-              >
-                <span className="text-ambient-blue font-black">&lt;</span>
-                <span className="text-white">
-                  {headerInfo.name || "ASHUTOSH PRASAD"}
-                </span>
-                <span className="text-ambient-blue font-black ml-1">/&gt;</span>
-              </motion.h1>
-
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.8, delay: 0.2 }}
-                className="text-base sm:text-xl md:text-2xl font-bold text-ambient-blue flex items-center gap-2"
-              >
-                <span>{headerInfo.role || "C# / .NET Developer"}</span>
-                <Sparkles className="w-5 h-5 text-ambient-blue animate-pulse" />
-              </motion.div>
-            </div>
+      {/* ── Portfolio Hero Section — Two-Column: Left Text + Right Avatar ── */}
+      <section className="shell hero-section" style={{ minHeight: 'auto', padding: '100px 0 60px' }}>
+        {/* LEFT — Big text copy */}
+        <div className="hero-copy">
+          <div className="eyebrow">
+            <span className="eyebrow-line" /> ACADEMIC &amp; RESUME PORTFOLIO
           </div>
-
-          {/* Quick Contact & Links Bar */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
-            className="flex flex-wrap items-center gap-3 text-xs md:text-sm text-gray-300 pt-4 border-t border-white/10"
-          >
-            {headerInfo.location && (
-              <span className="flex items-center gap-1.5 glass-pill px-3.5 py-1.5 rounded-full">
-                <MapPin className="w-4 h-4 text-ambient-blue" />
-                {headerInfo.location}
-              </span>
-            )}
-            {headerInfo.phone && (
-              <a
-                href={`tel:${headerInfo.phone}`}
-                className="flex items-center gap-1.5 glass-pill px-3.5 py-1.5 rounded-full hover:border-ambient-blue/50 hover:bg-ambient-blue/10 transition-colors"
-              >
-                <Phone className="w-4 h-4 text-ambient-blue" />
-                {headerInfo.phone}
-              </a>
-            )}
-            {headerInfo.email && (
-              <a
-                href={`mailto:${headerInfo.email}`}
-                className="flex items-center gap-1.5 glass-pill px-3.5 py-1.5 rounded-full hover:border-ambient-blue/50 hover:bg-ambient-blue/10 transition-colors cursor-pointer"
-              >
-                <Mail className="w-4 h-4 text-ambient-blue" />
-                {headerInfo.email}
-              </a>
-            )}
-            {headerInfo.linkedin && (
-              <a
-                href={headerInfo.linkedin}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-1.5 bg-ambient-blue/15 text-ambient-blue px-3.5 py-1.5 rounded-full border border-ambient-blue/30 hover:bg-ambient-blue hover:text-white transition-all shadow-sm"
-              >
-                <LinkedInIcon className="w-4 h-4" />
-                LinkedIn
-              </a>
-            )}
-            {headerInfo.github && (
-              <a
-                href={headerInfo.github}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-1.5 bg-white/10 text-white px-3.5 py-1.5 rounded-full border border-white/20 hover:bg-white hover:text-black transition-all shadow-sm"
-              >
-                <GitHubIcon className="w-4 h-4" />
-                GitHub
-              </a>
-            )}
-            <a
-              href="#"
-              onClick={(e) => { e.preventDefault(); alert("Downloading Resume..."); }}
-              className="btn-slide-blue flex items-center gap-1.5 text-white px-4 py-1.5 rounded-full border border-ambient-blue/50 hover:border-ambient-blue transition-all shadow-[0_0_15px_rgba(29,78,216,0.35)] cursor-pointer text-xs font-bold"
-            >
-              <Download className="w-4 h-4 text-blue-200" />
-              <span>Resume</span>
-            </a>
-          </motion.div>
-        </motion.div>
-
-        {/* Full Page Sections */}
-        <div className="space-y-20 sm:space-y-28">
-          {/* 1. PROFESSIONAL SUMMARY */}
-          <section id="summary" className="scroll-mt-28">
-            <SectionHeading icon={UserCheck} title="Professional Summary" />
-            <RevealingCard delay={0.1}>
-              <div className="p-8 sm:p-10 md:p-12 rounded-3xl glass-card border border-white/10 relative overflow-hidden group hover:border-ambient-blue/40 transition-all duration-300">
-                <div className="flex gap-6 items-start">
-                  <div className="w-1.5 h-24 rounded-full bg-ambient-blue shadow-[0_0_20px_rgba(59,130,246,0.9)] shrink-0 mt-1" />
-                  <div>
-                    <p className="text-gray-200 text-base md:text-lg leading-relaxed font-normal">
-                      {data.summary}
-                    </p>
-                    <div className="mt-8 flex flex-wrap gap-2.5">
-                      {[
-                        "C#",
-                        "ASP.NET Core Web API",
-                        "ASP.NET MVC",
-                        "React.js",
-                        "SQL Server",
-                        "Entity Framework Core",
-                        "RESTful APIs",
-                      ].map((tag, idx) => (
-                        <span
-                          key={idx}
-                          className="text-xs font-mono px-3.5 py-1.5 rounded-xl bg-ambient-blue/15 text-ambient-blue border border-ambient-blue/30 shadow-sm"
-                        >
-                          #{tag}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </RevealingCard>
-          </section>
-
-          {/* 2. TECHNICAL SKILLS */}
-          <section id="skills" className="scroll-mt-28">
-            <SectionHeading icon={Code2} title="Technical Skills" />
-            <SkillsMarquee />
-            <SkillsSlider categories={skillCategories} />
-          </section>
-
-          {/* 3. INTERNSHIP & TRAINING EXPERIENCE */}
-          <section id="experience" className="scroll-mt-28">
-            <SectionHeading
-              icon={Briefcase}
-              title="Internship & Training Experience"
-            />
-            <div className="flex flex-col space-y-10">
-              {(data.experience || []).map((item, i) => {
-                const isEven = i % 2 === 0;
-                const ExpIcon = getExpIcon(item.role, item.company);
-                return (
-                  <div
-                    key={item.id}
-                    className={`w-full md:w-[90%] ${isEven ? "self-start md:mr-auto" : "self-end md:ml-auto"}`}
-                  >
-                    <RevealingCard delay={i * 0.1}>
-                      <div className="p-8 md:p-10 rounded-2xl glass-card border border-white/10 relative z-10 group hover:border-ambient-blue/50 transition-all duration-300 shadow-xl">
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5 pb-5 border-b border-white/10">
-                          <div className="flex items-start gap-4">
-                            <div className="p-3.5 rounded-xl bg-ambient-blue/15 text-ambient-blue border border-ambient-blue/30 shrink-0 mt-0.5 group-hover:scale-110 transition-transform shadow-[0_0_15px_rgba(59,130,246,0.25)]">
-                              <ExpIcon className="w-5 h-5" />
-                            </div>
-                            <div>
-                              <h3 className="text-lg sm:text-2xl font-bold text-white mb-1 group-hover:text-ambient-blue transition-colors">
-                                {item.role}
-                              </h3>
-                              <div className="text-ambient-blue font-semibold text-sm sm:text-base flex flex-wrap items-center gap-1 sm:gap-2">
-                                <span>{item.company}</span>
-                                <span className="text-gray-500">•</span>
-                                <span className="text-gray-300 text-sm font-normal">
-                                  {item.location}
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-                          <div className="text-ambient-blue text-xs font-bold font-mono bg-ambient-blue/15 px-4 py-2 rounded-full border border-ambient-blue/30 inline-block shrink-0 shadow-sm">
-                            {item.period}
-                          </div>
-                        </div>
-
-                        <ul className="space-y-3.5 mt-4 text-gray-300 text-sm leading-relaxed">
-                          {(item.bullets || []).map((bullet, bIdx) => (
-                            <li key={bIdx} className="flex items-start gap-3">
-                              <CheckCircle2 className="w-4 h-4 text-ambient-blue shrink-0 mt-1" />
-                              <span>{bullet}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    </RevealingCard>
-                  </div>
-                );
-              })}
-            </div>
-          </section>
-
-          {/* 4. TRAINING & CERTIFICATIONS */}
-          <section id="certificates" className="scroll-mt-28">
-            <SectionHeading icon={Award} title="Training & Certifications" />
-            <CertificateCarousel certificates={data.certificates} />
-          </section>
-
-          {/* 5. ACADEMIC PROJECTS */}
-          <section id="projects" className="scroll-mt-28">
-            <SectionHeading icon={Layers} title="Academic Projects" />
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10">
-              {(data.academicProjects || []).map((item, i) => (
-                <RevealingCard key={item.id} delay={i * 0.15}>
-                  <div className="h-full w-full p-8 sm:p-10 md:p-12 min-h-\[380px]\ rounded-3xl glass-card border border-white/10 relative z-10 group hover:border-ambient-blue/50 transition-all duration-300 flex flex-col justify-between shadow-2xl">
-                    <div>
-                      <h3 className="text-xl sm:text-3xl font-extrabold text-white mb-5 group-hover:text-ambient-blue transition-colors flex items-center justify-between">
-                        <span>
-                          <span className="text-ambient-blue font-black">
-                            &lt;
-                          </span>
-                          {item.title}
-                          <span className="text-ambient-blue font-black ml-1">
-                            /&gt;
-                          </span>
-                        </span>
-                      </h3>
-
-                      {/* Tech Stack Pills with Skill Icons */}
-                      <div className="flex flex-wrap gap-2.5 mb-8">
-                        {(item.techStack || []).map((tech, tIdx) => (
-                          <span
-                            key={tIdx}
-                            className="text-xs font-mono font-medium px-3.5 py-1.5 rounded-xl bg-ambient-blue/15 text-ambient-blue border border-ambient-blue/30 flex items-center gap-1.5 shadow-sm"
-                          >
-                            <SkillIcon
-                              name={tech}
-                              className="w-4 h-4 text-ambient-blue"
-                            />
-                            {tech}
-                          </span>
-                        ))}
-                      </div>
-
-                      {/* Bullet Points */}
-                      <ul className="space-y-4 text-gray-300 text-sm sm:text-base leading-relaxed mb-6">
-                        {(item.bullets || [])
-                          .slice(0, 2)
-                          .map((bullet, bIdx) => (
-                            <li key={bIdx} className="flex items-start gap-3">
-                              <CheckCircle2 className="w-5 h-5 text-ambient-blue shrink-0 mt-0.5" />
-                              <span>{bullet}</span>
-                            </li>
-                          ))}
-                      </ul>
-                    </div>
-                  </div>
-                </RevealingCard>
-              ))}
-            </div>
-          </section>
-
-          {/* 6. EDUCATION */}
-          <section id="timeline" className="scroll-mt-28">
-            <SectionHeading icon={GraduationCap} title="Education" />
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-              {(data.education || []).map((item, i) => {
-                const SchoolIcon = getSchoolIcon(item.iconType);
-                return (
-                  <RevealingCard key={item.id} delay={i * 0.15}>
-                    <div className="h-full w-full p-8 rounded-2xl glass-card border border-white/10 relative z-10 overflow-hidden flex flex-col justify-between group hover:border-ambient-blue/50 transition-all duration-300 shadow-xl">
-                      {/* Background Watermark Icon */}
-                      <div className="absolute -right-6 -bottom-6 opacity-5 group-hover:opacity-15 transition-opacity duration-500 pointer-events-none">
-                        <SchoolIcon className="w-44 h-44 text-ambient-blue" />
-                      </div>
-
-                      <div>
-                        <div className="flex justify-between items-center mb-6">
-                          <div className="flex items-center gap-3">
-                            <div className="w-12 h-12 rounded-xl bg-ambient-blue/15 border border-ambient-blue/30 flex items-center justify-center text-ambient-blue shadow-[0_0_15px_rgba(59,130,246,0.3)] group-hover:scale-110 group-hover:bg-ambient-blue group-hover:text-white transition-all duration-300">
-                              <SchoolIcon className="w-6 h-6" />
-                            </div>
-                            <span className="text-xs font-bold font-mono px-3.5 py-1.5 rounded-full bg-ambient-blue/15 text-ambient-blue border border-ambient-blue/30">
-                              {item.period}
-                            </span>
-                          </div>
-                        </div>
-
-                        <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-ambient-blue transition-colors">
-                          {item.degree}
-                        </h3>
-
-                        <div className="text-ambient-blue font-medium text-sm mb-4 flex items-center gap-2">
-                          <School className="w-4 h-4 text-ambient-blue shrink-0" />
-                          <span>{item.institution}</span>
-                        </div>
-                      </div>
-
-                      {item.score && (
-                        <div className="text-xs text-gray-300 glass-pill px-4 py-2.5 rounded-xl mt-4 flex items-center justify-between">
-                          <span className="text-gray-400 font-medium">
-                            Academic Score:
-                          </span>
-                          <span className="font-bold text-ambient-blue">
-                            {item.score}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                  </RevealingCard>
-                );
-              })}
-            </div>
-          </section>
-        </div>
-
-        {/* ── Download Resume CTA Section ── */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          className="mt-16 sm:mt-20 flex flex-col items-center gap-4 py-10 sm:py-12 border-t border-b border-white/10"
-        >
-          <h3 className="text-xl sm:text-2xl md:text-3xl font-black text-white text-center">
-            <span className="text-ambient-blue">&lt;</span> Get my full resume{" "}
-            <span className="text-ambient-blue">/&gt;</span>
-          </h3>
-          <motion.a
-            href="/resume.pdf"
-            target="_blank"
-            rel="noopener noreferrer"
-            whileTap={{ scale: 0.97 }}
-            className="btn-slide-blue inline-flex items-center gap-3 px-10 py-4 font-bold text-lg rounded-2xl transition-all cursor-pointer"
-          >
-            <Download className="w-5 h-5" />
-            Download Resume
-          </motion.a>
-          <p className="text-xs text-gray-500 font-mono">
-            Opens as PDF in a new tab
+          <h1 className="text-4xl sm:text-6xl font-bold tracking-tight">
+            Engineering<br />
+            <span>credentials</span><br />
+            built on proof.
+          </h1>
+          <p className="hero-lede hero-lede-large" style={{ marginTop: '22px' }}>
+            MCA graduate &amp; Full-Stack .NET Engineer. Verified academic record,
+            project blueprints, industrial training &amp; technical skills.
           </p>
 
-          <div className="mt-4">
-            <Link
-              to="/"
-              className="inline-flex items-center gap-2.5 px-6 py-3 rounded-xl glass-card border border-white/10 hover:border-ambient-blue hover:bg-ambient-blue/15 text-gray-300 hover:text-white transition-all text-sm font-semibold group cursor-pointer active:scale-95"
+          <div className="hero-actions">
+            <button
+              className="button button-primary cursor-pointer"
+              onClick={downloadResume}
             >
-              <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-              <span>Back to Main Webpage</span>
+              <Download size={16} /> Download résumé
+            </button>
+            <button
+              className="button button-quiet cursor-pointer"
+              onClick={openContactDrawer}
+            >
+              <Mail size={16} /> Contact Me
+            </button>
+            <Link to="/" className="button button-quiet cursor-pointer">
+              <ArrowLeft size={16} /> Back to Main Site
             </Link>
           </div>
-        </motion.div>
 
-        {/* Contact CTA */}
-        <section id="contact" className="mt-16 scroll-mt-28">
-          <TiltCard delay={0.1} maxTilt={3.5}>
-            <div className="p-8 sm:p-12 md:p-16 rounded-3xl bg-[#1F150C] border border-[#412D15] relative overflow-hidden flex flex-col items-center justify-between gap-8 md:flex-row group transition-all duration-300 text-center md:text-left">
-              <div className="space-y-4 max-w-xl">
-                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-ambient-blue/15 text-ambient-blue border border-ambient-blue/30 text-xs font-mono font-semibold">
-                  <Mail className="w-3.5 h-3.5" />
-                  Looking for a .NET / Full Stack Developer?
-                </div>
-                <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white tracking-tight">
-                  Let's Discuss Opportunities
-                </h3>
-                <p className="text-gray-300 text-sm leading-relaxed">
-                  Available for full-time positions, contractor engagements, and
-                  technical collaborations.
-                </p>
-              </div>
-
-              <button
-                onClick={openContactDrawer}
-                className="btn-slide-blue px-8 py-4 font-bold rounded-2xl transition-all flex items-center gap-3 shrink-0 cursor-pointer text-base"
-              >
-                <Mail className="w-5 h-5" />
-                Contact Me Now
-              </button>
+          <div className="hero-proof mt-8">
+            <div>
+              <strong>8.24</strong>
+              <span>MCA CGPA (AKTU)</span>
             </div>
-          </TiltCard>
+            <div>
+              <strong>4+</strong>
+              <span>Showcase Projects</span>
+            </div>
+            <div>
+              <strong>100%</strong>
+              <span>Verified Credentials</span>
+            </div>
+          </div>
+        </div>
+
+        {/* RIGHT — Animated Avatar */}
+        <div className="portfolio-hero-avatar" style={{ minHeight: '380px' }}>
+          <div className="avatar-ring-outer" />
+          <div className="avatar-ring-inner" />
+
+          {/* Ambient glow behind avatar */}
+          <div
+            style={{
+              position: 'absolute',
+              width: '280px',
+              height: '280px',
+              borderRadius: '50%',
+              background: 'radial-gradient(circle, rgba(118,84,232,0.28) 0%, rgba(34,211,238,0.12) 55%, transparent 75%)',
+              filter: 'blur(30px)',
+              pointerEvents: 'none',
+            }}
+          />
+
+          <div className="avatar-float">
+            <div className="avatar-image-wrap">
+              <img src={avatarPhoto} alt="Ashutosh Prasad" />
+            </div>
+            <div className="avatar-badge">OPEN TO WORK</div>
+          </div>
+
+          {/* Floating credential chips */}
+          <motion.div
+            className="absolute"
+            style={{ top: '8%', right: '-8%' }}
+            animate={{ y: [0, -8, 0] }}
+            transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut' }}
+          >
+            <div style={{
+              padding: '7px 14px',
+              background: 'rgba(9,10,15,0.88)',
+              border: '1px solid rgba(156,135,255,0.35)',
+              borderRadius: '100px',
+              fontSize: '10px',
+              fontFamily: 'var(--font-mono)',
+              color: '#9c87ff',
+              boxShadow: '0 0 18px rgba(118,84,232,0.25)',
+              whiteSpace: 'nowrap',
+            }}>
+              🎓 MCA · CGPA 8.24
+            </div>
+          </motion.div>
+
+          <motion.div
+            className="absolute"
+            style={{ bottom: '12%', left: '-10%' }}
+            animate={{ y: [0, 8, 0] }}
+            transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
+          >
+            <div style={{
+              padding: '7px 14px',
+              background: 'rgba(9,10,15,0.88)',
+              border: '1px solid rgba(34,211,238,0.35)',
+              borderRadius: '100px',
+              fontSize: '10px',
+              fontFamily: 'var(--font-mono)',
+              color: '#22d3ee',
+              boxShadow: '0 0 18px rgba(34,211,238,0.20)',
+              whiteSpace: 'nowrap',
+            }}>
+              ⚡ Full-Stack .NET Engineer
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ── Main Content Container (Contained Shell Width) ── */}
+      <div className="shell page-content space-y-16">
+
+        {/* ─────────────────────────────────────────────────────────────
+           SECTION 01: PROFESSIONAL SUMMARY
+        ─────────────────────────────────────────────────────────────── */}
+        <section id="summary" className="section scroll-mt-28">
+          <div className="section-heading split-heading">
+            <div>
+              <span className="section-number">01</span>
+              <h2>Professional <em>Summary</em></h2>
+            </div>
+          </div>
+
+          <div
+            className="project-card accent-cyan p-8 rounded-2xl"
+            style={{
+              background: 'linear-gradient(135deg, rgba(34, 211, 238, 0.08), rgba(118, 84, 232, 0.16))',
+              border: '1px solid rgba(34, 211, 238, 0.28)'
+            }}
+          >
+            <div className="flex gap-6 items-start">
+              <div className="w-1.5 h-20 rounded-full bg-cyan shadow-[0_0_15px_rgba(34,211,238,0.8)] shrink-0 mt-1" />
+              <div>
+                <p className="text-gray-200 text-base md:text-lg leading-relaxed font-normal">
+                  {data.summary}
+                </p>
+                <div className="mt-6 flex flex-wrap gap-2.5">
+                  {[
+                    "C#",
+                    "ASP.NET Core Web API",
+                    "ASP.NET MVC",
+                    "React.js",
+                    "SQL Server",
+                    "Entity Framework Core",
+                    "RESTful APIs",
+                    "JWT Auth"
+                  ].map((tag, idx) => (
+                    <span
+                      key={idx}
+                      className="text-xs font-mono px-3.5 py-1.5 rounded-xl bg-purple/15 text-purple-bright border border-purple/30 shadow-sm"
+                    >
+                      #{tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ─────────────────────────────────────────────────────────────
+           SECTION 02: ACADEMIC & SHOWCASE PROJECTS
+        ─────────────────────────────────────────────────────────────── */}
+        <section id="projects" className="section scroll-mt-28">
+          <div className="section-heading split-heading">
+            <div>
+              <span className="section-number">02</span>
+              <h2>Academic <em>Showcase Projects</em></h2>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {(data.academicProjects || []).map((item, i) => {
+              const gStyle = projectGradients[i % projectGradients.length];
+              return (
+                <article
+                  key={item.id}
+                  className="project-card academic-project-card"
+                  style={{ background: gStyle.bg, border: gStyle.border }}
+                >
+                  {/* Visual header strip — same style as MainSite cards */}
+                  <div className="project-visual" style={{ minHeight: '110px' }}>
+                    <span className="project-index">0{i + 1}</span>
+                    <a
+                      href="https://github.com/OfficialAshutosh2412"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="project-open"
+                      title="View Repository"
+                    >
+                      <ArrowUpRight size={15} />
+                    </a>
+                    <div className="visual-window">
+                      <div className="window-bar"><span /><span /><span /></div>
+                      <div className="visual-lines"><i /><i /><i /><i /><i /></div>
+                    </div>
+                    <div className="visual-node node-a" />
+                    <div className="visual-node node-b" />
+                    <div className="visual-connector" />
+                  </div>
+
+                  {/* Body */}
+                  <div className="project-body">
+                    <div className="flex justify-between items-center mb-2">
+                      <div className="project-eyebrow" style={{ color: gStyle.eyebrowColor }}>ACADEMIC &amp; THESIS</div>
+                      <span className="text-xs font-mono" style={{ color: gStyle.accent }}>2023–2024</span>
+                    </div>
+
+                    <h3>{item.title}</h3>
+
+                    {/* Only 2 lines of description */}
+                    <p className="project-description" style={{
+                      display: '-webkit-box',
+                      WebkitLineClamp: 2,
+                      WebkitBoxOrient: 'vertical',
+                      overflow: 'hidden',
+                    }}>
+                      {(item.bullets || []).join(' — ')}
+                    </p>
+
+                    {/* Tech stack as plain text tags — no white border */}
+                    <div className="project-footer" style={{ marginTop: 'auto' }}>
+                      <div className="stack-list">
+                        {(item.techStack || []).slice(0, 5).map((tech, tIdx) => (
+                          <span key={tIdx}>{tech}</span>
+                        ))}
+                      </div>
+                      <a
+                        href="https://github.com/OfficialAshutosh2412"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="button button-quiet text-xs py-1.5 px-3 min-h-0"
+                        style={{ fontSize: '11px', gap: '5px' }}
+                      >
+                        <GitHubIcon className="w-3 h-3" />
+                        <span>Repository</span>
+                      </a>
+                    </div>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* ─────────────────────────────────────────────────────────────
+           SECTION 03: TECHNICAL SKILLS MATRIX
+        ─────────────────────────────────────────────────────────────── */}
+        <section id="skills" className="section scroll-mt-28">
+          <div className="section-heading split-heading">
+            <div>
+              <span className="section-number">03</span>
+              <h2>Technical <em>Skills Matrix</em></h2>
+            </div>
+          </div>
+
+          <SkillsMarquee />
+          <SkillsSlider categories={skillCategories} />
+        </section>
+
+        {/* ─────────────────────────────────────────────────────────────
+           SECTION 04: INTERNSHIP & INDUSTRIAL TRAINING
+        ─────────────────────────────────────────────────────────────── */}
+        <section id="experience" className="section scroll-mt-28">
+          <div className="section-heading split-heading">
+            <div>
+              <span className="section-number">04</span>
+              <h2>Experience &amp; <em>Industrial Training</em></h2>
+            </div>
+          </div>
+
+          <div className="space-y-6">
+            {(data.experience || []).map((item) => {
+              const ExpIcon = getExpIcon(item.role, item.company);
+              return (
+                <div
+                  key={item.id}
+                  className="project-card accent-cyan p-8 rounded-2xl"
+                  style={{
+                    background: 'linear-gradient(135deg, rgba(9, 10, 15, 0.95), rgba(34, 211, 238, 0.06))',
+                    border: '1px solid rgba(255, 255, 255, 0.08)'
+                  }}
+                >
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4 pb-4 border-b border-line">
+                    <div className="flex items-center gap-4">
+                      <div className="p-3 rounded-xl bg-purple/15 text-purple-bright border border-purple/30 shrink-0">
+                        <ExpIcon className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <h3 className="text-xl font-bold text-white mb-1">
+                          {item.role}
+                        </h3>
+                        <div className="text-purple-bright text-xs font-mono flex items-center gap-2">
+                          <span>{item.company}</span>
+                          <span>•</span>
+                          <span className="text-muted">{item.location}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <span className="text-xs font-mono text-cyan bg-cyan/10 px-3 py-1.5 rounded-full border border-cyan/20">
+                      {item.period}
+                    </span>
+                  </div>
+
+                  <ul className="space-y-2.5 text-gray-300 text-sm leading-relaxed">
+                    {(item.bullets || []).map((bullet, bIdx) => (
+                      <li key={bIdx} className="flex items-start gap-2.5">
+                        <CheckCircle2 className="w-4 h-4 text-cyan shrink-0 mt-0.5" />
+                        <span>{bullet}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* ─────────────────────────────────────────────────────────────
+           SECTION 05: EDUCATION & CERTIFICATIONS
+        ─────────────────────────────────────────────────────────────── */}
+        <section id="education" className="section scroll-mt-28">
+          <div className="section-heading split-heading">
+            <div>
+              <span className="section-number">05</span>
+              <h2>Education &amp; <em>Certifications</em></h2>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+            {(data.education || []).map((item) => {
+              const SchoolIcon = getSchoolIcon(item.iconType);
+              return (
+                <div
+                  key={item.id}
+                  className="project-card p-8 rounded-2xl flex flex-col justify-between"
+                  style={{
+                    background: 'linear-gradient(135deg, rgba(9, 10, 15, 0.95), rgba(118, 84, 232, 0.08))',
+                    border: '1px solid rgba(255, 255, 255, 0.08)'
+                  }}
+                >
+                  <div>
+                    <div className="flex justify-between items-center mb-4">
+                      <div className="p-3 rounded-xl bg-purple/15 text-purple-bright border border-purple/30">
+                        <SchoolIcon className="w-5 h-5" />
+                      </div>
+                      <span className="text-xs font-mono text-purple-bright bg-purple/10 px-3 py-1 rounded-full border border-purple/20">
+                        {item.period}
+                      </span>
+                    </div>
+
+                    <h3 className="text-2xl font-bold text-white mb-2">
+                      {item.degree}
+                    </h3>
+                    <p className="text-xs text-muted mb-4">{item.institution}</p>
+                  </div>
+
+                  {item.score && (
+                    <div className="pt-3 border-t border-line flex justify-between items-center text-xs font-mono">
+                      <span className="text-muted">Academic Score:</span>
+                      <span className="font-bold text-green">{item.score}</span>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+
+          <CertificateCarousel certificates={data.certificates} />
+        </section>
+
+        {/* ─────────────────────────────────────────────────────────────
+           SECTION 06: CONTACT CTA BANNER
+        ─────────────────────────────────────────────────────────────── */}
+        <section id="contact" className="section contact-section scroll-mt-28">
+          <div className="contact-card">
+            <div className="contact-stamp">
+              <span>ASHUTOSH PRASAD</span>
+              <br />
+              LUCKNOW, INDIA
+              <br />
+              RESUME &amp; CV PORTFOLIO
+            </div>
+
+            <div className="contact-copy">
+              <div className="eyebrow">
+                <span className="eyebrow-line" /> GET IN TOUCH
+              </div>
+              <h2>Let’s Discuss Full-Stack &amp; .NET Opportunities</h2>
+              <p>
+                Available for software engineering roles, C#/.NET backend positions, and technical collaborations.
+              </p>
+
+              <div className="contact-actions">
+                <button
+                  className="button button-primary cursor-pointer"
+                  onClick={openContactDrawer}
+                >
+                  <Mail size={16} /> Contact Me Now
+                </button>
+                <button
+                  className="button button-quiet cursor-pointer"
+                  onClick={downloadResume}
+                >
+                  <Download size={15} /> Download résumé
+                </button>
+              </div>
+            </div>
+
+            <div className="contact-meta">
+              <span><MapPin size={12} /> {portfolioData.header.location}</span>
+              <a href={`mailto:${portfolioData.header.email}`}>
+                <Mail size={12} /> {portfolioData.header.email}
+              </a>
+              <a href={`tel:${portfolioData.header.phone}`}>
+                <Phone size={12} /> {portfolioData.header.phone}
+              </a>
+            </div>
+          </div>
         </section>
       </div>
 
+      {/* ── Footer ── */}
       <Footer />
     </div>
   );
