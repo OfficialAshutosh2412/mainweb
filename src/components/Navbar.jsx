@@ -5,7 +5,6 @@ import { useContactDrawer } from '../context/ContactContext';
 
 const navItems = [
   ['home', 'Main Site', '/'],
-  ['portfolio', 'Portfolio & CV', '/portfolio'],
   ['store', 'Code Vault', '/store'],
   ['notes', 'Notes', '/notes'],
   ['videos', 'Videos', '/videos'],

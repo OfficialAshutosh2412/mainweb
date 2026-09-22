@@ -547,13 +547,88 @@ h1 span, h2 em {
   50%       { transform: translateY(-12px); }
 }
 
+/* ── Portfolio Avatar Core (3D stage central element) ── */
+.portfolio-avatar-core {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) translateZ(80px) rotateX(5deg) rotateY(-12deg);
+  animation: core-float 6s ease-in-out infinite;
+  z-index: 5;
+}
+
+.portfolio-avatar-core .avatar-image-wrap {
+  width: 340px;
+  height: 340px;
+  border-radius: 50%;
+  overflow: hidden;
+  position: relative;
+  border: 2px solid rgba(156,135,255,0.40);
+  box-shadow:
+    0 0 0 10px rgba(156,135,255,0.06),
+    0 28px 70px rgba(0,0,0,.42),
+    0 0 100px rgba(118,84,232,0.35),
+    0 0 160px rgba(34,211,238,0.12),
+    inset 0 0 50px rgba(0,0,0,0.35);
+}
+
+.portfolio-avatar-core .avatar-image-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 15%;
+  filter: brightness(0.92) contrast(1.05);
+  display: block;
+}
+
+
+.portfolio-avatar-core .avatar-badge {
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 5px 14px;
+  background: rgba(9,10,15,0.92);
+  border: 1px solid rgba(49,211,154,0.45);
+  border-radius: 100px;
+  font: 9px var(--font-mono);
+  color: var(--green);
+  letter-spacing: 0.08em;
+  box-shadow: 0 0 16px rgba(49,211,154,0.3);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  z-index: 6;
+}
+
+.portfolio-avatar-core .avatar-badge::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 8px var(--green);
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+/* ── Portfolio hero stage: top-align to match left eyebrow label height ── */
+.portfolio-hero-stage {
+  align-self: flex-start;
+  margin-top: -30px;
+}
+
 /* 3D Interactive Stage Canvas */
 .hero-stage-wrap {
-
   height: 500px;
   position: relative;
   perspective: 1300px;
   transform-style: preserve-3d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+  overflow: visible;
 }
 
 .hero-stage-grid {
@@ -952,6 +1027,20 @@ h1 span, h2 em {
 
 .skill-tabs button.active svg {
   color: var(--purple-bright);
+}
+
+.skill-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 4px;
+  background: rgba(118,84,232,.18);
+  color: var(--purple-bright);
+  font: 9px var(--font-mono);
+  border: 1px solid rgba(118,84,232,.25);
 }
 
 .skill-list {

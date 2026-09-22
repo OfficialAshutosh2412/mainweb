@@ -204,145 +204,121 @@ const getExpIcon = (role = "", company = "") => {
   return Briefcase;
 };
 
-/* ── Infinite 3D Carousel for Technical Skill Category Cards ── */
+/* ── Inf/* Proficiency lookup (out of 100) */
+const skillLevels = {
+  // Languages
+  'C#': { pct: 92, label: 'Expert' },
+  'JavaScript': { pct: 85, label: 'Advanced' },
+  'SQL': { pct: 88, label: 'Advanced' },
+  'Python': { pct: 68, label: 'Intermediate' },
+  'C': { pct: 60, label: 'Intermediate' },
+  'C++': { pct: 58, label: 'Intermediate' },
+  // Backend
+  'ASP.NET Core Web API': { pct: 90, label: 'Expert' },
+  'ASP.NET MVC': { pct: 88, label: 'Advanced' },
+  'Entity Framework Core': { pct: 85, label: 'Advanced' },
+  'ADO.NET': { pct: 82, label: 'Advanced' },
+  'LINQ': { pct: 84, label: 'Advanced' },
+  'JWT Auth': { pct: 87, label: 'Advanced' },
+  'SignalR': { pct: 75, label: 'Proficient' },
+  'RESTful APIs': { pct: 91, label: 'Expert' },
+  // Frontend
+  'React.js': { pct: 80, label: 'Advanced' },
+  'HTML5': { pct: 90, label: 'Expert' },
+  'CSS3': { pct: 86, label: 'Advanced' },
+  'Tailwind CSS': { pct: 82, label: 'Advanced' },
+  'Bootstrap': { pct: 80, label: 'Advanced' },
+  'AJAX': { pct: 78, label: 'Proficient' },
+  'jQuery': { pct: 76, label: 'Proficient' },
+  // Database
+  'SQL Server': { pct: 88, label: 'Advanced' },
+  'PostgreSQL': { pct: 76, label: 'Proficient' },
+  'MySQL': { pct: 74, label: 'Proficient' },
+  // Tools
+  'Visual Studio': { pct: 92, label: 'Expert' },
+  'VS Code': { pct: 90, label: 'Expert' },
+  'Git': { pct: 85, label: 'Advanced' },
+  'GitHub': { pct: 85, label: 'Advanced' },
+  'Postman': { pct: 83, label: 'Advanced' },
+  'Swagger': { pct: 80, label: 'Advanced' },
+  'SSMS': { pct: 82, label: 'Advanced' },
+  'Vercel': { pct: 76, label: 'Proficient' },
+  'Render': { pct: 72, label: 'Proficient' },
+  'Supabase': { pct: 70, label: 'Proficient' },
+};
+
+const getLevelColor = (pct) => {
+  if (pct >= 88) return 'var(--purple-bright)';
+  if (pct >= 78) return 'var(--cyan)';
+  if (pct >= 68) return 'var(--green)';
+  return 'var(--muted)';
+};
+
 const SkillsSlider = ({ categories = [] }) => {
-  const cardsPerPage = 2;
-  const pages = [];
-  for (let i = 0; i < categories.length; i += cardsPerPage) {
-    pages.push(categories.slice(i, i + cardsPerPage));
-  }
-
-  const [currentPage, setCurrentPage] = useState(0);
-  const [direction, setDirection] = useState(1);
-  const [isPaused, setIsPaused] = useState(false);
-
-  const totalPages = pages.length;
-
-  const paginate = (newDirection, targetPage = null) => {
-    setDirection(newDirection);
-    if (targetPage !== null) {
-      setCurrentPage(targetPage);
-    } else {
-      setCurrentPage((prev) => {
-        if (newDirection > 0) {
-          return (prev + 1) % totalPages;
-        } else {
-          return (prev - 1 + totalPages) % totalPages;
-        }
-      });
-    }
-  };
-
-  useEffect(() => {
-    if (isPaused || totalPages <= 1) return;
-    const timer = setInterval(() => {
-      paginate(1);
-    }, 4500);
-    return () => clearInterval(timer);
-  }, [currentPage, isPaused, totalPages]);
-
+  const [activeIdx, setActiveIdx] = useState(0);
   if (!categories || categories.length === 0) return null;
-  const currentCards = pages[currentPage] || [];
+  const active = categories[activeIdx];
+  const IconComp = active.icon;
 
   return (
-    <div
-      className="relative w-full mt-8"
-      onMouseEnter={() => setIsPaused(true)}
-      onMouseLeave={() => setIsPaused(false)}
-    >
-      <div className="relative overflow-hidden px-1 py-3">
-        <AnimatePresence mode="wait" custom={direction}>
-          <motion.div
-            key={currentPage}
-            custom={direction}
-            initial={{ opacity: 0, x: direction > 0 ? 100 : -100, scale: 0.98 }}
-            animate={{ opacity: 1, x: 0, scale: 1 }}
-            exit={{ opacity: 0, x: direction > 0 ? -100 : 100, scale: 0.98 }}
-            transition={{ type: "spring", stiffness: 220, damping: 26 }}
-            className="grid grid-cols-1 sm:grid-cols-2 gap-5 md:gap-8 w-full"
-          >
-            {currentCards.map((cat) => (
-              <TiltCard key={cat.title} className="h-full w-full" maxTilt={3.5}>
-                <div className="h-full w-full p-7 rounded-2xl glass-card border border-white/10 hover:border-ambient-blue/50 transition-all duration-300 relative z-10 flex flex-col justify-between group shadow-xl">
-                  <div>
-                    <div className="flex items-center gap-3.5 mb-6">
-                      <div className="p-3 rounded-xl bg-ambient-blue/15 text-ambient-blue border border-ambient-blue/30 shadow-[0_0_15px_rgba(59,130,246,0.25)] group-hover:scale-110 transition-transform">
-                        <cat.icon className="w-5 h-5" />
-                      </div>
-                      <h3 className="text-xl font-bold text-white group-hover:text-ambient-blue transition-colors">
-                        {cat.title}
-                      </h3>
-                    </div>
-                    <div className="flex flex-wrap gap-2.5">
-                      {cat.items.map((skill, idx) => (
-                        <div
-                          key={idx}
-                          className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/5 border border-white/5 hover:border-ambient-blue/50 hover:bg-ambient-blue/15 transition-all group/skill cursor-default shadow-sm"
-                        >
-                          <SkillIcon
-                            name={skill}
-                            className="w-4 h-4 text-ambient-blue shrink-0 group-hover/skill:scale-125 transition-transform"
-                          />
-                          <span className="text-xs font-semibold text-gray-300 group-hover/skill:text-white transition-colors whitespace-nowrap">
-                            {skill}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </TiltCard>
-            ))}
-          </motion.div>
-        </AnimatePresence>
+    <div className="skills-layout">
+      {/* LEFT: Category tabs */}
+      <div className="skill-tabs">
+        {categories.map((cat, idx) => {
+          const CatIcon = cat.icon;
+          return (
+            <button
+              key={cat.title}
+              className={`skill-tabs-btn cursor-pointer ${idx === activeIdx ? 'active' : ''}`}
+              onClick={() => setActiveIdx(idx)}
+            >
+              <span style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <CatIcon size={14} />
+                {cat.title}
+              </span>
+              <span className="skill-count">{cat.items.length}</span>
+            </button>
+          );
+        })}
       </div>
 
-      {/* Slider Navigation */}
-      <div className="flex items-center justify-between mt-6 px-2">
-        <div className="flex gap-2">
-          <button
-            onClick={() => paginate(-1)}
-            className="p-3 rounded-xl glass-card border border-white/10 hover:border-ambient-blue hover:bg-ambient-blue/15 text-gray-300 hover:text-white transition-all cursor-pointer shadow-md active:scale-95"
-            aria-label="Previous Slide"
-          >
-            <ChevronLeft className="w-5 h-5" />
-          </button>
-          <button
-            onClick={() => paginate(1)}
-            className="p-3 rounded-xl glass-card border border-white/10 hover:border-ambient-blue hover:bg-ambient-blue/15 text-gray-300 hover:text-white transition-all cursor-pointer shadow-md active:scale-95"
-            aria-label="Next Slide"
-          >
-            <ChevronRight className="w-5 h-5" />
-          </button>
+      {/* RIGHT: Skill bars */}
+      <div className="skill-list">
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
+          <IconComp size={16} style={{ color: 'var(--purple-bright)' }} />
+          <span style={{ color: 'var(--text)', fontSize: '13px', fontFamily: 'var(--font-heading)', fontWeight: 600 }}>
+            {active.title}
+          </span>
+          <span style={{ marginLeft: 'auto', color: 'var(--faint)', fontSize: '9px', fontFamily: 'var(--font-mono)' }}>
+            {active.items.length} SKILLS
+          </span>
         </div>
 
-        <div className="flex items-center gap-2.5">
-          {pages.map((_, idx) => (
-            <button
-              key={idx}
-              onClick={() => paginate(idx > currentPage ? 1 : -1, idx)}
-              className={`transition-all duration-300 cursor-pointer ${
-                idx === currentPage
-                  ? "w-8 h-2.5 rounded-full bg-ambient-blue shadow-[0_0_15px_rgba(59,130,246,0.9)]"
-                  : "w-2.5 h-2.5 rounded-full bg-white/20 hover:bg-white/50"
-              }`}
-              aria-label={`Go to slide ${idx + 1}`}
-            />
-          ))}
-        </div>
-
-        <span className="text-xs text-gray-400 font-mono hidden sm:inline-block">
-          {currentPage * 2 + 1}-
-          {Math.min((currentPage + 1) * 2, categories.length)} /{" "}
-          {categories.length}
-        </span>
+        {active.items.map((skill) => {
+          const lvl = skillLevels[skill] || { pct: 70, label: 'Proficient' };
+          const color = getLevelColor(lvl.pct);
+          return (
+            <div key={skill} className="skill-row">
+              <div className="skill-row-heading">
+                <span>{skill}</span>
+                <small>{lvl.label}</small>
+              </div>
+              <div className="skill-bar">
+                <span style={{ width: `${lvl.pct}%`, background: `linear-gradient(90deg, ${color}, var(--cyan))` }} />
+              </div>
+              <strong style={{ color }}>{lvl.pct}%</strong>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
 };
 
+
 /* ── 3D Carousel for Training & Certifications ── */
 const CertificateCarousel = ({ certificates = [] }) => {
+
   const cardsPerPage = 2;
   const pages = [];
   for (let i = 0; i < certificates.length; i += cardsPerPage) {
@@ -597,73 +573,61 @@ const Portfolio = () => {
           </div>
         </div>
 
-        {/* RIGHT — Animated Avatar */}
-        <div className="portfolio-hero-avatar" style={{ minHeight: '380px' }}>
-          <div className="avatar-ring-outer" />
-          <div className="avatar-ring-inner" />
+        {/* RIGHT — 3D Interactive Stage with Avatar (matches MainSite hero) */}
+        <div className="hero-stage-wrap portfolio-hero-stage">
+          {/* Perspective Grid */}
+          <div className="hero-stage-grid" aria-hidden="true" />
 
-          {/* Ambient glow behind avatar */}
-          <div
-            style={{
-              position: 'absolute',
-              width: '280px',
-              height: '280px',
-              borderRadius: '50%',
-              background: 'radial-gradient(circle, rgba(118,84,232,0.28) 0%, rgba(34,211,238,0.12) 55%, transparent 75%)',
-              filter: 'blur(30px)',
-              pointerEvents: 'none',
-            }}
-          />
+          {/* 3D Orbit Rings */}
+          <div className="orbit orbit-one" aria-hidden="true" />
+          <div className="orbit orbit-two" aria-hidden="true" />
+          <div className="orbit orbit-three" aria-hidden="true" />
 
-          <div className="avatar-float">
+          {/* Central Floating Avatar (replaces core-card) */}
+          <div className="portfolio-avatar-core">
             <div className="avatar-image-wrap">
               <img src={avatarPhoto} alt="Ashutosh Prasad" />
             </div>
-            <div className="avatar-badge">OPEN TO WORK</div>
           </div>
 
-          {/* Floating credential chips */}
-          <motion.div
-            className="absolute"
-            style={{ top: '8%', right: '-8%' }}
-            animate={{ y: [0, -8, 0] }}
-            transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut' }}
-          >
-            <div style={{
-              padding: '7px 14px',
-              background: 'rgba(9,10,15,0.88)',
-              border: '1px solid rgba(156,135,255,0.35)',
-              borderRadius: '100px',
-              fontSize: '10px',
-              fontFamily: 'var(--font-mono)',
-              color: '#9c87ff',
-              boxShadow: '0 0 18px rgba(118,84,232,0.25)',
-              whiteSpace: 'nowrap',
-            }}>
-              🎓 MCA · CGPA 8.24
-            </div>
-          </motion.div>
+          {/* Floating credential badges (same pattern as tech-badges) */}
+          <div className="tech-badge tech-csharp" style={{ '--badge-index': 0 }}>
+            <div className="tech-badge-icon"><GraduationCap size={13} /></div>
+            <span>MCA · 8.24</span>
+          </div>
+          <div className="tech-badge tech-dotnet" style={{ '--badge-index': 1 }}>
+            <div className="tech-badge-icon"><Code2 size={13} /></div>
+            <span>ASP.NET Core</span>
+          </div>
+          <div className="tech-badge tech-azure" style={{ '--badge-index': 2 }}>
+            <div className="tech-badge-icon"><Database size={13} /></div>
+            <span>SQL Server</span>
+          </div>
+          <div className="tech-badge tech-sql" style={{ '--badge-index': 3 }}>
+            <div className="tech-badge-icon"><Atom size={13} /></div>
+            <span>React.js</span>
+          </div>
+          <div className="tech-badge tech-react" style={{ '--badge-index': 4 }}>
+            <div className="tech-badge-icon"><Terminal size={13} /></div>
+            <span>C# / .NET</span>
+          </div>
+          <div className="tech-badge tech-docker" style={{ '--badge-index': 5 }}>
+            <div className="tech-badge-icon"><ShieldCheck size={13} /></div>
+            <span>JWT Auth</span>
+          </div>
+          <div className="tech-badge tech-redis" style={{ '--badge-index': 6 }}>
+            <div className="tech-badge-icon"><Globe size={13} /></div>
+            <span>RESTful APIs</span>
+          </div>
+          <div className="tech-badge tech-grpc" style={{ '--badge-index': 7 }}>
+            <div className="tech-badge-icon"><Layers size={13} /></div>
+            <span>EF Core</span>
+          </div>
 
-          <motion.div
-            className="absolute"
-            style={{ bottom: '12%', left: '-10%' }}
-            animate={{ y: [0, 8, 0] }}
-            transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
-          >
-            <div style={{
-              padding: '7px 14px',
-              background: 'rgba(9,10,15,0.88)',
-              border: '1px solid rgba(34,211,238,0.35)',
-              borderRadius: '100px',
-              fontSize: '10px',
-              fontFamily: 'var(--font-mono)',
-              color: '#22d3ee',
-              boxShadow: '0 0 18px rgba(34,211,238,0.20)',
-              whiteSpace: 'nowrap',
-            }}>
-              ⚡ Full-Stack .NET Engineer
-            </div>
-          </motion.div>
+          {/* Stage Caption */}
+          <div className="stage-caption">
+            <span>ASHUTOSH</span> ACADEMIC PORTFOLIO · VERIFIED
+          </div>
         </div>
       </section>
 
@@ -806,17 +770,21 @@ const Portfolio = () => {
         {/* ─────────────────────────────────────────────────────────────
            SECTION 03: TECHNICAL SKILLS MATRIX
         ─────────────────────────────────────────────────────────────── */}
-        <section id="skills" className="section scroll-mt-28">
-          <div className="section-heading split-heading">
-            <div>
-              <span className="section-number">03</span>
-              <h2>Technical <em>Skills Matrix</em></h2>
-            </div>
-          </div>
-
+        {/* Full-width marquee OUTSIDE shell — bleeds edge to edge */}
+        <div id="skills" className="scroll-mt-28" style={{ marginTop: '121px' }}>
           <SkillsMarquee />
-          <SkillsSlider categories={skillCategories} />
-        </section>
+
+          {/* Title + Slider inside shell, BELOW the marquee */}
+          <div className="shell" style={{ marginTop: '48px' }}>
+            <div className="section-heading split-heading">
+              <div>
+                <span className="section-number">03</span>
+                <h2>Technical <em>Skills Matrix</em></h2>
+              </div>
+            </div>
+            <SkillsSlider categories={skillCategories} />
+          </div>
+        </div>
 
         {/* ─────────────────────────────────────────────────────────────
            SECTION 04: INTERNSHIP & INDUSTRIAL TRAINING
