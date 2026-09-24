@@ -46,12 +46,12 @@ const Dot = () => <span style={dotStyle} aria-hidden="true" />;
 const SkillPill = ({ skill }) => {
   const Icon = skill.icon;
   return (
-    <div style={{ display: 'inline-flex', alignItems: 'center', gap: '14px', flexShrink: 0, cursor: 'default' }}>
+    <div style={{ display: 'inline-flex', alignItems: 'center', gap: '14px', flexShrink: 0, cursor: 'default', padding: '6px 0' }}>
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         width: '48px', height: '48px', borderRadius: '50%', flexShrink: 0,
         background: `radial-gradient(circle, ${skill.color}30 0%, ${skill.color}0a 100%)`,
-        boxShadow: `0 0 18px ${skill.color}40`,
+        boxShadow: `0 0 20px ${skill.color}45`,
         border: `1px solid ${skill.color}25`,
       }}>
         <Icon size={22} style={{ color: skill.color }} />
@@ -71,11 +71,13 @@ const MarqueeTrack = ({ items, reverse = false, speed = 60 }) => {
   const track = [...items, ...items, ...items];
   const animName = reverse ? 'skills-marquee-rtl' : 'skills-marquee-ltr';
   return (
-    <div style={{ display: 'flex', overflow: 'hidden', width: '100%', userSelect: 'none' }}>
+    <div style={{ display: 'flex', overflow: 'hidden', width: '100%', userSelect: 'none', padding: '16px 0' }}>
       <div style={{
-        display: 'inline-flex', alignItems: 'center', flexShrink: 0, paddingLeft: '22px',
+        display: 'inline-flex', alignItems: 'center', flexShrink: 0, paddingLeft: '22px', paddingRight: '22px',
         animation: `${animName} ${speed}s linear infinite`,
         willChange: 'transform',
+        transform: 'translateZ(0)',
+        backfaceVisibility: 'hidden',
       }}>
         {track.map((skill, i) => (
           <span key={`${skill.name}-${i}`} style={{ display: 'inline-flex', alignItems: 'center' }}>
@@ -94,7 +96,7 @@ const SkillsMarquee = () => (
     position: 'relative',
     left: '50%',
     transform: 'translateX(-50%)',
-    padding: '30px 0',
+    padding: '36px 0',
     overflow: 'hidden',
     background: 'linear-gradient(180deg, transparent 0%, rgba(118,84,232,0.04) 50%, transparent 100%)',
   }}>
@@ -111,7 +113,7 @@ const SkillsMarquee = () => (
       background: 'linear-gradient(to left, var(--void) 0%, transparent 100%)',
     }} />
 
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '26px' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
       <MarqueeTrack items={row1} reverse={false} speed={60} />
       <MarqueeTrack items={row2} reverse={true}  speed={48} />
     </div>

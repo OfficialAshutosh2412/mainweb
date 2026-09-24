@@ -36,12 +36,12 @@ const Layout = ({ children }) => {
 
   return (
     <ContactProvider>
-      {isMobile ? (
+      {isMobile || reducedMotion ? (
         <div className="w-full min-h-screen relative overflow-x-hidden">
           {pageContent}
         </div>
       ) : (
-        <ReactLenis root options={{ lerp: 0.08, duration: 1.2 }}>
+        <ReactLenis root options={{ lerp: 0.12, duration: 0.85, smoothWheel: true, syncTouch: false, touchMultiplier: 1.5 }}>
           {pageContent}
         </ReactLenis>
       )}

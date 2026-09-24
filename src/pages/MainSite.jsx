@@ -4,7 +4,6 @@ import HeroSection from '../components/HeroSection';
 import Footer from '../components/Footer';
 import { useContactDrawer } from '../context/ContactContext';
 import { portfolioData, mainWebsiteData } from '../api/mockData';
-import { downloadResume } from '../components/Navbar';
 import {
   ArrowRight, ArrowUpRight, Check, Copy, Database, Layers, Mail,
   MapPin, Phone, ShieldCheck, Sparkles, Terminal, Code2, Server, ExternalLink,
@@ -71,9 +70,7 @@ const MainSite = () => {
   };
 
   return (
-    <div className="portfolio-shell">
-      <div className="ambient ambient-one" aria-hidden="true" />
-      <div className="ambient ambient-two" aria-hidden="true" />
+    <div className="portfolio-page-wrapper w-full">
 
       {/* ── 3D Interactive Canvas Hero Section (Contained Shell Width) ── */}
       <HeroSection />
@@ -271,12 +268,11 @@ const MainSite = () => {
                   {copied ? <Check size={15} className="text-green" /> : <Copy size={15} />}
                   <span>{copied ? 'Copied Email!' : 'Copy Email'}</span>
                 </button>
-                <button
+                <a href="/resume.pdf" target='_blank' download={true}
                   className="button button-quiet cursor-pointer"
-                  onClick={downloadResume}
                 >
-                  Download résumé
-                </button>
+                  Download Resume
+                </a >
               </div>
             </div>
 

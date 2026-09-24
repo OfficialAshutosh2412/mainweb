@@ -75,9 +75,31 @@ a {
 
 .portfolio-shell {
   min-height: 100vh;
-  overflow: hidden;
+  overflow-x: hidden;
   position: relative;
   background: radial-gradient(ellipse 70% 45% at 82% 9%, rgba(81, 43, 212, .12), transparent 65%), var(--void);
+}
+
+.portfolio-shell .hero-section {
+  grid-template-columns: minmax(0, 1.18fr) minmax(360px, 0.82fr);
+  gap: 40px;
+}
+
+.portfolio-shell .hero-copy {
+  z-index: 10;
+  max-width: 680px;
+}
+
+.portfolio-shell .hero-copy h1 {
+  overflow: visible;
+  line-height: 1.04;
+  letter-spacing: -0.03em;
+  font-size: clamp(2.6rem, 5.2vw, 4.5rem);
+}
+
+.portfolio-shell .hero-copy h1 span {
+  display: inline-block;
+  padding-right: 0.18em;
 }
 
 .portfolio-shell::before {
@@ -418,14 +440,14 @@ h1 span, h2 em {
   letter-spacing: .06em;
 }
 
-/* ── Marquee Keyframes for Skills Tracks ── */
+/* ── Marquee Keyframes for Skills Tracks (GPU accelerated) ── */
 @keyframes skills-marquee-ltr {
-  from { transform: translateX(0); }
-  to   { transform: translateX(calc(-100% / 3)); }
+  from { transform: translate3d(0, 0, 0); }
+  to   { transform: translate3d(calc(-100% / 3), 0, 0); }
 }
 @keyframes skills-marquee-rtl {
-  from { transform: translateX(calc(-100% / 3)); }
-  to   { transform: translateX(0); }
+  from { transform: translate3d(calc(-100% / 3), 0, 0); }
+  to   { transform: translate3d(0, 0, 0); }
 }
 
 /* ── Portfolio Hero Avatar ── */
@@ -540,11 +562,12 @@ h1 span, h2 em {
 
 .avatar-float {
   animation: avatar-float 4s ease-in-out infinite;
+  will-change: transform;
 }
 
 @keyframes avatar-float {
-  0%, 100% { transform: translateY(0px); }
-  50%       { transform: translateY(-12px); }
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50%       { transform: translate3d(0, -12px, 0); }
 }
 
 /* ── Portfolio Avatar Core (3D stage central element) ── */
@@ -552,8 +575,11 @@ h1 span, h2 em {
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%) translateZ(80px) rotateX(5deg) rotateY(-12deg);
+  transform: translate3d(-50%, -50%, 80px) rotateX(5deg) rotateY(-12deg);
   animation: core-float 6s ease-in-out infinite;
+  will-change: transform;
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
   z-index: 5;
 }
 
@@ -681,12 +707,15 @@ h1 span, h2 em {
   top: 50%;
   left: 50%;
   padding: 21px;
-  transform: translate(-50%, -50%) translateZ(80px) rotateX(5deg) rotateY(-12deg);
+  transform: translate3d(-50%, -50%, 80px) rotateX(5deg) rotateY(-12deg);
   border: 1px solid rgba(166,145,255,.28);
   border-radius: 15px;
   background: linear-gradient(145deg, rgba(38,31,74,.94), rgba(17,23,38,.95));
   box-shadow: 0 28px 70px rgba(0,0,0,.42), inset 0 1px rgba(255,255,255,.1);
   animation: core-float 6s ease-in-out infinite;
+  will-change: transform;
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
 }
 
 .core-card-top {
@@ -752,6 +781,9 @@ h1 span, h2 em {
   font: 10px var(--font-mono);
   animation: badge-float 5s ease-in-out infinite;
   animation-delay: calc(var(--badge-index) * -.52s);
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }
 
 .tech-badge-icon {
@@ -822,12 +854,15 @@ h1 span, h2 em {
 .section {
   padding: 121px 0 0;
   scroll-margin-top: 75px;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 600px;
 }
 
 .section-heading {
   display: flex;
   gap: 22px;
   align-items: flex-start;
+  margin-bottom: 38px;
 }
 
 .section-number {
@@ -1127,11 +1162,14 @@ h1 span, h2 em {
   border: 1px solid var(--line);
   border-radius: 11px;
   background: var(--card);
-  transition: transform .28s ease, border-color .28s ease, box-shadow .28s ease;
+  transition: transform .26s cubic-bezier(0.22, 1, 0.36, 1), border-color .26s ease, box-shadow .26s ease;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  will-change: transform;
 }
 
 .project-card:hover {
-  transform: translateY(-7px) rotateX(1deg);
+  transform: translate3d(0, -6px, 0);
   border-color: var(--line-bright);
   box-shadow: 0 25px 50px rgba(0,0,0,.26);
 }
@@ -1604,19 +1642,19 @@ h1 span, h2 em {
 
 @keyframes core-float {
   0%, 100% {
-    margin-top: 0;
+    transform: translate3d(-50%, -50%, 80px) rotateX(5deg) rotateY(-12deg);
   }
   50% {
-    margin-top: -9px;
+    transform: translate3d(-50%, calc(-50% - 9px), 80px) rotateX(5deg) rotateY(-12deg);
   }
 }
 
 @keyframes badge-float {
   0%, 100% {
-    transform: translateY(0);
+    transform: translate3d(0, 0, 0);
   }
   50% {
-    transform: translateY(-8px);
+    transform: translate3d(0, -8px, 0);
   }
 }
 

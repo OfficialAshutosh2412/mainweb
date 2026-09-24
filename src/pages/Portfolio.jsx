@@ -21,6 +21,8 @@ import {
   Library,
   ChevronLeft,
   ChevronRight,
+  ChevronDown,
+  ChevronUp,
   UserCheck,
   Code2,
   Terminal,
@@ -47,33 +49,32 @@ import RevealingCard from "../components/RevealingCard";
 import TiltCard from "../components/TiltCard";
 import SkillsMarquee from "../components/SkillsMarquee";
 import { useContactDrawer } from "../context/ContactContext";
-import { downloadResume } from "../components/Navbar";
 import { portfolioData } from "../api/mockData";
 import avatarPhoto from "../assets/photo_one.png";
 
 /* ── Random gradient pool for academic project cards ── */
 const projectGradients = [
   {
-    bg: 'linear-gradient(135deg, rgba(118,84,232,0.14) 0%, rgba(34,211,238,0.10) 100%)',
-    border: '1px solid rgba(118,84,232,0.32)',
+    bg: 'linear-gradient(135deg, rgba(118,84,232,0.18) 0%, rgba(34,211,238,0.12) 100%), #0c101c',
+    border: '1px solid rgba(118,84,232,0.36)',
     accent: '#9c87ff',
     eyebrowColor: '#9c87ff',
   },
   {
-    bg: 'linear-gradient(135deg, rgba(34,211,238,0.12) 0%, rgba(16,185,129,0.14) 100%)',
-    border: '1px solid rgba(34,211,238,0.30)',
+    bg: 'linear-gradient(135deg, rgba(34,211,238,0.16) 0%, rgba(16,185,129,0.14) 100%), #0c101c',
+    border: '1px solid rgba(34,211,238,0.34)',
     accent: '#22d3ee',
     eyebrowColor: '#22d3ee',
   },
   {
-    bg: 'linear-gradient(135deg, rgba(168,85,247,0.12) 0%, rgba(236,72,153,0.14) 100%)',
-    border: '1px solid rgba(168,85,247,0.30)',
+    bg: 'linear-gradient(135deg, rgba(168,85,247,0.16) 0%, rgba(236,72,153,0.14) 100%), #0c101c',
+    border: '1px solid rgba(168,85,247,0.34)',
     accent: '#c084fc',
     eyebrowColor: '#c084fc',
   },
   {
-    bg: 'linear-gradient(135deg, rgba(245,158,11,0.10) 0%, rgba(239,68,68,0.14) 100%)',
-    border: '1px solid rgba(245,158,11,0.28)',
+    bg: 'linear-gradient(135deg, rgba(245,158,11,0.14) 0%, rgba(239,68,68,0.14) 100%), #0c101c',
+    border: '1px solid rgba(245,158,11,0.32)',
     accent: '#fbbf24',
     eyebrowColor: '#fbbf24',
   },
@@ -204,7 +205,25 @@ const getExpIcon = (role = "", company = "") => {
   return Briefcase;
 };
 
-/* ── Inf/* Proficiency lookup (out of 100) */
+/* ── Experience Tech Stack Helper ── */
+const getExpTechStack = (item) => {
+  const r = (item?.role || "").toLowerCase();
+  if (r.includes("mvc")) {
+    return ["ASP.NET MVC", "C#", "SQL Server", "AJAX", "Bootstrap"];
+  }
+  if (r.includes("core") || r.includes("qms")) {
+    return ["ASP.NET Core", "React.js", "JWT Auth", "REST APIs", "SQL Server"];
+  }
+  if (r.includes("summer internship")) {
+    return ["Python", "Tkinter", "MySQL", "Desktop GUI"];
+  }
+  if (r.includes("python") && r.includes("training")) {
+    return ["Python", "Flask", "MySQL", "PhpMyAdmin", "CRUD"];
+  }
+  return ["Software Development", "C#", "SQL Server"];
+};
+
+/* ── Proficiency lookup (out of 100) ── */
 const skillLevels = {
   // Languages
   'C#': { pct: 92, label: 'Expert' },
@@ -315,47 +334,29 @@ const SkillsSlider = ({ categories = [] }) => {
   );
 };
 
-
-/* ── 3D Carousel for Training & Certifications ── */
+/* ── Redesigned 3D Showcase Carousel for Certifications (Theme Card Design) ── */
 const CertificateCarousel = ({ certificates = [] }) => {
-
-  const cardsPerPage = 2;
-  const pages = [];
-  for (let i = 0; i < certificates.length; i += cardsPerPage) {
-    pages.push(certificates.slice(i, i + cardsPerPage));
-  }
-
-  const [currentPage, setCurrentPage] = useState(0);
-  const [direction, setDirection] = useState(1);
+  const [activeIndex, setActiveIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+  const total = certificates.length;
 
-  const totalPages = pages.length;
+  const nextSlide = () => {
+    setActiveIndex((prev) => (prev + 1) % total);
+  };
 
-  const paginate = (newDirection, targetPage = null) => {
-    setDirection(newDirection);
-    if (targetPage !== null) {
-      setCurrentPage(targetPage);
-    } else {
-      setCurrentPage((prev) => {
-        if (newDirection > 0) {
-          return (prev + 1) % totalPages;
-        } else {
-          return (prev - 1 + totalPages) % totalPages;
-        }
-      });
-    }
+  const prevSlide = () => {
+    setActiveIndex((prev) => (prev - 1 + total) % total);
   };
 
   useEffect(() => {
-    if (isPaused || totalPages <= 1) return;
+    if (isPaused || total <= 1) return;
     const timer = setInterval(() => {
-      paginate(1);
+      setActiveIndex((prev) => (prev + 1) % total);
     }, 4500);
     return () => clearInterval(timer);
-  }, [currentPage, isPaused, totalPages]);
+  }, [isPaused, total]);
 
   if (!certificates || certificates.length === 0) return null;
-  const currentCards = pages[currentPage] || [];
 
   return (
     <div
@@ -363,96 +364,432 @@ const CertificateCarousel = ({ certificates = [] }) => {
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
-      <div className="relative overflow-hidden px-1 py-3">
-        <AnimatePresence mode="wait" custom={direction}>
-          <motion.div
-            key={currentPage}
-            custom={direction}
-            initial={{ opacity: 0, x: direction > 0 ? 100 : -100, scale: 0.98 }}
-            animate={{ opacity: 1, x: 0, scale: 1 }}
-            exit={{ opacity: 0, x: direction > 0 ? -100 : 100, scale: 0.98 }}
-            transition={{ type: "spring", stiffness: 220, damping: 26 }}
-            className="grid grid-cols-1 sm:grid-cols-2 gap-5 md:gap-8 w-full"
-          >
-            {currentCards.map((cert) => (
-              <TiltCard key={cert.id} className="h-full w-full" maxTilt={3.5}>
-                <div className="h-full w-full p-8 rounded-2xl glass-card border border-white/10 relative overflow-hidden z-10 group hover:border-ambient-blue/50 transition-all duration-300 flex flex-col justify-between shadow-xl min-h-\[220px]\">
-                  <div className="absolute right-0 bottom-0 opacity-5 group-hover:opacity-15 transition-opacity duration-500 pointer-events-none">
+      {/* 3D Track Stage with Smooth Edge Fading */}
+      <div
+        className="relative w-full h-[370px] sm:h-[350px] flex items-center justify-center overflow-hidden"
+        style={{
+          maskImage: "linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%)",
+          WebkitMaskImage: "linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%)",
+        }}
+      >
+        {/* Left & Right Soft Fade Overlays for Smooth Ending */}
+        <div
+          className="absolute left-0 top-0 bottom-0 w-20 sm:w-36 z-30 pointer-events-none"
+          style={{
+            background: "linear-gradient(to right, rgba(9, 10, 15, 0.95) 0%, transparent 100%)",
+          }}
+        />
+        <div
+          className="absolute right-0 top-0 bottom-0 w-20 sm:w-36 z-30 pointer-events-none"
+          style={{
+            background: "linear-gradient(to left, rgba(9, 10, 15, 0.95) 0%, transparent 100%)",
+          }}
+        />
+        {certificates.map((cert, idx) => {
+          let diff = (idx - activeIndex) % total;
+          if (diff > total / 2) diff -= total;
+          if (diff < -total / 2) diff += total;
+
+          const isActive = diff === 0;
+          const isPrev = diff === -1;
+          const isNext = diff === 1;
+          const isVisible = isActive || isPrev || isNext;
+
+          const gStyle = projectGradients[idx % projectGradients.length];
+
+          // Compute animation styles
+          let x = "0%";
+          let scale = 1;
+          let opacity = 1;
+          let zIndex = 20;
+
+          if (isActive) {
+            x = "0%";
+            scale = 1;
+            opacity = 1;
+            zIndex = 25;
+          } else if (isPrev) {
+            x = "-74%";
+            scale = 0.92;
+            opacity = 0.38;
+            zIndex = 10;
+          } else if (isNext) {
+            x = "74%";
+            scale = 0.92;
+            opacity = 0.38;
+            zIndex = 10;
+          } else {
+            x = diff > 0 ? "150%" : "-150%";
+            scale = 0.8;
+            opacity = 0;
+            zIndex = 1;
+          }
+
+          return (
+            <motion.div
+              key={cert.id}
+              initial={false}
+              animate={{
+                x,
+                scale,
+                opacity,
+                zIndex,
+              }}
+              transition={{
+                type: "spring",
+                stiffness: 260,
+                damping: 28,
+              }}
+              onClick={() => {
+                if (isPrev) prevSlide();
+                if (isNext) nextSlide();
+              }}
+              className={`absolute top-0 bottom-0 m-auto w-[88%] sm:w-[480px] md:w-[540px] max-w-[560px] h-[315px] select-none ${
+                isActive ? "pointer-events-auto" : isVisible ? "pointer-events-auto cursor-pointer" : "pointer-events-none"
+              }`}
+              style={{
+                filter: "none", // STRICTLY NO BLUR, per user request: "littlle low opcaity but not blur"
+              }}
+            >
+              <article
+                className="project-card academic-project-card w-full h-full flex flex-col justify-between"
+                style={{
+                  background: gStyle.bg,
+                  backgroundColor: '#0c101c',
+                  border: isActive ? `1.5px solid ${gStyle.accent}` : gStyle.border,
+                  opacity: isActive ? 1 : 0.95,
+                  boxShadow: isActive
+                    ? `0 24px 50px rgba(0,0,0,0.7), 0 0 35px ${gStyle.eyebrowColor}40`
+                    : "0 10px 30px rgba(0,0,0,0.35)",
+                }}
+              >
+                {/* Visual Header Strip — Theme Card Design */}
+                <div className="project-visual" style={{ height: "98px" }}>
+                  <span className="project-index">CERT · 0{idx + 1}</span>
+                  <div
+                    className="project-open"
+                    style={{ borderColor: gStyle.accent + "60", color: gStyle.accent }}
+                  >
                     <AnimatedIcon
                       Icon={cert.type === "Bootcamp" ? BookOpen : Award}
-                      className="w-32 h-32 text-ambient-blue"
+                      className="w-4 h-4"
                     />
                   </div>
+                  <div className="visual-window">
+                    <div className="window-bar"><span /><span /><span /></div>
+                    <div className="visual-lines"><i /><i /><i /><i /><i /></div>
+                  </div>
+                  <div className="visual-node node-a" />
+                  <div className="visual-node node-b" />
+                  <div className="visual-connector" />
+                </div>
+
+                {/* Body — Theme Card Design */}
+                <div className="project-body flex-1 flex flex-col justify-between py-4 px-6">
                   <div>
-                    <div className="flex justify-between items-center mb-4">
-                      <span className="text-xs font-bold text-ambient-blue bg-ambient-blue/15 px-3.5 py-1 rounded-full uppercase tracking-wider border border-ambient-blue/30 shadow-sm">
-                        {cert.type}
-                      </span>
-                      <span className="text-ambient-blue font-bold font-mono text-sm">
+                    <div className="flex justify-between items-center mb-1.5">
+                      <div className="project-eyebrow" style={{ color: gStyle.eyebrowColor }}>
+                        {cert.type.toUpperCase()}
+                      </div>
+                      <span className="text-xs font-mono" style={{ color: gStyle.accent }}>
                         {cert.year}
                       </span>
                     </div>
-                    <h3 className="text-xl font-bold text-white mb-2 pr-6 group-hover:text-ambient-blue transition-colors">
+
+                    <h3 className="text-lg sm:text-xl font-bold text-white mb-2 leading-snug">
                       {cert.title}
                     </h3>
                   </div>
-                  <div className="flex justify-between items-end text-sm text-gray-400 mt-6 pt-4 border-t border-white/5">
-                    <span className="flex items-center gap-2 font-medium text-gray-300">
-                      <Award className="w-4 h-4 text-ambient-blue" />
+
+                  <div className="project-footer mt-auto pt-3 flex items-center justify-between">
+                    <span className="flex items-center gap-1.5 text-xs text-gray-300 font-medium">
+                      <Award className="w-3.5 h-3.5" style={{ color: gStyle.accent }} />
                       {cert.issuer}
                     </span>
                     <span className="text-xs text-emerald-400 font-mono flex items-center gap-1">
-                      <CheckCircle2 size={12} /> Verified
+                      <CheckCircle2 size={12} /> Verified Credential
                     </span>
                   </div>
                 </div>
-              </TiltCard>
-            ))}
-          </motion.div>
-        </AnimatePresence>
+              </article>
+            </motion.div>
+          );
+        })}
       </div>
 
       {/* Navigation Controls */}
-      <div className="flex items-center justify-between mt-8 px-2">
+      <div className="flex items-center justify-between mt-6 px-2 max-w-xl mx-auto">
         <div className="flex gap-2">
           <button
-            onClick={() => paginate(-1)}
-            className="p-3 rounded-xl glass-card border border-white/10 hover:border-ambient-blue hover:bg-ambient-blue/15 text-gray-300 hover:text-white transition-all cursor-pointer shadow-md active:scale-95"
-            aria-label="Previous Slide"
+            onClick={prevSlide}
+            className="p-2.5 rounded-xl glass-card border border-white/10 hover:border-ambient-blue hover:bg-ambient-blue/15 text-gray-300 hover:text-white transition-all cursor-pointer shadow-md active:scale-95"
+            aria-label="Previous Certificate"
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
           <button
-            onClick={() => paginate(1)}
-            className="p-3 rounded-xl glass-card border border-white/10 hover:border-ambient-blue hover:bg-ambient-blue/15 text-gray-300 hover:text-white transition-all cursor-pointer shadow-md active:scale-95"
-            aria-label="Next Slide"
+            onClick={nextSlide}
+            className="p-2.5 rounded-xl glass-card border border-white/10 hover:border-ambient-blue hover:bg-ambient-blue/15 text-gray-300 hover:text-white transition-all cursor-pointer shadow-md active:scale-95"
+            aria-label="Next Certificate"
           >
             <ChevronRight className="w-5 h-5" />
           </button>
         </div>
 
-        <div className="flex items-center gap-2.5">
-          {pages.map((_, idx) => (
+        <div className="flex items-center gap-2">
+          {certificates.map((_, idx) => (
             <button
               key={idx}
-              onClick={() => paginate(idx > currentPage ? 1 : -1, idx)}
+              onClick={() => setActiveIndex(idx)}
               className={`transition-all duration-300 cursor-pointer ${
-                idx === currentPage
+                idx === activeIndex
                   ? "w-8 h-2.5 rounded-full bg-ambient-blue shadow-[0_0_15px_rgba(59,130,246,0.9)]"
                   : "w-2.5 h-2.5 rounded-full bg-white/20 hover:bg-white/50"
               }`}
-              aria-label={`Go to slide ${idx + 1}`}
+              aria-label={`Go to certificate ${idx + 1}`}
             />
           ))}
         </div>
 
-        <span className="text-xs text-gray-400 font-mono hidden sm:inline-block">
-          {currentPage * 2 + 1}-
-          {Math.min((currentPage + 1) * 2, certificates.length)} /{" "}
-          {certificates.length}
+        <span className="text-xs text-gray-400 font-mono">
+          0{activeIndex + 1} / 0{total}
         </span>
       </div>
     </div>
+  );
+};
+
+/* ── Academic Project Card with Animated Independent Expansion ── */
+const AcademicProjectCard = ({ item, index }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const gStyle = projectGradients[index % projectGradients.length];
+  const bullets = item.bullets || [];
+  const firstBullet = bullets[0];
+  const remainingBullets = bullets.slice(1);
+
+  return (
+    <article
+      className="project-card academic-project-card flex flex-col justify-between"
+      style={{ background: gStyle.bg, border: gStyle.border }}
+    >
+      {/* Visual Header */}
+      <div className="project-visual" style={{ height: "110px" }}>
+        <span className="project-index">0{index + 1}</span>
+        <a
+          href="https://github.com/OfficialAshutosh2412"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="project-open"
+          title="View Repository"
+          style={{ borderColor: `${gStyle.accent}60`, color: gStyle.accent }}
+        >
+          <ArrowUpRight size={15} />
+        </a>
+        <div className="visual-window">
+          <div className="window-bar"><span /><span /><span /></div>
+          <div className="visual-lines"><i /><i /><i /><i /><i /></div>
+        </div>
+        <div className="visual-node node-a" />
+        <div className="visual-node node-b" />
+        <div className="visual-connector" />
+      </div>
+
+      {/* Body */}
+      <div className="project-body flex-1 flex flex-col justify-between">
+        <div>
+          <div className="flex justify-between items-center mb-2">
+            <div className="project-eyebrow" style={{ color: gStyle.eyebrowColor }}>
+              ACADEMIC &amp; THESIS
+            </div>
+            <span className="text-xs font-mono" style={{ color: gStyle.accent }}>
+              2023–2024
+            </span>
+          </div>
+
+          <h3 className="text-xl md:text-2xl font-bold text-white mb-3">
+            {item.title}
+          </h3>
+
+          {/* First / Primary bullet always shown */}
+          {firstBullet && (
+            <ul className="space-y-2.5 text-xs md:text-sm text-gray-300 leading-relaxed mb-2">
+              <li className="flex items-start gap-2">
+                <CheckCircle2 size={14} className="shrink-0 mt-0.5" style={{ color: gStyle.accent }} />
+                <span>{firstBullet}</span>
+              </li>
+            </ul>
+          )}
+
+          {/* Smooth animated extra bullets */}
+          <AnimatePresence initial={false}>
+            {isExpanded && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                className="overflow-hidden"
+              >
+                <ul className="space-y-2.5 text-xs md:text-sm text-gray-300 leading-relaxed pt-1 pb-3">
+                  {remainingBullets.map((bullet, bIdx) => (
+                    <li key={bIdx} className="flex items-start gap-2">
+                      <CheckCircle2 size={14} className="shrink-0 mt-0.5" style={{ color: gStyle.accent }} />
+                      <span>{bullet}</span>
+                    </li>
+                  ))}
+                </ul>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+
+        {/* Footer */}
+        <div className="project-footer mt-auto pt-3 flex items-center justify-between gap-3">
+          <div className="stack-list">
+            {(item.techStack || []).slice(0, 5).map((tech, tIdx) => (
+              <span key={tIdx}>{tech}</span>
+            ))}
+          </div>
+
+          <div className="flex items-center gap-2 shrink-0">
+            {remainingBullets.length > 0 && (
+              <button
+                type="button"
+                onClick={() => setIsExpanded((prev) => !prev)}
+                className="button button-quiet text-xs py-1.5 px-2.5 min-h-0 cursor-pointer"
+                style={{ fontSize: "11px", gap: "4px", borderColor: `${gStyle.accent}40`, color: gStyle.accent }}
+              >
+                <span>{isExpanded ? "See less" : "See more"}</span>
+                {isExpanded ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
+              </button>
+            )}
+            <a
+              href="https://github.com/OfficialAshutosh2412"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="button button-quiet text-xs py-1.5 px-3 min-h-0"
+              style={{ fontSize: "11px", gap: "5px" }}
+            >
+              <GitHubIcon className="w-3 h-3" />
+              <span>Repository</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </article>
+  );
+};
+
+/* ── Experience Card with Animated Independent Expansion ── */
+const ExperienceCard = ({ item, index }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const ExpIcon = getExpIcon(item.role, item.company);
+  const gStyle = projectGradients[index % projectGradients.length];
+  const techList = getExpTechStack(item);
+  const bullets = item.bullets || [];
+  const firstBullet = bullets[0];
+  const remainingBullets = bullets.slice(1);
+
+  return (
+    <article
+      className="project-card academic-project-card flex flex-col justify-between"
+      style={{ background: gStyle.bg, border: gStyle.border }}
+    >
+      <div className="project-visual" style={{ height: "110px" }}>
+        <span className="project-index">EXP · 0{index + 1}</span>
+        <div
+          className="project-open"
+          style={{ borderColor: `${gStyle.accent}60`, color: gStyle.accent }}
+          title={item.company}
+        >
+          <ExpIcon size={15} />
+        </div>
+        <div className="visual-window">
+          <div className="window-bar"><span /><span /><span /></div>
+          <div className="visual-lines"><i /><i /><i /><i /><i /></div>
+        </div>
+        <div className="visual-node node-a" />
+        <div className="visual-node node-b" />
+        <div className="visual-connector" />
+      </div>
+
+      <div className="project-body flex-1 flex flex-col justify-between">
+        <div>
+          <div className="flex justify-between items-center mb-2">
+            <div className="project-eyebrow" style={{ color: gStyle.eyebrowColor }}>
+              {item.role.toLowerCase().includes("internship") ? "SUMMER INTERNSHIP" : "INDUSTRIAL TRAINING"}
+            </div>
+            <span className="text-xs font-mono" style={{ color: gStyle.accent }}>
+              {item.period}
+            </span>
+          </div>
+
+          <h3 className="text-xl md:text-2xl font-bold text-white mb-2">{item.role}</h3>
+          <div className="text-xs font-mono text-muted mb-4 flex items-center gap-1.5">
+            <Building2 size={13} style={{ color: gStyle.accent }} />
+            <span className="text-gray-200 font-semibold">{item.company}</span>
+            <span>•</span>
+            <span>{item.location}</span>
+          </div>
+
+          {/* First bullet always shown */}
+          {firstBullet && (
+            <ul className="space-y-2.5 text-xs md:text-sm text-gray-300 leading-relaxed mb-2">
+              <li className="flex items-start gap-2">
+                <CheckCircle2 size={14} className="shrink-0 mt-0.5" style={{ color: gStyle.accent }} />
+                <span>{firstBullet}</span>
+              </li>
+            </ul>
+          )}
+
+          {/* Smooth animated extra bullets */}
+          <AnimatePresence initial={false}>
+            {isExpanded && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                className="overflow-hidden"
+              >
+                <ul className="space-y-2.5 text-xs md:text-sm text-gray-300 leading-relaxed pt-1 pb-3">
+                  {remainingBullets.map((bullet, bIdx) => (
+                    <li key={bIdx} className="flex items-start gap-2">
+                      <CheckCircle2 size={14} className="shrink-0 mt-0.5" style={{ color: gStyle.accent }} />
+                      <span>{bullet}</span>
+                    </li>
+                  ))}
+                </ul>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+
+        <div className="project-footer mt-auto pt-3 flex items-center justify-between gap-3">
+          <div className="stack-list">
+            {techList.map((tech, tIdx) => (
+              <span key={tIdx}>{tech}</span>
+            ))}
+          </div>
+          <div className="flex items-center gap-2.5 shrink-0">
+            <span className="text-xs font-mono text-emerald-400 flex items-center gap-1">
+              <CheckCircle2 size={12} /> Verified Training
+            </span>
+            {remainingBullets.length > 0 && (
+              <button
+                type="button"
+                onClick={() => setIsExpanded((prev) => !prev)}
+                className="button button-quiet text-xs py-1.5 px-2.5 min-h-0 cursor-pointer"
+                style={{ fontSize: "11px", gap: "4px", borderColor: `${gStyle.accent}40`, color: gStyle.accent }}
+              >
+                <span>{isExpanded ? "See less" : "See more"}</span>
+                {isExpanded ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+    </article>
   );
 };
 
@@ -493,14 +830,28 @@ const Portfolio = () => {
     }
   }, [location, openContactDrawer]);
 
+  const rafId = useRef(null);
   const handleHeaderMouseMove = (e) => {
     if (!headerRef.current) return;
-    const rect = headerRef.current.getBoundingClientRect();
-    mouseX.set(e.clientX - (rect.left + rect.width / 2));
-    mouseY.set(e.clientY - (rect.top + rect.height / 2));
+    if (typeof window !== 'undefined' && !window.matchMedia('(pointer: fine)').matches) return;
+    if (rafId.current) return;
+    const clientX = e.clientX;
+    const clientY = e.clientY;
+    rafId.current = requestAnimationFrame(() => {
+      if (headerRef.current) {
+        const rect = headerRef.current.getBoundingClientRect();
+        mouseX.set(clientX - (rect.left + rect.width / 2));
+        mouseY.set(clientY - (rect.top + rect.height / 2));
+      }
+      rafId.current = null;
+    });
   };
 
   const handleHeaderMouseLeave = () => {
+    if (rafId.current) {
+      cancelAnimationFrame(rafId.current);
+      rafId.current = null;
+    }
     mouseX.set(0);
     mouseY.set(0);
   };
@@ -518,9 +869,7 @@ const Portfolio = () => {
   ];
 
   return (
-    <div className="portfolio-shell">
-      <div className="ambient ambient-one" aria-hidden="true" />
-      <div className="ambient ambient-two" aria-hidden="true" />
+    <div className="portfolio-page-wrapper w-full">
 
       {/* ── Portfolio Hero Section — Two-Column: Left Text + Right Avatar ── */}
       <section className="shell hero-section" style={{ minHeight: 'auto', padding: '100px 0 60px' }}>
@@ -529,9 +878,9 @@ const Portfolio = () => {
           <div className="eyebrow">
             <span className="eyebrow-line" /> ACADEMIC &amp; RESUME PORTFOLIO
           </div>
-          <h1 className="text-4xl sm:text-6xl font-bold tracking-tight">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-normal leading-[1.06]" style={{ overflow: 'visible' }}>
             Engineering<br />
-            <span>credentials</span><br />
+            <span style={{ display: 'inline-block', paddingRight: '0.18em' }}>credentials</span><br />
             built on proof.
           </h1>
           <p className="hero-lede hero-lede-large" style={{ marginTop: '22px' }}>
@@ -540,12 +889,11 @@ const Portfolio = () => {
           </p>
 
           <div className="hero-actions">
-            <button
+            <a href="/resume.pdf" target='_blank' download
               className="button button-primary cursor-pointer"
-              onClick={downloadResume}
             >
-              <Download size={16} /> Download résumé
-            </button>
+              Download Resume
+            </a>
             <button
               className="button button-quiet cursor-pointer"
               onClick={openContactDrawer}
@@ -578,15 +926,17 @@ const Portfolio = () => {
           {/* Perspective Grid */}
           <div className="hero-stage-grid" aria-hidden="true" />
 
-          {/* 3D Orbit Rings */}
-          <div className="orbit orbit-one" aria-hidden="true" />
-          <div className="orbit orbit-two" aria-hidden="true" />
-          <div className="orbit orbit-three" aria-hidden="true" />
-
           {/* Central Floating Avatar (replaces core-card) */}
           <div className="portfolio-avatar-core">
             <div className="avatar-image-wrap">
-              <img src={avatarPhoto} alt="Ashutosh Prasad" />
+              <img
+                src={avatarPhoto}
+                alt="Ashutosh Prasad"
+                width={340}
+                height={340}
+                fetchPriority="high"
+                decoding="async"
+              />
             </div>
           </div>
 
@@ -623,11 +973,6 @@ const Portfolio = () => {
             <div className="tech-badge-icon"><Layers size={13} /></div>
             <span>EF Core</span>
           </div>
-
-          {/* Stage Caption */}
-          <div className="stage-caption">
-            <span>ASHUTOSH</span> ACADEMIC PORTFOLIO · VERIFIED
-          </div>
         </div>
       </section>
 
@@ -637,7 +982,7 @@ const Portfolio = () => {
         {/* ─────────────────────────────────────────────────────────────
            SECTION 01: PROFESSIONAL SUMMARY
         ─────────────────────────────────────────────────────────────── */}
-        <section id="summary" className="section scroll-mt-28">
+        {/* <section id="summary" className="section scroll-mt-28">
           <div className="section-heading split-heading">
             <div>
               <span className="section-number">01</span>
@@ -680,40 +1025,95 @@ const Portfolio = () => {
               </div>
             </div>
           </div>
-        </section>
+        </section> */}
 
         {/* ─────────────────────────────────────────────────────────────
-           SECTION 02: ACADEMIC & SHOWCASE PROJECTS
+           SECTION 01: ACADEMIC & SHOWCASE PROJECTS
         ─────────────────────────────────────────────────────────────── */}
         <section id="projects" className="section scroll-mt-28">
-          <div className="section-heading split-heading">
+          <div className="section-heading split-heading mb-10 md:mb-12">
             <div>
-              <span className="section-number">02</span>
+              <span className="section-number">01</span>
               <h2>Academic <em>Showcase Projects</em></h2>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {(data.academicProjects || []).map((item, i) => {
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+            {(data.academicProjects || []).map((item, i) => (
+              <AcademicProjectCard key={item.id} item={item} index={i} />
+            ))}
+          </div>
+        </section>
+
+        {/* ─────────────────────────────────────────────────────────────
+           SECTION 02: TECHNICAL SKILLS MATRIX
+        ─────────────────────────────────────────────────────────────── */}
+        {/* Full-width marquee OUTSIDE shell — bleeds edge to edge */}
+        <div id="skills" className="scroll-mt-28" style={{ marginTop: '121px' }}>
+          <SkillsMarquee />
+
+          {/* Title + Slider inside shell, BELOW the marquee */}
+          <div className="shell" style={{ marginTop: '56px' }}>
+            <div className="section-heading split-heading mb-10 md:mb-12">
+              <div>
+                <span className="section-number">02</span>
+                <h2>Technical <em>Skills Matrix</em></h2>
+              </div>
+            </div>
+            <SkillsSlider categories={skillCategories} />
+          </div>
+        </div>
+
+        {/* ─────────────────────────────────────────────────────────────
+           SECTION 03: INTERNSHIP & INDUSTRIAL TRAINING (THEME CARDS)
+        ─────────────────────────────────────────────────────────────── */}
+        <section id="experience" className="section scroll-mt-28">
+          <div className="section-heading split-heading mb-10 md:mb-12">
+            <div>
+              <span className="section-number">03</span>
+              <h2>Experience &amp; <em>Industrial Training</em></h2>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+            {(data.experience || []).map((item, i) => (
+              <ExperienceCard key={item.id} item={item} index={i} />
+            ))}
+          </div>
+        </section>
+
+        {/* ─────────────────────────────────────────────────────────────
+           SECTION 04: EDUCATION & CERTIFICATIONS (THEME CARDS)
+        ─────────────────────────────────────────────────────────────── */}
+        <section id="education" className="section scroll-mt-28">
+          <div className="section-heading split-heading mb-10 md:mb-12">
+            <div>
+              <span className="section-number">04</span>
+              <h2>Verified <em>Academic Education</em></h2>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start mb-16">
+            {(data.education || []).map((item, i) => {
+              const SchoolIcon = getSchoolIcon(item.iconType);
               const gStyle = projectGradients[i % projectGradients.length];
+              const isMasters = i === 0;
+
               return (
                 <article
                   key={item.id}
-                  className="project-card academic-project-card"
+                  className="project-card academic-project-card flex flex-col justify-between"
                   style={{ background: gStyle.bg, border: gStyle.border }}
                 >
-                  {/* Visual header strip — same style as MainSite cards */}
-                  <div className="project-visual" style={{ minHeight: '110px' }}>
-                    <span className="project-index">0{i + 1}</span>
-                    <a
-                      href="https://github.com/OfficialAshutosh2412"
-                      target="_blank"
-                      rel="noopener noreferrer"
+                  <div className="project-visual" style={{ height: '110px' }}>
+                    <span className="project-index">EDU · 0{i + 1}</span>
+                    <div
                       className="project-open"
-                      title="View Repository"
+                      style={{ borderColor: gStyle.accent + '60', color: gStyle.accent }}
+                      title={item.institution}
                     >
-                      <ArrowUpRight size={15} />
-                    </a>
+                      <SchoolIcon size={15} />
+                    </div>
                     <div className="visual-window">
                       <div className="window-bar"><span /><span /><span /></div>
                       <div className="visual-lines"><i /><i /><i /><i /><i /></div>
@@ -723,182 +1123,65 @@ const Portfolio = () => {
                     <div className="visual-connector" />
                   </div>
 
-                  {/* Body */}
-                  <div className="project-body">
-                    <div className="flex justify-between items-center mb-2">
-                      <div className="project-eyebrow" style={{ color: gStyle.eyebrowColor }}>ACADEMIC &amp; THESIS</div>
-                      <span className="text-xs font-mono" style={{ color: gStyle.accent }}>2023–2024</span>
+                  <div className="project-body flex-1 flex flex-col justify-between">
+                    <div>
+                      <div className="flex justify-between items-center mb-2">
+                        <div className="project-eyebrow" style={{ color: gStyle.eyebrowColor }}>
+                          {isMasters ? 'POSTGRADUATE DEGREE · AKTU' : 'UNDERGRADUATE DEGREE · LU'}
+                        </div>
+                        <span className="text-xs font-mono" style={{ color: gStyle.accent }}>{item.period}</span>
+                      </div>
+
+                      <h3 className="text-xl md:text-2xl font-bold text-white mb-2">{item.degree}</h3>
+                      <div className="text-xs text-muted mb-5 flex items-center gap-1.5">
+                        <School size={13} style={{ color: gStyle.accent }} />
+                        <span>{item.institution}</span>
+                      </div>
+
+                      {item.score && (
+                        <div className="p-3 rounded-xl border border-white/5 bg-black/30 mb-6 flex justify-between items-center">
+                          <span className="text-xs text-gray-400 font-mono">Official Score Record</span>
+                          <span className="text-xs font-bold font-mono px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+                            {item.score}
+                          </span>
+                        </div>
+                      )}
                     </div>
 
-                    <h3>{item.title}</h3>
-
-                    {/* Only 2 lines of description */}
-                    <p className="project-description" style={{
-                      display: '-webkit-box',
-                      WebkitLineClamp: 2,
-                      WebkitBoxOrient: 'vertical',
-                      overflow: 'hidden',
-                    }}>
-                      {(item.bullets || []).join(' — ')}
-                    </p>
-
-                    {/* Tech stack as plain text tags — no white border */}
-                    <div className="project-footer" style={{ marginTop: 'auto' }}>
+                    <div className="project-footer mt-auto pt-3 flex items-center justify-between">
                       <div className="stack-list">
-                        {(item.techStack || []).slice(0, 5).map((tech, tIdx) => (
-                          <span key={tIdx}>{tech}</span>
+                        {(isMasters
+                          ? ['ASP.NET Core', 'C#', 'SQL Server', 'React.js', 'Data Structures']
+                          : ['C / C++', 'Java Basics', 'Database Concepts', 'Web Basics']
+                        ).map((tag, tIdx) => (
+                          <span key={tIdx}>{tag}</span>
                         ))}
                       </div>
-                      <a
-                        href="https://github.com/OfficialAshutosh2412"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="button button-quiet text-xs py-1.5 px-3 min-h-0"
-                        style={{ fontSize: '11px', gap: '5px' }}
-                      >
-                        <GitHubIcon className="w-3 h-3" />
-                        <span>Repository</span>
-                      </a>
+                      <span className="text-xs font-mono text-purple-bright flex items-center gap-1 shrink-0">
+                        <GraduationCap size={13} /> Degree Verified
+                      </span>
                     </div>
                   </div>
                 </article>
               );
             })}
           </div>
-        </section>
 
-        {/* ─────────────────────────────────────────────────────────────
-           SECTION 03: TECHNICAL SKILLS MATRIX
-        ─────────────────────────────────────────────────────────────── */}
-        {/* Full-width marquee OUTSIDE shell — bleeds edge to edge */}
-        <div id="skills" className="scroll-mt-28" style={{ marginTop: '121px' }}>
-          <SkillsMarquee />
-
-          {/* Title + Slider inside shell, BELOW the marquee */}
-          <div className="shell" style={{ marginTop: '48px' }}>
-            <div className="section-heading split-heading">
+          {/* Subheading for Certifications with generous margin-top and margin-bottom */}
+          <div className="mt-14 pt-8 border-t border-white/5">
+            <div className="section-heading split-heading mb-10 md:mb-12">
               <div>
-                <span className="section-number">03</span>
-                <h2>Technical <em>Skills Matrix</em></h2>
+                <span className="section-number">04.B</span>
+                <h2>Training &amp; <em>Certifications</em></h2>
               </div>
             </div>
-            <SkillsSlider categories={skillCategories} />
-          </div>
-        </div>
 
-        {/* ─────────────────────────────────────────────────────────────
-           SECTION 04: INTERNSHIP & INDUSTRIAL TRAINING
-        ─────────────────────────────────────────────────────────────── */}
-        <section id="experience" className="section scroll-mt-28">
-          <div className="section-heading split-heading">
-            <div>
-              <span className="section-number">04</span>
-              <h2>Experience &amp; <em>Industrial Training</em></h2>
-            </div>
-          </div>
-
-          <div className="space-y-6">
-            {(data.experience || []).map((item) => {
-              const ExpIcon = getExpIcon(item.role, item.company);
-              return (
-                <div
-                  key={item.id}
-                  className="project-card accent-cyan p-8 rounded-2xl"
-                  style={{
-                    background: 'linear-gradient(135deg, rgba(9, 10, 15, 0.95), rgba(34, 211, 238, 0.06))',
-                    border: '1px solid rgba(255, 255, 255, 0.08)'
-                  }}
-                >
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4 pb-4 border-b border-line">
-                    <div className="flex items-center gap-4">
-                      <div className="p-3 rounded-xl bg-purple/15 text-purple-bright border border-purple/30 shrink-0">
-                        <ExpIcon className="w-5 h-5" />
-                      </div>
-                      <div>
-                        <h3 className="text-xl font-bold text-white mb-1">
-                          {item.role}
-                        </h3>
-                        <div className="text-purple-bright text-xs font-mono flex items-center gap-2">
-                          <span>{item.company}</span>
-                          <span>•</span>
-                          <span className="text-muted">{item.location}</span>
-                        </div>
-                      </div>
-                    </div>
-                    <span className="text-xs font-mono text-cyan bg-cyan/10 px-3 py-1.5 rounded-full border border-cyan/20">
-                      {item.period}
-                    </span>
-                  </div>
-
-                  <ul className="space-y-2.5 text-gray-300 text-sm leading-relaxed">
-                    {(item.bullets || []).map((bullet, bIdx) => (
-                      <li key={bIdx} className="flex items-start gap-2.5">
-                        <CheckCircle2 className="w-4 h-4 text-cyan shrink-0 mt-0.5" />
-                        <span>{bullet}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              );
-            })}
+            <CertificateCarousel certificates={data.certificates} />
           </div>
         </section>
 
         {/* ─────────────────────────────────────────────────────────────
-           SECTION 05: EDUCATION & CERTIFICATIONS
-        ─────────────────────────────────────────────────────────────── */}
-        <section id="education" className="section scroll-mt-28">
-          <div className="section-heading split-heading">
-            <div>
-              <span className="section-number">05</span>
-              <h2>Education &amp; <em>Certifications</em></h2>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-            {(data.education || []).map((item) => {
-              const SchoolIcon = getSchoolIcon(item.iconType);
-              return (
-                <div
-                  key={item.id}
-                  className="project-card p-8 rounded-2xl flex flex-col justify-between"
-                  style={{
-                    background: 'linear-gradient(135deg, rgba(9, 10, 15, 0.95), rgba(118, 84, 232, 0.08))',
-                    border: '1px solid rgba(255, 255, 255, 0.08)'
-                  }}
-                >
-                  <div>
-                    <div className="flex justify-between items-center mb-4">
-                      <div className="p-3 rounded-xl bg-purple/15 text-purple-bright border border-purple/30">
-                        <SchoolIcon className="w-5 h-5" />
-                      </div>
-                      <span className="text-xs font-mono text-purple-bright bg-purple/10 px-3 py-1 rounded-full border border-purple/20">
-                        {item.period}
-                      </span>
-                    </div>
-
-                    <h3 className="text-2xl font-bold text-white mb-2">
-                      {item.degree}
-                    </h3>
-                    <p className="text-xs text-muted mb-4">{item.institution}</p>
-                  </div>
-
-                  {item.score && (
-                    <div className="pt-3 border-t border-line flex justify-between items-center text-xs font-mono">
-                      <span className="text-muted">Academic Score:</span>
-                      <span className="font-bold text-green">{item.score}</span>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-
-          <CertificateCarousel certificates={data.certificates} />
-        </section>
-
-        {/* ─────────────────────────────────────────────────────────────
-           SECTION 06: CONTACT CTA BANNER
+           SECTION 05: CONTACT CTA BANNER
         ─────────────────────────────────────────────────────────────── */}
         <section id="contact" className="section contact-section scroll-mt-28">
           <div className="contact-card">
@@ -926,12 +1209,11 @@ const Portfolio = () => {
                 >
                   <Mail size={16} /> Contact Me Now
                 </button>
-                <button
+                <a href="/resume.pdf" target="_blank" download
                   className="button button-quiet cursor-pointer"
-                  onClick={downloadResume}
                 >
-                  <Download size={15} /> Download résumé
-                </button>
+                  Download Resume
+                </a>
               </div>
             </div>
 

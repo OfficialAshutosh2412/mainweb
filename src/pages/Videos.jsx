@@ -47,6 +47,7 @@ const Videos = () => {
                   <iframe
                     src={video.url}
                     title={video.title}
+                    loading="lazy"
                     className="w-full h-full"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowFullScreen

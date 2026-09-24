@@ -2,49 +2,17 @@ import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Braces, Menu, X, Download } from 'lucide-react';
 import { useContactDrawer } from '../context/ContactContext';
+import { prefetchRoute } from '../App';
 
 const navItems = [
   ['home', 'Main Site', '/'],
+  ['portfolio', 'Portfolio', '/portfolio'],
   ['store', 'Code Vault', '/store'],
   ['notes', 'Notes', '/notes'],
   ['videos', 'Videos', '/videos'],
 ];
 
-export const downloadResume = () => {
-  const resume = `ASHUTOSH PRASAD
-C# / .NET & Full-Stack Developer
-Location: Lucknow, Uttar Pradesh | Phone: +91-6386239194
-Email: ashutoshprasad2427@gmail.com
-LinkedIn: https://linkedin.com/in/ashutosh-prasad-0449181ba
-GitHub: https://github.com/OfficialAshutosh2412
 
-SUMMARY
-MCA graduate with hands-on experience in C#, ASP.NET MVC, ASP.NET Core Web API, React.js, and SQL Server. Skilled in developing full-stack web applications, RESTful APIs, JWT Authentication, and database-driven applications using Entity Framework Core & ADO.NET.
-
-TECHNICAL SKILLS
-- Languages: C#, JavaScript, SQL, Python, C, C++
-- Backend: ASP.NET Core Web API, ASP.NET MVC, Entity Framework Core, ADO.NET, LINQ, JWT Auth, SignalR, RESTful APIs
-- Frontend: React.js, HTML5, CSS3, JavaScript, Tailwind CSS, Bootstrap, AJAX, jQuery
-- Databases: SQL Server, PostgreSQL, MySQL
-- Tools: Visual Studio, VS Code, Git, GitHub, Postman, Swagger, SSMS, Vercel, Render, Supabase
-
-ACADEMIC & SHOWCASE PROJECTS
-- Quality Management System (QMS): Full-Stack ASP.NET Core Web API + React.js + PostgreSQL/SQL Server
-- Crime Tracking System (CTS): ASP.NET MVC + C# + EF + AJAX + SQL Server
-- SIS Institute Academy Portal: ASP.NET Web Forms + C# + ADO.NET + SQL Server
-
-EDUCATION
-- MCA (Master of Computer Applications) — AKTU, Lucknow (CGPA: 8.24)
-- BCA (Bachelor of Computer Applications) — Lucknow University (61.02%)
-`;
-  const blob = new Blob([resume], { type: 'text/plain' });
-  const url = URL.createObjectURL(blob);
-  const anchor = document.createElement('a');
-  anchor.href = url;
-  anchor.download = 'ashutosh-prasad-resume.txt';
-  anchor.click();
-  URL.revokeObjectURL(url);
-};
 
 const Navbar = ({ reducedMotion, setReducedMotion }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -84,6 +52,8 @@ const Navbar = ({ reducedMotion, setReducedMotion }) => {
             <Link
               key={id}
               to={path}
+              onMouseEnter={() => prefetchRoute(path)}
+              onTouchStart={() => prefetchRoute(path)}
               className={`cursor-pointer ${location.pathname === path ? 'active' : ''}`}
               data-testid={`nav-${id}-link`}
             >
@@ -128,6 +98,8 @@ const Navbar = ({ reducedMotion, setReducedMotion }) => {
           {navItems.map(([id, label, path]) => (
             <button
               key={id}
+              onMouseEnter={() => prefetchRoute(path)}
+              onTouchStart={() => prefetchRoute(path)}
               onClick={() => {
                 setMobileMenuOpen(false);
                 navigate(path);
@@ -145,16 +117,12 @@ const Navbar = ({ reducedMotion, setReducedMotion }) => {
           >
             Contact
           </button>
-          <button
-            className="mobile-resume-link"
-            onClick={() => {
-              setMobileMenuOpen(false);
-              downloadResume();
-            }}
-            data-testid="mobile-resume-download-button"
+          <a href='resume' download={true}
+            className="mobile-resume-link cursor-pointer"
+
           >
-            <Download size={15} /> Download résumé
-          </button>
+            Download Resume
+          </a>
         </div>
       )}
     </header>

@@ -1,5 +1,4 @@
 import { ArrowUpRight, Download, Code2, Database, Cloud, Terminal, ShieldCheck, Cpu, Layers, Sparkles } from 'lucide-react';
-import { downloadResume } from './Navbar';
 
 const orbitTech = [
   { name: 'C#', class: 'tech-csharp', icon: Code2, index: 0 },
@@ -40,13 +39,12 @@ const HeroSection = () => {
           >
             See selected work <ArrowUpRight size={17} />
           </button>
-          <button
+          <a href="resume.pdf" target='_blank' download={true}
             className="button button-quiet cursor-pointer"
-            onClick={downloadResume}
             data-testid="hero-resume-download-button"
           >
-            <Download size={16} /> Download résumé
-          </button>
+            Download Resume
+          </a>
         </div>
 
         <div className="hero-proof" data-testid="hero-proof-row">

@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { UserCheck, ArrowUpRight } from 'lucide-react';
+import { prefetchRoute } from '../App';
 
 const Footer = () => {
   const scrollToTop = () => {
@@ -15,6 +16,8 @@ const Footer = () => {
       <div className="flex items-center gap-4 flex-wrap">
         <Link
           to="/portfolio"
+          onMouseEnter={() => prefetchRoute('/portfolio')}
+          onTouchStart={() => prefetchRoute('/portfolio')}
           className="button button-primary text-xs py-1.5 px-3.5 gap-1.5 cursor-pointer"
         >
           <UserCheck size={14} />

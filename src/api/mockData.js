@@ -29,28 +29,28 @@ export const mainWebsiteData = {
     { id: 3, title: "Modern C# & .NET Architecture Best Practices 2026", url: "https://www.youtube.com/embed/dQw4w9WgXcQ" }
   ],
   showcaseProjects: [
-    { 
-      id: 1, 
-      title: "Frontend Development", 
-      description: "Designing and building responsive, interactive user interfaces with React.js, JavaScript, HTML5, CSS3, Tailwind CSS, Bootstrap, and AJAX for modern web applications.", 
-      type: "Personal", 
-      tech: ["React.js", "JavaScript", "Tailwind CSS", "Bootstrap"] 
+    {
+      id: 1,
+      title: "Frontend Development",
+      description: "Designing and building responsive, interactive user interfaces with React.js, JavaScript, HTML5, CSS3, Tailwind CSS, Bootstrap, and AJAX for modern web applications.",
+      type: "Personal",
+      tech: ["React.js", "JavaScript", "Tailwind CSS", "Bootstrap"]
     },
-    { 
-      id: 2, 
-      title: "Backend Development", 
-      description: "Architecting scalable RESTful APIs and secure server-side applications using C#, ASP.NET Core Web API, ASP.NET MVC, Entity Framework Core, JWT Authentication, and SQL Server.", 
-      type: "Certified", 
-      tech: ["C#", "ASP.NET Core", "SQL Server", "EF Core", "JWT Auth"] 
+    {
+      id: 2,
+      title: "Backend Development",
+      description: "Architecting scalable RESTful APIs and secure server-side applications using C#, ASP.NET Core Web API, ASP.NET MVC, Entity Framework Core, JWT Authentication, and SQL Server.",
+      type: "Certified",
+      tech: ["C#", "ASP.NET Core", "SQL Server", "EF Core", "JWT Auth"]
     }
   ],
   storeProjects: {
     minor: [
-      { 
-        id: 1, 
-        title: "Quality Management System (QMS)", 
-        description: "Full-stack QMS with role-based JWT auth, real-time SignalR analytics, ASP.NET Core Web API, React.js, and SQL Server/PostgreSQL database integration.", 
-        price: "$25", 
+      {
+        id: 1,
+        title: "Quality Management System (QMS)",
+        description: "Full-stack QMS with role-based JWT auth, real-time SignalR analytics, ASP.NET Core Web API, React.js, and SQL Server/PostgreSQL database integration.",
+        price: "$25",
         thumbnail: qmsThumb,
         features: [
           "JWT Auth & Role-Based Security",
@@ -58,14 +58,14 @@ export const mainWebsiteData = {
           "Complete Source Code & Architectural Blueprint"
         ],
         tech: ["ASP.NET Core", "React.js", "C#", "SQL Server", "SignalR"],
-        hasDocumentation: true, 
-        hasThesis: true 
+        hasDocumentation: true,
+        hasThesis: true
       },
-      { 
-        id: 2, 
-        title: "Crime Tracking System (CTS)", 
-        description: "Role-based crime reporting & management portal using ASP.NET MVC, C#, Entity Framework, LINQ, SQL Server, and AJAX-based async retrieval.", 
-        price: "$20", 
+      {
+        id: 2,
+        title: "Crime Tracking System (CTS)",
+        description: "Role-based crime reporting & management portal using ASP.NET MVC, C#, Entity Framework, LINQ, SQL Server, and AJAX-based async retrieval.",
+        price: "$20",
         thumbnail: ctsThumb,
         features: [
           "Role-Based Incident & Crime Reporting",
@@ -73,14 +73,14 @@ export const mainWebsiteData = {
           "Entity Framework & SQL Server Database Schema"
         ],
         tech: ["ASP.NET MVC", "C#", "SQL Server", "Bootstrap"],
-        hasDocumentation: true, 
-        hasThesis: true 
+        hasDocumentation: true,
+        hasThesis: true
       },
-      { 
-        id: 3, 
-        title: "SIS Institute Academy Portal", 
-        description: "Academy management portal for student enrollment, record management, certificate generation, and status tracking using ASP.NET Web Forms & ADO.NET.", 
-        price: "$18", 
+      {
+        id: 3,
+        title: "SIS Institute Academy Portal",
+        description: "Academy management portal for student enrollment, record management, certificate generation, and status tracking using ASP.NET Web Forms & ADO.NET.",
+        price: "$18",
         thumbnail: sisThumb,
         features: [
           "Student Enrollment & Transcript Management",
@@ -88,14 +88,14 @@ export const mainWebsiteData = {
           "ADO.NET Data Layer & Stored Procedures"
         ],
         tech: ["ASP.NET Web Forms", "C#", "SQL Server", "ADO.NET"],
-        hasDocumentation: true, 
-        hasThesis: false 
+        hasDocumentation: true,
+        hasThesis: false
       },
-      { 
-        id: 4, 
-        title: "Digital Diary & Cloud Note Vault", 
-        description: "Minimalist encrypted note taking & diary web application built with React.js, Tailwind CSS, PostgreSQL, and Supabase Authentication.", 
-        price: "$15", 
+      {
+        id: 4,
+        title: "Digital Diary & Cloud Note Vault",
+        description: "Minimalist encrypted note taking & diary web application built with React.js, Tailwind CSS, PostgreSQL, and Supabase Authentication.",
+        price: "$15",
         thumbnail: qmsThumb,
         features: [
           "Client-Side Note Encryption & Secure Vault",
@@ -103,8 +103,8 @@ export const mainWebsiteData = {
           "Clean Modern UI & Markdown Support"
         ],
         tech: ["React.js", "Tailwind CSS", "Supabase", "PostgreSQL"],
-        hasDocumentation: true, 
-        hasThesis: false 
+        hasDocumentation: true,
+        hasThesis: false
       }
     ]
   }
@@ -120,7 +120,7 @@ export const portfolioData = {
     linkedin: "https://linkedin.com/in/ashutosh-prasad-0449181ba",
     github: "https://github.com/OfficialAshutosh2412"
   },
-  summary: "MCA graduate with hands-on experience in C#, ASP.NET MVC, ASP.NET Core Web API, React.js, and SQL Server through internships, technical training, and academic projects. Skilled in developing full-stack web applications, RESTful APIs, authentication and authorization, and database-driven applications using Entity Framework Core and ADO.NET. Seeking an entry-level .NET Developer role to contribute to modern software solutions while continuing to grow professionally.",
+  // summary: "MCA graduate with hands-on experience in C#, ASP.NET MVC, ASP.NET Core Web API, React.js, and SQL Server through internships, technical training, and academic projects. Skilled in developing full-stack web applications, RESTful APIs, authentication and authorization, and database-driven applications using Entity Framework Core and ADO.NET. Seeking an entry-level .NET Developer role to contribute to modern software solutions while continuing to grow professionally.",
   technicalSkills: {
     languages: ["C#", "JavaScript", "SQL", "Python", "C", "C++"],
     backend: ["ASP.NET Web Forms", "ASP.NET MVC", "ASP.NET Core Web API", "ADO.NET", "Entity Framework", "Entity Framework Core", "LINQ", "ASP.NET Core Identity", "JWT Authentication", "SignalR", "RESTful APIs"],
