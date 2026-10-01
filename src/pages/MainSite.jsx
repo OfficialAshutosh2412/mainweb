@@ -1,13 +1,12 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import HeroSection from '../components/HeroSection';
 import Footer from '../components/Footer';
 import { useContactDrawer } from '../context/ContactContext';
 import { portfolioData, mainWebsiteData } from '../api/mockData';
 import {
-  ArrowRight, ArrowUpRight, Check, Copy, Database, Layers, Mail,
-  MapPin, Phone, ShieldCheck, Sparkles, Terminal, Code2, Server, ExternalLink,
-  BookOpen, Play, ShoppingCart, CheckCircle, Zap
+  ArrowRight, ArrowUpRight, Check, Copy, Mail,
+  MapPin, Phone, Code2, ExternalLink, ShoppingCart
 } from 'lucide-react';
 
 /* ── Selling / Blueprint Projects for Main Landing Page ── */
@@ -41,7 +40,6 @@ const cardGradients = [
 ];
 
 const MainSite = () => {
-  const [projectFilter, setProjectFilter] = useState('All');
   const [copied, setCopied] = useState(false);
   const { openContactDrawer } = useContactDrawer();
   const location = useLocation();
@@ -121,26 +119,20 @@ const MainSite = () => {
                     <div className="visual-connector" />
                   </div>
 
-                  <div className="project-body">
-                    <div className="flex justify-between items-center mb-2">
+                  <div className="project-body card-body">
+                    <div className="card-meta-row mb-2">
                       <div className="project-eyebrow">BLUEPRINT &amp; SOURCE CODE</div>
                       <span className="text-sm font-bold font-mono" style={{ color: gStyle.priceColor }}>
                         {project.price}
                       </span>
                     </div>
-                    <h3>{project.title}</h3>
-                    <p className="project-description">{project.description}</p>
+                    <h3 className="card-title">{project.title}</h3>
 
-                    <div className="space-y-1.5 mb-4">
-                      {project.features.map((feat, fIdx) => (
-                        <div key={fIdx} className="flex items-center gap-2 text-xs text-muted">
-                          <CheckCircle size={13} className="text-green shrink-0" />
-                          <span className="truncate">{feat}</span>
-                        </div>
-                      ))}
-                    </div>
+                    {/* Description + feature list intentionally omitted on the
+                        landing page — the full detail lives on /store. Keeps
+                        the card short and the grid scannable. */}
 
-                    <div className="project-footer">
+                    <div className="project-footer card-footer">
                       <div className="stack-list">
                         {project.tech.map((s) => (
                           <span key={s}>{s}</span>
@@ -151,7 +143,7 @@ const MainSite = () => {
                         className="button button-primary text-xs py-1.5 px-3 min-h-0"
                       >
                         <ShoppingCart size={13} />
-                        <span>{project.price}</span>
+                        <span>Get</span>
                       </Link>
                     </div>
                   </div>
@@ -177,15 +169,15 @@ const MainSite = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10">
             {mainWebsiteData.notes.slice(0, 3).map((note) => (
-              <div key={note.id} className="project-card p-6 flex flex-col justify-between h-full hover:border-line-bright transition-all">
+              <div key={note.id} className="project-card card-body p-6 flex flex-col justify-between h-full hover:border-line-bright transition-all">
                 <div>
-                  <div className="flex justify-between items-center mb-3">
+                  <div className="card-meta-row mb-3">
                     <span className="text-[10px] font-mono text-purple-bright border border-purple/30 px-2 py-0.5 rounded">
                       {note.tech}
                     </span>
                     <span className="text-xs font-mono text-faint">{note.date}</span>
                   </div>
-                  <h3 className="text-lg font-bold text-white mb-2">{note.title}</h3>
+                  <h3 className="card-title text-lg font-bold text-white mb-2">{note.title}</h3>
                   <p className="text-xs text-muted leading-relaxed mb-4">{note.snippet}</p>
                 </div>
 

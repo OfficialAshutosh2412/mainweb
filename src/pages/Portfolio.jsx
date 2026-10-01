@@ -364,14 +364,12 @@ const CertificateCarousel = ({ certificates = [] }) => {
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
-      {/* 3D Track Stage with Smooth Edge Fading */}
-      <div
-        className="relative w-full h-[370px] sm:h-[350px] flex items-center justify-center overflow-hidden"
-        style={{
-          maskImage: "linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%)",
-          WebkitMaskImage: "linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%)",
-        }}
-      >
+      {/* 3D Track Stage with Smooth Edge Fading.
+          `cert-track` has vertical padding so the scaled card isn't
+          clipped at the top when it animates in. The horizontal fade
+          is defined in CSS (.cert-track-mask) so it can be softened
+          on narrow screens. */}
+      <div className="cert-track cert-track-mask relative w-full h-[400px] sm:h-[380px] flex items-center justify-center overflow-hidden">
         {/* Left & Right Soft Fade Overlays for Smooth Ending */}
         <div
           className="absolute left-0 top-0 bottom-0 w-20 sm:w-36 z-30 pointer-events-none"
@@ -464,7 +462,7 @@ const CertificateCarousel = ({ certificates = [] }) => {
                 }}
               >
                 {/* Visual Header Strip — Theme Card Design */}
-                <div className="project-visual" style={{ height: "98px" }}>
+                <div className="project-visual card-visual" style={{ height: "98px" }}>
                   <span className="project-index">CERT · 0{idx + 1}</span>
                   <div
                     className="project-open"
@@ -485,9 +483,9 @@ const CertificateCarousel = ({ certificates = [] }) => {
                 </div>
 
                 {/* Body — Theme Card Design */}
-                <div className="project-body flex-1 flex flex-col justify-between py-4 px-6">
-                  <div>
-                    <div className="flex justify-between items-center mb-1.5">
+                <div className="project-body card-body flex-1 flex flex-col justify-between py-4 px-6">
+                  <div className="min-w-0">
+                    <div className="card-meta-row mb-1.5">
                       <div className="project-eyebrow" style={{ color: gStyle.eyebrowColor }}>
                         {cert.type.toUpperCase()}
                       </div>
@@ -496,18 +494,18 @@ const CertificateCarousel = ({ certificates = [] }) => {
                       </span>
                     </div>
 
-                    <h3 className="text-lg sm:text-xl font-bold text-white mb-2 leading-snug">
+                    <h3 className="card-title text-base sm:text-lg sm:font-bold font-bold text-white mb-2 leading-snug">
                       {cert.title}
                     </h3>
                   </div>
 
-                  <div className="project-footer mt-auto pt-3 flex items-center justify-between">
-                    <span className="flex items-center gap-1.5 text-xs text-gray-300 font-medium">
-                      <Award className="w-3.5 h-3.5" style={{ color: gStyle.accent }} />
-                      {cert.issuer}
+                  <div className="project-footer card-footer mt-auto pt-3 flex items-center justify-between gap-2">
+                    <span className="flex items-center gap-1.5 text-xs text-gray-300 font-medium min-w-0">
+                      <Award className="w-3.5 h-3.5 shrink-0" style={{ color: gStyle.accent }} />
+                      <span className="truncate">{cert.issuer}</span>
                     </span>
-                    <span className="text-xs text-emerald-400 font-mono flex items-center gap-1">
-                      <CheckCircle2 size={12} /> Verified Credential
+                    <span className="text-xs text-emerald-400 font-mono flex items-center gap-1 shrink-0">
+                      <CheckCircle2 size={12} className="shrink-0" /> Verified
                     </span>
                   </div>
                 </div>
@@ -573,7 +571,7 @@ const AcademicProjectCard = ({ item, index }) => {
       style={{ background: gStyle.bg, border: gStyle.border }}
     >
       {/* Visual Header */}
-      <div className="project-visual" style={{ height: "110px" }}>
+      <div className="project-visual card-visual" style={{ height: "110px" }}>
         <span className="project-index">0{index + 1}</span>
         <a
           href="https://github.com/OfficialAshutosh2412"
@@ -595,9 +593,9 @@ const AcademicProjectCard = ({ item, index }) => {
       </div>
 
       {/* Body */}
-      <div className="project-body flex-1 flex flex-col justify-between">
-        <div>
-          <div className="flex justify-between items-center mb-2">
+      <div className="project-body card-body flex-1 flex flex-col justify-between">
+        <div className="min-w-0">
+          <div className="card-meta-row mb-2">
             <div className="project-eyebrow" style={{ color: gStyle.eyebrowColor }}>
               ACADEMIC &amp; THESIS
             </div>
@@ -606,16 +604,16 @@ const AcademicProjectCard = ({ item, index }) => {
             </span>
           </div>
 
-          <h3 className="text-xl md:text-2xl font-bold text-white mb-3">
+          <h3 className="card-title text-lg sm:text-xl md:text-2xl font-bold text-white mb-3">
             {item.title}
           </h3>
 
           {/* First / Primary bullet always shown */}
           {firstBullet && (
-            <ul className="space-y-2.5 text-xs md:text-sm text-gray-300 leading-relaxed mb-2">
+            <ul className="card-list space-y-2.5 text-xs md:text-sm text-gray-300 leading-relaxed mb-2">
               <li className="flex items-start gap-2">
                 <CheckCircle2 size={14} className="shrink-0 mt-0.5" style={{ color: gStyle.accent }} />
-                <span>{firstBullet}</span>
+                <span className="min-w-0">{firstBullet}</span>
               </li>
             </ul>
           )}
@@ -630,11 +628,11 @@ const AcademicProjectCard = ({ item, index }) => {
                 transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
                 className="overflow-hidden"
               >
-                <ul className="space-y-2.5 text-xs md:text-sm text-gray-300 leading-relaxed pt-1 pb-3">
+                <ul className="card-list space-y-2.5 text-xs md:text-sm text-gray-300 leading-relaxed pt-1 pb-3">
                   {remainingBullets.map((bullet, bIdx) => (
                     <li key={bIdx} className="flex items-start gap-2">
                       <CheckCircle2 size={14} className="shrink-0 mt-0.5" style={{ color: gStyle.accent }} />
-                      <span>{bullet}</span>
+                      <span className="min-w-0">{bullet}</span>
                     </li>
                   ))}
                 </ul>
@@ -644,30 +642,31 @@ const AcademicProjectCard = ({ item, index }) => {
         </div>
 
         {/* Footer */}
-        <div className="project-footer mt-auto pt-3 flex items-center justify-between gap-3">
+        <div className="project-footer card-footer mt-auto pt-3 flex items-center justify-between gap-3">
           <div className="stack-list">
             {(item.techStack || []).slice(0, 5).map((tech, tIdx) => (
               <span key={tIdx}>{tech}</span>
             ))}
           </div>
 
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="card-actions flex items-center gap-2">
             {remainingBullets.length > 0 && (
               <button
                 type="button"
                 onClick={() => setIsExpanded((prev) => !prev)}
-                className="button button-quiet text-xs py-1.5 px-2.5 min-h-0 cursor-pointer"
-                style={{ fontSize: "11px", gap: "4px", borderColor: `${gStyle.accent}40`, color: gStyle.accent }}
+                className="button button-quiet card-action-btn text-xs py-1.5 px-3 min-h-0 cursor-pointer"
+                aria-expanded={isExpanded}
+                style={{ fontSize: "11px", gap: "5px" }}
               >
-                <span>{isExpanded ? "See less" : "See more"}</span>
                 {isExpanded ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
+                <span>{isExpanded ? "See less" : "See more"}</span>
               </button>
             )}
             <a
               href="https://github.com/OfficialAshutosh2412"
               target="_blank"
               rel="noopener noreferrer"
-              className="button button-quiet text-xs py-1.5 px-3 min-h-0"
+              className="button button-quiet card-action-btn text-xs py-1.5 px-3 min-h-0"
               style={{ fontSize: "11px", gap: "5px" }}
             >
               <GitHubIcon className="w-3 h-3" />
@@ -695,7 +694,7 @@ const ExperienceCard = ({ item, index }) => {
       className="project-card academic-project-card flex flex-col justify-between"
       style={{ background: gStyle.bg, border: gStyle.border }}
     >
-      <div className="project-visual" style={{ height: "110px" }}>
+      <div className="project-visual card-visual" style={{ height: "110px" }}>
         <span className="project-index">EXP · 0{index + 1}</span>
         <div
           className="project-open"
@@ -713,9 +712,9 @@ const ExperienceCard = ({ item, index }) => {
         <div className="visual-connector" />
       </div>
 
-      <div className="project-body flex-1 flex flex-col justify-between">
-        <div>
-          <div className="flex justify-between items-center mb-2">
+      <div className="project-body card-body flex-1 flex flex-col justify-between">
+        <div className="min-w-0">
+          <div className="card-meta-row mb-2">
             <div className="project-eyebrow" style={{ color: gStyle.eyebrowColor }}>
               {item.role.toLowerCase().includes("internship") ? "SUMMER INTERNSHIP" : "INDUSTRIAL TRAINING"}
             </div>
@@ -724,20 +723,20 @@ const ExperienceCard = ({ item, index }) => {
             </span>
           </div>
 
-          <h3 className="text-xl md:text-2xl font-bold text-white mb-2">{item.role}</h3>
-          <div className="text-xs font-mono text-muted mb-4 flex items-center gap-1.5">
-            <Building2 size={13} style={{ color: gStyle.accent }} />
+          <h3 className="card-title text-lg sm:text-xl md:text-2xl font-bold text-white mb-2">{item.role}</h3>
+          <div className="card-company text-xs font-mono text-muted mb-4 flex items-center gap-1.5 flex-wrap">
+            <Building2 size={13} className="shrink-0" style={{ color: gStyle.accent }} />
             <span className="text-gray-200 font-semibold">{item.company}</span>
-            <span>•</span>
+            <span aria-hidden="true">•</span>
             <span>{item.location}</span>
           </div>
 
           {/* First bullet always shown */}
           {firstBullet && (
-            <ul className="space-y-2.5 text-xs md:text-sm text-gray-300 leading-relaxed mb-2">
+            <ul className="card-list space-y-2.5 text-xs md:text-sm text-gray-300 leading-relaxed mb-2">
               <li className="flex items-start gap-2">
                 <CheckCircle2 size={14} className="shrink-0 mt-0.5" style={{ color: gStyle.accent }} />
-                <span>{firstBullet}</span>
+                <span className="min-w-0">{firstBullet}</span>
               </li>
             </ul>
           )}
@@ -752,11 +751,11 @@ const ExperienceCard = ({ item, index }) => {
                 transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
                 className="overflow-hidden"
               >
-                <ul className="space-y-2.5 text-xs md:text-sm text-gray-300 leading-relaxed pt-1 pb-3">
+                <ul className="card-list space-y-2.5 text-xs md:text-sm text-gray-300 leading-relaxed pt-1 pb-3">
                   {remainingBullets.map((bullet, bIdx) => (
                     <li key={bIdx} className="flex items-start gap-2">
                       <CheckCircle2 size={14} className="shrink-0 mt-0.5" style={{ color: gStyle.accent }} />
-                      <span>{bullet}</span>
+                      <span className="min-w-0">{bullet}</span>
                     </li>
                   ))}
                 </ul>
@@ -765,25 +764,26 @@ const ExperienceCard = ({ item, index }) => {
           </AnimatePresence>
         </div>
 
-        <div className="project-footer mt-auto pt-3 flex items-center justify-between gap-3">
+        <div className="project-footer card-footer mt-auto pt-3 flex items-center justify-between gap-3">
           <div className="stack-list">
             {techList.map((tech, tIdx) => (
               <span key={tIdx}>{tech}</span>
             ))}
           </div>
-          <div className="flex items-center gap-2.5 shrink-0">
-            <span className="text-xs font-mono text-emerald-400 flex items-center gap-1">
-              <CheckCircle2 size={12} /> Verified Training
+          <div className="card-actions flex items-center gap-2.5 flex-wrap justify-end">
+            <span className="card-verified text-xs font-mono text-emerald-400 flex items-center gap-1">
+              <CheckCircle2 size={12} className="shrink-0" /> Verified Training
             </span>
             {remainingBullets.length > 0 && (
               <button
                 type="button"
                 onClick={() => setIsExpanded((prev) => !prev)}
-                className="button button-quiet text-xs py-1.5 px-2.5 min-h-0 cursor-pointer"
-                style={{ fontSize: "11px", gap: "4px", borderColor: `${gStyle.accent}40`, color: gStyle.accent }}
+                className="button button-quiet card-action-btn text-xs py-1.5 px-3 min-h-0 cursor-pointer"
+                aria-expanded={isExpanded}
+                style={{ fontSize: "11px", gap: "5px" }}
               >
-                <span>{isExpanded ? "See less" : "See more"}</span>
                 {isExpanded ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
+                <span>{isExpanded ? "See less" : "See more"}</span>
               </button>
             )}
           </div>
@@ -872,15 +872,15 @@ const Portfolio = () => {
     <div className="portfolio-page-wrapper w-full">
 
       {/* ── Portfolio Hero Section — Two-Column: Left Text + Right Avatar ── */}
-      <section className="shell hero-section" style={{ minHeight: 'auto', padding: '100px 0 60px' }}>
+      <section className="shell hero-section portfolio-hero">
         {/* LEFT — Big text copy */}
         <div className="hero-copy">
           <div className="eyebrow">
             <span className="eyebrow-line" /> ACADEMIC &amp; RESUME PORTFOLIO
           </div>
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-normal leading-[1.06]" style={{ overflow: 'visible' }}>
+          <h1 className="portfolio-hero-title">
             Engineering<br />
-            <span style={{ display: 'inline-block', paddingRight: '0.18em' }}>credentials</span><br />
+            <span>credentials</span><br />
             built on proof.
           </h1>
           <p className="hero-lede hero-lede-large" style={{ marginTop: '22px' }}>
@@ -1049,11 +1049,11 @@ const Portfolio = () => {
            SECTION 02: TECHNICAL SKILLS MATRIX
         ─────────────────────────────────────────────────────────────── */}
         {/* Full-width marquee OUTSIDE shell — bleeds edge to edge */}
-        <div id="skills" className="scroll-mt-28" style={{ marginTop: '121px' }}>
+        <div id="skills" className="skills-anchor scroll-mt-28">
           <SkillsMarquee />
 
           {/* Title + Slider inside shell, BELOW the marquee */}
-          <div className="shell" style={{ marginTop: '56px' }}>
+          <div className="shell skills-shell">
             <div className="section-heading split-heading mb-10 md:mb-12">
               <div>
                 <span className="section-number">02</span>
@@ -1105,7 +1105,7 @@ const Portfolio = () => {
                   className="project-card academic-project-card flex flex-col justify-between"
                   style={{ background: gStyle.bg, border: gStyle.border }}
                 >
-                  <div className="project-visual" style={{ height: '110px' }}>
+                  <div className="project-visual card-visual" style={{ height: '110px' }}>
                     <span className="project-index">EDU · 0{i + 1}</span>
                     <div
                       className="project-open"
@@ -1123,23 +1123,23 @@ const Portfolio = () => {
                     <div className="visual-connector" />
                   </div>
 
-                  <div className="project-body flex-1 flex flex-col justify-between">
-                    <div>
-                      <div className="flex justify-between items-center mb-2">
+                  <div className="project-body card-body flex-1 flex flex-col justify-between">
+                    <div className="min-w-0">
+                      <div className="card-meta-row mb-2">
                         <div className="project-eyebrow" style={{ color: gStyle.eyebrowColor }}>
                           {isMasters ? 'POSTGRADUATE DEGREE · AKTU' : 'UNDERGRADUATE DEGREE · LU'}
                         </div>
                         <span className="text-xs font-mono" style={{ color: gStyle.accent }}>{item.period}</span>
                       </div>
 
-                      <h3 className="text-xl md:text-2xl font-bold text-white mb-2">{item.degree}</h3>
-                      <div className="text-xs text-muted mb-5 flex items-center gap-1.5">
-                        <School size={13} style={{ color: gStyle.accent }} />
-                        <span>{item.institution}</span>
+                      <h3 className="card-title text-lg sm:text-xl md:text-2xl font-bold text-white mb-2">{item.degree}</h3>
+                      <div className="card-company text-xs text-muted mb-5 flex items-center gap-1.5">
+                        <School size={13} className="shrink-0" style={{ color: gStyle.accent }} />
+                        <span className="min-w-0">{item.institution}</span>
                       </div>
 
                       {item.score && (
-                        <div className="p-3 rounded-xl border border-white/5 bg-black/30 mb-6 flex justify-between items-center">
+                        <div className="card-score p-3 rounded-xl border border-white/5 bg-black/30 mb-6 flex justify-between items-center gap-3 flex-wrap">
                           <span className="text-xs text-gray-400 font-mono">Official Score Record</span>
                           <span className="text-xs font-bold font-mono px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
                             {item.score}
@@ -1148,7 +1148,7 @@ const Portfolio = () => {
                       )}
                     </div>
 
-                    <div className="project-footer mt-auto pt-3 flex items-center justify-between">
+                    <div className="project-footer card-footer mt-auto pt-3 flex items-center justify-between gap-3">
                       <div className="stack-list">
                         {(isMasters
                           ? ['ASP.NET Core', 'C#', 'SQL Server', 'React.js', 'Data Structures']

@@ -58,8 +58,8 @@ const Projects = () => {
   const filteredProjects = allProjects.filter(p => filter === 'all' || p.category === filter);
 
   return (
-    <div className="bg-transparent text-white flex flex-col min-h-screen selection:bg-ambient-blue relative overflow-hidden">
-      <div className="flex-1 max-w-6xl mx-auto px-4 sm:px-6 pt-28 sm:pt-36 pb-24 w-full relative z-10">
+    <div className="page-stack">
+      <div className="page-stack-body">
         
         {/* Page header */}
         <motion.div

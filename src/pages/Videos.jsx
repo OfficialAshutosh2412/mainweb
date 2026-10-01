@@ -17,20 +17,21 @@ const Videos = () => {
   if (!data) return <div className="min-h-screen bg-dark-bg" />;
 
   return (
-    <div className="bg-transparent min-h-screen text-white flex flex-col justify-between relative overflow-hidden selection:bg-ambient-blue">
-      <div className="flex-1 w-full max-w-6xl mx-auto px-4 sm:px-6 pt-28 sm:pt-36 pb-16 sm:pb-24 relative z-10">
-        
+    /* `.page-stack` fills the 100dvh ancestor and lets the document own
+       the scroll, so no phantom space appears below the footer. */
+    <div className="page-stack">
+      <div className="page-stack-body">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="mb-14"
+          className="mb-10 sm:mb-14"
         >
           <Link to="/" className="inline-flex items-center gap-2 text-ambient-blue hover:text-white transition-colors mb-6 group glass-pill px-4 py-2 rounded-full w-fit">
             <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" /> Back to Home
           </Link>
-          <h1 className="text-4xl sm:text-6xl md:text-7xl font-black tracking-tighter">
+          <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tighter break-words">
             YouTube Showcase<span className="text-ambient-blue">.</span>
           </h1>
           <p className="text-gray-300 mt-4 max-w-xl text-sm sm:text-base leading-relaxed">
@@ -39,11 +40,11 @@ const Videos = () => {
         </motion.div>
 
         {/* Video Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 lg:gap-8">
           {data.youtubeVideos.map((video, i) => (
-            <TiltCard key={video.id} delay={i * 0.1} maxTilt={3.5}>
-              <div className="p-5 rounded-2xl glass-card border border-white/10 group relative overflow-hidden hover:border-ambient-blue/50 transition-all shadow-xl flex flex-col justify-between h-full">
-                <div className="aspect-video rounded-xl overflow-hidden bg-black/60 mb-5 border border-white/10 shadow-inner">
+            <TiltCard key={video.id} delay={i * 0.1} className="h-full" maxTilt={3.5}>
+              <div className="card-body video-card p-4 sm:p-5 rounded-2xl glass-card border border-white/10 group relative hover:border-ambient-blue/50 transition-all shadow-xl flex flex-col justify-between h-full">
+                <div className="aspect-video rounded-xl overflow-hidden bg-black/60 mb-4 sm:mb-5 border border-white/10 shadow-inner">
                   <iframe
                     src={video.url}
                     title={video.title}
@@ -53,16 +54,16 @@ const Videos = () => {
                     allowFullScreen
                   />
                 </div>
-                <div className="flex items-start gap-3.5 p-1">
-                  <div className="p-2.5 rounded-xl bg-ambient-blue/15 text-ambient-blue border border-ambient-blue/30 mt-0.5 group-hover:scale-110 group-hover:bg-ambient-blue group-hover:text-white transition-all shadow-sm">
+                <div className="flex items-start gap-3 min-w-0">
+                  <div className="video-play shrink-0 p-2.5 rounded-xl bg-ambient-blue/15 text-ambient-blue border border-ambient-blue/30 mt-0.5 transition-all duration-300 group-hover:bg-ambient-blue group-hover:text-white shadow-sm">
                     <Play size={16} fill="currentColor" />
                   </div>
-                  <div>
-                    <h3 className="text-lg font-bold text-white group-hover:text-ambient-blue transition-colors duration-300">
+                  <div className="min-w-0">
+                    <h3 className="card-title text-base sm:text-lg font-bold text-white group-hover:text-ambient-blue transition-colors duration-300">
                       {video.title}
                     </h3>
-                    <p className="text-gray-400 text-xs mt-1 font-mono flex items-center gap-1">
-                      <Film size={12} /> EMBEDDED MEDIA ASSET
+                    <p className="text-gray-400 text-[11px] sm:text-xs mt-1 font-mono flex items-center gap-1">
+                      <Film size={12} className="shrink-0" /> EMBEDDED MEDIA ASSET
                     </p>
                   </div>
                 </div>

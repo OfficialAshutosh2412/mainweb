@@ -36,6 +36,97 @@
   --color-dark-surface: var(--surface);
   --color-glass-surface: var(--card);
   --color-glass-border: var(--line);
+
+  /* Semantic tokens so the `text-*` / `border-*` / `bg-*` utilities used
+     throughout the JSX resolve to the theme instead of falling back. */
+  --color-void: var(--void);
+  --color-card: var(--card);
+  --color-card-raised: var(--card-raised);
+  --color-purple: var(--purple);
+  --color-purple-bright: var(--purple-bright);
+  --color-azure: var(--azure);
+  --color-cyan: var(--cyan);
+  --color-green: var(--green);
+  --color-orange: var(--orange);
+  --color-text: var(--text);
+  --color-muted: var(--muted);
+  --color-faint: var(--faint);
+  --color-line: var(--line);
+  --color-line-bright: var(--line-bright);
+}
+
+/* ── Global safety nets: no horizontal scrollbar on any device ── */
+html,
+body {
+  max-width: 100%;
+  /* `clip` (not `hidden`) avoids creating a scroll container, which would
+     otherwise break the Lenis root-scroll instance. */
+  overflow-x: clip;
+  overscroll-behavior-x: none;
+  /* Kill rubber-band / scroll chaining that exposes phantom space below
+     the footer, without disabling scrolling itself. */
+  overscroll-behavior-y: none;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  /* Only the document scrolls. Every inner element uses `clip`, so there
+     is exactly one scrollbar on the page. */
+  height: 100%;
+}
+
+body {
+  height: 100%;
+  margin: 0;
+}
+
+/* Fallback for browsers without `overflow: clip` support */
+@supports not (overflow: clip) {
+  html,
+  body {
+    overflow-x: hidden;
+  }
+}
+
+img,
+svg,
+video,
+canvas,
+iframe {
+  max-width: 100%;
+}
+
+/* Prevent flex/grid children from forcing the page wider than the viewport */
+.min-w-0-safe {
+  min-width: 0;
+}
+
+/* ── App height chain (fixes dual scrollbar + footer overscroll) ──
+   `vh` on mobile is measured against the LARGEST viewport, so a 100vh
+   element is taller than the visible area by exactly the browser chrome
+   height — that difference is what produced the phantom scroll below the
+   footer. Every layer now uses dvh (dynamic viewport height) so the
+   document height always matches what the user can actually see.
+
+   dvh is the modern value; vh is kept as a fallback for older browsers
+   and must be declared FIRST so the newer value wins where supported. */
+.app-root,
+.app-content {
+  width: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+.app-root {
+  position: relative;
+  overflow-x: clip;
+}
+
+.app-content {
+  flex: 1 0 auto;
+  min-width: 0;
+  overflow-x: clip;
 }
 
 * {
@@ -48,7 +139,6 @@ html {
 }
 
 body {
-  margin: 0;
   background: var(--void);
   color: var(--text);
   font-family: var(--font-sans);
@@ -75,7 +165,10 @@ a {
 
 .portfolio-shell {
   min-height: 100vh;
-  overflow-x: hidden;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: clip;
   position: relative;
   background: radial-gradient(ellipse 70% 45% at 82% 9%, rgba(81, 43, 212, .12), transparent 65%), var(--void);
 }
@@ -290,9 +383,12 @@ a {
   border: 1px solid var(--line);
   background: transparent;
   border-radius: 8px;
+  overflow: hidden;
 }
 
-.mobile-nav {
+/* Animated drawer — the base rule keeps it hidden on desktop */
+.mobile-nav,
+.mobile-nav-inner {
   display: none;
 }
 
@@ -448,6 +544,137 @@ h1 span, h2 em {
 @keyframes skills-marquee-rtl {
   from { transform: translate3d(calc(-100% / 3), 0, 0); }
   to   { transform: translate3d(0, 0, 0); }
+}
+
+/* ── Skills Marquee (edge-to-edge, overflow-safe) ──────────
+   The pill icons carry large box-shadows, so the track needs real
+   vertical breathing room or the glow gets clipped at the top.
+   Padding is generous and overflow is clipped on the X axis only. */
+.skills-marquee {
+  position: relative;
+  width: 100%;
+  padding: 48px 0;
+  overflow: hidden;
+  overflow-x: clip;
+  background: linear-gradient(180deg, transparent 0%, rgba(118, 84, 232, .04) 50%, transparent 100%);
+  max-width: 100%;
+}
+
+.marquee-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.marquee-track {
+  display: flex;
+  overflow: hidden;
+  width: 100%;
+  user-select: none;
+  /* Room for the 48px icon glow (20px blur) without clipping */
+  padding: 22px 0;
+}
+
+.marquee-run {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  padding-inline: 22px;
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+.marquee-item {
+  display: inline-flex;
+  align-items: center;
+}
+
+.marquee-dot {
+  display: inline-block;
+  flex-shrink: 0;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin: 0 22px;
+  background: radial-gradient(circle, rgba(156, 135, 255, 1) 0%, rgba(34, 211, 238, .7) 55%, transparent 100%);
+  box-shadow: 0 0 10px rgba(156, 135, 255, .9), 0 0 22px rgba(156, 135, 255, .4);
+}
+
+.marquee-fade {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 200px;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.marquee-fade-left {
+  left: 0;
+  background: linear-gradient(to right, var(--void) 0%, transparent 100%);
+}
+
+.marquee-fade-right {
+  right: 0;
+  background: linear-gradient(to left, var(--void) 0%, transparent 100%);
+}
+
+.skill-pill {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  cursor: default;
+  padding: 6px 0;
+  gap: 14px;
+}
+
+.skill-pill-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.skill-pill-name {
+  font-size: 17px;
+  font-weight: 700;
+  color: rgba(245, 246, 250, .85);
+  white-space: nowrap;
+  letter-spacing: -.02em;
+  font-family: var(--font-heading);
+}
+
+/* ── Portfolio hero + skills anchor (fluid, no fixed inline heights) ── */
+.portfolio-hero {
+  min-height: auto;
+  padding: 100px 0 60px;
+}
+
+.portfolio-hero .hero-copy h1,
+.portfolio-hero-title {
+  font-size: clamp(2.1rem, 5.2vw, 3.5rem);
+  line-height: 1.06;
+  letter-spacing: -.03em;
+  font-weight: 700;
+  overflow: visible;
+  max-width: 100%;
+}
+
+.portfolio-hero-title span {
+  display: inline-block;
+  padding-right: .18em;
+}
+
+.skills-anchor {
+  margin-top: 121px;
+}
+
+.skills-shell {
+  margin-top: 56px;
 }
 
 /* ── Portfolio Hero Avatar ── */
@@ -646,7 +873,9 @@ h1 span, h2 em {
 
 /* 3D Interactive Stage Canvas */
 .hero-stage-wrap {
-  height: 500px;
+  /* Scales the whole 3D stage down proportionally on narrow viewports */
+  --stage-scale: 1;
+  height: calc(500px * var(--stage-scale));
   position: relative;
   perspective: 1300px;
   transform-style: preserve-3d;
@@ -655,6 +884,9 @@ h1 span, h2 em {
   justify-content: center;
   align-self: center;
   overflow: visible;
+  transform: scale(var(--stage-scale));
+  transform-origin: center center;
+  max-width: 100%;
 }
 
 .hero-stage-grid {
@@ -1168,11 +1400,9 @@ h1 span, h2 em {
   will-change: transform;
 }
 
-.project-card:hover {
-  transform: translate3d(0, -6px, 0);
-  border-color: var(--line-bright);
-  box-shadow: 0 25px 50px rgba(0,0,0,.26);
-}
+/* The hover lift is scoped to fine pointers further down the file
+   (see the Performance & motion polish block) so touch devices don't
+   get a stuck hover state. */
 
 .project-visual {
   height: 215px;
@@ -1595,21 +1825,47 @@ h1 span, h2 em {
 /* Site Footer */
 .site-footer {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
+  gap: 20px 32px;
   padding: 25px 0 35px;
   color: var(--faint);
   border-top: 1px solid var(--line);
-  font: 9px var(--font-mono);
 }
 
-.site-footer button {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
+.site-footer-brand {
+  font-size: 11px;
+  line-height: 1.7;
   color: var(--muted);
-  border: 0;
-  background: transparent;
+  min-width: 0;
+}
+
+.site-footer-links {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.site-footer-cta {
+  font-size: 11px;
+  padding: 7px 13px;
+  min-height: 0;
+  gap: 5px;
+}
+
+.site-footer-link {
+  font-size: 11px;
+  color: var(--muted);
+  transition: color .2s ease;
+  white-space: nowrap;
+}
+
+.site-footer-link:hover,
+.site-footer-link:focus-visible {
+  color: var(--text);
 }
 
 .site-footer button:hover {
@@ -1619,6 +1875,640 @@ h1 span, h2 em {
 .footer-dot {
   margin: 0 7px;
   color: var(--purple-bright);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Shared Component Utility Classes
+   (referenced from JSX but previously undefined)
+─────────────────────────────────────────────────────────────── */
+
+.glass-card {
+  background: linear-gradient(145deg, rgba(28, 33, 48, .78), rgba(17, 19, 29, .66));
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 18px 44px rgba(0, 0, 0, .28);
+}
+
+.glass-pill {
+  background: rgba(255, 255, 255, .04);
+  border: 1px solid var(--line);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+
+/* Animated gradient CTA used by forms, store cards and project CTAs */
+.btn-slide-blue {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  color: #fff;
+  background: linear-gradient(120deg, #6848dd, #4b91de);
+  box-shadow: 0 12px 27px rgba(81, 43, 212, .24);
+  transition: transform .23s ease, box-shadow .23s ease, filter .23s ease;
+}
+
+.btn-slide-blue::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(120deg, #4b91de, #22d3ee);
+  transform: translateX(-101%);
+  transition: transform .45s cubic-bezier(.22, 1, .36, 1);
+}
+
+.btn-slide-blue:hover::before {
+  transform: translateX(0);
+}
+
+.btn-slide-blue:hover {
+  box-shadow: 0 16px 34px rgba(81, 43, 212, .38);
+}
+
+/* Background cyber grid used by ParallaxBackground */
+.cyber-grid {
+  background-image:
+    linear-gradient(rgba(118, 84, 232, .18) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(118, 84, 232, .18) 1px, transparent 1px);
+  background-size: 56px 56px;
+  transform: perspective(1000px) rotateX(62deg) scale(1.6);
+  transform-origin: center top;
+}
+
+.gpu-layer {
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+@keyframes float-rotate-cw {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50%      { transform: translateY(-22px) rotate(22deg); }
+}
+
+@keyframes float-rotate-ccw {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50%      { transform: translateY(18px) rotate(-22deg); }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Long-word / overflow protection
+   Guarantees that long emails, URLs and titles wrap instead of
+   pushing the layout wider than the viewport.
+─────────────────────────────────────────────────────────────── */
+.portfolio-shell h1,
+.portfolio-shell h2,
+.portfolio-shell h3,
+.project-card h3,
+.contact-copy h2,
+.contact-meta,
+.mobile-nav,
+.site-footer {
+  overflow-wrap: break-word;
+}
+
+.contact-meta a,
+.contact-meta span {
+  max-width: 100%;
+  min-width: 0;
+}
+
+/* Metrics & footers stack rather than squeeze on narrow cards */
+.project-metric {
+  flex-shrink: 0;
+}
+
+@media (max-width: 520px) {
+  .project-footer {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .project-metric {
+    align-items: flex-start;
+  }
+
+  .contact-meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+}
+
+/* ── Code Vault (Store) card ───────────────────────────────
+   Content is now title + price + tech stack only, so the frame is
+   shorter. The panel body still scrolls and the action bar stays
+   pinned, guaranteeing the CTAs are always reachable. */
+.store-card {
+  position: relative;
+  height: 300px;
+}
+
+.store-card-face,
+.store-card-panel {
+  padding: 1.25rem;
+}
+
+.store-card-title {
+  overflow-wrap: break-word;
+  min-width: 0;
+}
+
+.store-badge-soft,
+.store-price-pill,
+.store-tech-pill {
+  max-width: 100%;
+  min-width: 0;
+}
+
+.store-tech-pill {
+  font-size: 10px;
+}
+
+/* Panel internals */
+.store-panel-scroll {
+  padding-bottom: .5rem;
+}
+
+.store-panel-scroll::-webkit-scrollbar {
+  width: 3px;
+}
+
+.store-panel-scroll::-webkit-scrollbar-thumb {
+  background: rgba(156, 135, 255, .45);
+  border-radius: 99px;
+}
+
+.store-panel-head {
+  margin-bottom: .6rem;
+}
+
+.store-panel-tech {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding-bottom: 2px;
+}
+
+.store-panel-tech::-webkit-scrollbar {
+  display: none;
+}
+
+.store-panel-actions {
+  padding-top: .6rem;
+  border-top: 1px solid rgba(255, 255, 255, .1);
+  background: linear-gradient(to top, rgba(10, 12, 20, .96), rgba(10, 12, 20, .8));
+}
+
+.store-ai-note {
+  margin-bottom: .5rem;
+}
+
+/* ── Mobile centring: hero copy, stat counters & section titles ──
+   Everything above-the-fold reads far better centred on a narrow
+   screen, so hero text, the proof/counter row and every section
+   heading are centred at ≤900px. */
+@media (max-width: 900px) {
+  .hero-copy,
+  .portfolio-shell .hero-copy {
+    text-align: center;
+    max-width: 100%;
+  }
+
+  .hero-copy h1,
+  .hero-section h1,
+  .portfolio-shell .hero-copy h1,
+  .portfolio-hero-title {
+    text-align: center;
+  }
+
+  /* Eyebrow (line + label) centres as a pair */
+  .eyebrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 11px;
+  }
+
+  .eyebrow-line {
+    margin-right: 0;
+  }
+
+  .hero-lede,
+  .hero-lede-large {
+    margin-inline: auto;
+  }
+
+  /* CTAs stack full-width, centred */
+  .hero-actions {
+    justify-content: center;
+  }
+
+  .hero-actions .button {
+    flex: 0 1 auto;
+  }
+
+  /* ── Counters / stat row (2 + 8 of the original asks) ── */
+  .hero-proof {
+    justify-content: center;
+    text-align: center;
+    gap: 10px 24px;
+  }
+
+  .hero-proof div {
+    align-items: center;
+    text-align: center;
+    flex: 0 0 auto;
+  }
+
+  /* ── Section titles (3 + 9) ── */
+  .section-heading,
+  .split-heading {
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .section-heading > div,
+  .split-heading > div {
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 6px 14px;
+  }
+
+  .section-number {
+    margin-top: 0;
+  }
+
+  .section-note {
+    margin-inline: auto;
+    text-align: center;
+  }
+}
+
+@media (max-width: 640px) {
+  /* Full-width stacked CTAs read cleaner than two cramped buttons */
+  .hero-actions .button {
+    flex: 1 1 100%;
+    max-width: 320px;
+  }
+}
+
+/* ── Portfolio avatar rings track the image size at every tier ── */
+@media (max-width: 900px) {
+  .portfolio-avatar-core .avatar-ring-outer {
+    width: 330px;
+    height: 330px;
+  }
+
+  .portfolio-avatar-core .avatar-ring-inner {
+    width: 275px;
+    height: 275px;
+  }
+}
+
+@media (max-width: 640px) {
+  .portfolio-avatar-core .avatar-ring-outer {
+    width: 320px;
+    height: 320px;
+  }
+
+  .portfolio-avatar-core .avatar-ring-inner {
+    width: 265px;
+    height: 265px;
+  }
+}
+
+@media (max-width: 520px) {
+  .portfolio-avatar-core .avatar-ring-outer {
+    width: 310px;
+    height: 310px;
+  }
+
+  .portfolio-avatar-core .avatar-ring-inner {
+    width: 258px;
+    height: 258px;
+  }
+}
+
+@media (max-width: 400px) {
+  .portfolio-avatar-core .avatar-ring-outer {
+    width: 290px;
+    height: 290px;
+  }
+
+  .portfolio-avatar-core .avatar-ring-inner {
+    width: 240px;
+    height: 240px;
+  }
+}
+
+/* ── Certificate carousel: no top clipping on hover ──────────
+   The cards animate scale/translate inside an overflow:hidden
+   track; giving the track vertical padding stops the scaled
+   card's top edge from being sliced off. */
+.cert-track {
+  padding-block: 26px;
+}
+
+.cert-track-mask {
+  mask-image: linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%);
+}
+
+@media (max-width: 900px) {
+  .cert-track {
+    padding-block: 18px;
+  }
+}
+
+@media (max-width: 520px) {
+  .cert-track {
+    padding-block: 12px;
+  }
+
+  /* Soften the edge mask on phones so the fade doesn't crop the card */
+  .cert-track-mask {
+    mask-image: linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%);
+  }
+}
+
+/* ── Video card: the play badge must never be clipped ────────
+   The card previously used `overflow-hidden`, which sliced the
+   play badge (and its hover scale) at the card's right edge.
+   Only the thumbnail frame clips now. */
+.video-card {
+  min-width: 0;
+  overflow: hidden;
+}
+
+.video-play {
+  transition: transform .3s cubic-bezier(.22, 1, .36, 1), background-color .3s ease,
+    color .3s ease, box-shadow .3s ease;
+  will-change: transform;
+}
+
+.video-card:hover .video-play {
+  transform: scale(1.1);
+  box-shadow: 0 0 16px rgba(59, 130, 246, .5);
+}
+
+/* Long video titles truncate rather than pushing the badge off-screen */
+.video-card h3 {
+  min-width: 0;
+  overflow-wrap: break-word;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ── Card action buttons: "See more" mirrors "Repository" ──
+   Both share identical sizing, padding and icon spacing so the
+   two controls in a card footer read as a matched pair. */
+.card-action-btn {
+  min-height: 0;
+  white-space: nowrap;
+  flex: 0 0 auto;
+  align-items: center;
+  line-height: 1.2;
+}
+
+/* ── Page stack: content + footer layout that never overscrolls ──
+   The wrapper does NOT create its own scroll container — the document
+   scrolls instead, so there is exactly one scrollbar.
+
+   Height is `auto` (not 100dvh) because this stack sits inside an
+   ancestor that already owns the 100dvh height. Imposing another
+   100dvh here would double the height and reintroduce the phantom
+   scroll below the footer. `flex: 1` lets it simply fill the space. */
+.page-stack {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  color: #fff;
+  background: transparent;
+  position: relative;
+  /* `clip` avoids creating a scroll container (which would trap the
+     document scroll and re-introduce the overscroll bug). */
+  overflow-x: clip;
+}
+
+.page-stack-body {
+  flex: 1 0 auto;
+  width: 100%;
+  max-width: 72rem;
+  margin-inline: auto;
+  padding: 7rem 1rem 3rem;
+  position: relative;
+  z-index: 10;
+}
+
+.page-stack > .site-footer {
+  flex-shrink: 0;
+}
+
+/* ── Card content responsiveness ─────────────────────────── */
+
+/* Cards are grid items; min-width:0 lets them shrink instead of
+   being forced wide by long unbroken content. */
+.page-stack .glass-card,
+.project-card {
+  min-width: 0;
+  overflow-wrap: break-word;
+}
+
+/* Inline metadata rows (eyebrow + period, etc.) wrap gracefully */
+.card-meta-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 12px;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.card-meta-row > * {
+  min-width: 0;
+}
+
+.card-title {
+  overflow-wrap: break-word;
+  min-width: 0;
+  line-height: 1.3;
+}
+
+.card-company,
+.card-verified {
+  min-width: 0;
+}
+
+.card-score {
+  min-width: 0;
+}
+
+.card-footer {
+  min-width: 0;
+  flex-wrap: wrap;
+  row-gap: 10px;
+}
+
+.card-actions {
+  min-width: 0;
+}
+
+.card-visual {
+  flex-shrink: 0;
+}
+
+/* ── Portfolio card responsive behaviour ────────────────────
+   The visual header and body paddings shrink together so the
+   content area never gets squeezed on narrow screens. */
+@media (max-width: 640px) {
+  .page-stack-body {
+    padding: 6rem 1rem 2.25rem;
+  }
+
+  .card-visual {
+    height: 92px !important;
+  }
+
+  .card-title {
+    font-size: 1.05rem;
+    line-height: 1.35;
+  }
+
+  .card-body {
+    padding: 1rem .9rem 1.1rem;
+  }
+
+  /* Feature/bullet lists read better with a slightly tighter rhythm */
+  .card-list {
+    gap: 6px;
+    font-size: 11.5px;
+    line-height: 1.55;
+  }
+
+  .card-list li {
+    align-items: flex-start;
+  }
+
+  .card-list svg {
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .card-footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .card-actions {
+    width: 100%;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: flex-start !important;
+  }
+
+  .card-actions > * {
+    flex: 0 0 auto;
+  }
+
+  .card-score {
+    padding: .6rem .75rem;
+    gap: 8px;
+  }
+}
+
+@media (max-width: 400px) {
+  .card-visual {
+    height: 82px !important;
+  }
+
+  .card-body {
+    padding: .85rem .75rem 1rem;
+  }
+
+  .card-list {
+    font-size: 11px;
+  }
+
+  .page-stack-body {
+    padding: 5.5rem .75rem 2rem;
+  }
+
+  .card-title {
+    font-size: .98rem;
+  }
+}
+
+/* ── Performance & motion polish ──────────────────────────── */
+
+/* Promote only elements that are actually animated. Over-using
+   will-change creates layer explosions and hurts scroll FPS. */
+.ambient,
+.tech-badge,
+.core-card,
+.portfolio-avatar-core,
+.orbit,
+.project-card,
+.skill-bar span {
+  will-change: transform;
+}
+
+/* The 3D stage is the heaviest thing on the page — contain its
+   layout/paint work so scrolling never re-rasterises the orbits.
+   `layout paint` (not `strict`) because the stage has no fixed size. */
+.hero-stage-wrap {
+  contain: layout paint;
+}
+
+/* Images inside cards decode off the main thread where supported */
+img {
+  decoding: async;
+}
+
+/* Avoid repainting the fixed noise overlay on every scroll frame.
+   `contain: strict` needs an intrinsic size, so only the containment
+   hints that don't require sizing are used here. */
+.portfolio-shell::before {
+  will-change: auto;
+  contain: layout style;
+}
+
+/* Honour the OS reduced-motion setting globally for the decorative
+   loops, even when the in-app toggle hasn't been touched. */
+@media (prefers-reduced-motion: reduce) {
+  .orbit,
+  .core-card,
+  .tech-badge,
+  .avatar-ring-outer,
+  .avatar-ring-inner,
+  .portfolio-avatar-core,
+  .marquee-run {
+    animation: none !important;
+  }
+}
+
+/* Fine-grained pointer devices get hover affordances; touch devices
+   don't, so hover-lift transforms are scoped to avoid sticky states. */
+@media (hover: hover) and (pointer: fine) {
+  .project-card:hover {
+    transform: translate3d(0, -6px, 0);
+    border-color: var(--line-bright);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, .26);
+  }
+}
+
+@media (hover: none) {
+  .project-card:hover {
+    transform: none;
+  }
 }
 
 /* Keyframe Animations */
@@ -1635,6 +2525,7 @@ h1 span, h2 em {
   from {
     transform: translate(-50%, -50%) rotateX(70deg) rotateY(25deg) rotateZ(24deg) rotate(360deg);
   }
+
   to {
     transform: translate(-50%, -50%) rotateX(70deg) rotateY(25deg) rotateZ(24deg) rotate(0);
   }
@@ -1684,18 +2575,73 @@ h1 span, h2 em {
   }
 }
 
-/* Responsive Media Queries */
-@media (max-width: 980px) {
+/* ═══════════════════════════════════════════════════════════════
+   RESPONSIVE SYSTEM
+   Global overflow safety-nets live in the base layer at the top of
+   this file. The tiers below progressively adapt the layout
+   from XL desktop down to 320px phones.
+
+     1280px  Large desktop / small laptop
+     1080px  Laptop / tablet landscape
+      900px  Tablet portrait (hero stacks to one column)
+      768px  Large phone
+      640px  Large phone
+      520px  Standard phone
+      400px  Small phone
+      360px  Extra small phone
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── ≤1280px: tighten the desktop rhythm ───────────────────── */
+@media (max-width: 1280px) {
   .shell {
-    width: min(100% - 36px, 720px);
+    width: min(1080px, calc(100% - 48px));
   }
 
-  .desktop-nav {
-    gap: 15px;
+  .portfolio-shell .hero-section {
+    gap: 34px;
+  }
+
+  .hero-stage-wrap {
+    --stage-scale: .92;
+  }
+
+  .skills-layout {
+    grid-template-columns: 230px minmax(0, 1fr);
+    gap: 64px;
+  }
+
+  .about-grid {
+    gap: 70px;
+  }
+
+  .contact-card {
+    grid-template-columns: 190px minmax(0, 1fr);
+    gap: 46px;
+    padding: 48px 44px 40px;
+  }
+
+  .experience-details {
+    padding-left: 150px;
+  }
+}
+
+/* ── ≤1080px: laptop & tablet landscape ────────────────────── */
+@media (max-width: 1080px) {
+  .shell {
+    width: min(100% - 44px, 940px);
   }
 
   .header-inner {
-    gap: 14px;
+    gap: 18px;
+  }
+
+  .desktop-nav {
+    gap: 18px;
+  }
+
+  .desktop-nav button,
+  .desktop-nav a {
+    font-size: 12.5px;
   }
 
   .status-chip {
@@ -1703,44 +2649,211 @@ h1 span, h2 em {
   }
 
   .hero-section {
-    grid-template-columns: 1fr;
-    padding-top: 76px;
+    padding: 96px 0 80px;
   }
 
-  .hero-copy {
-    max-width: 680px;
+  .portfolio-shell .hero-section {
+    grid-template-columns: minmax(0, 1fr) minmax(0, .82fr);
   }
 
   .hero-stage-wrap {
-    max-width: 670px;
-    width: 100%;
-    margin: 0 auto;
+    --stage-scale: .78;
+  }
+
+  .hero-lede-large {
+    font-size: clamp(1.1rem, 2.1vw, 1.4rem);
+  }
+
+  .hero-proof {
+    gap: 24px;
+    margin-top: 52px;
+  }
+
+  .section {
+    padding-top: 100px;
   }
 
   .about-grid {
-    gap: 45px;
+    gap: 52px;
   }
 
   .skills-layout {
-    gap: 45px;
+    grid-template-columns: 210px minmax(0, 1fr);
+    gap: 48px;
   }
 
   .contact-card {
-    gap: 28px;
-    padding: 42px 36px 33px;
+    grid-template-columns: 170px minmax(0, 1fr);
+    gap: 36px;
+    padding: 42px 36px 34px;
+  }
+
+  .experience-details {
+    padding-left: 140px;
+  }
+
+  .project-visual {
+    height: 200px;
   }
 }
 
-@media (max-width: 700px) {
+/* ── ≤900px: tablet portrait — hero stacks to one column ───── */
+@media (max-width: 900px) {
   .shell {
-    width: min(100% - 32px, 520px);
+    width: min(100% - 40px, 720px);
   }
 
+  .hero-section,
+  .portfolio-shell .hero-section {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 40px;
+    padding-top: 108px;
+  }
+
+  .hero-section {
+    min-height: 0;
+  }
+
+  /* On narrow screens the animated 3D stage leads, the copy follows.
+     `order` keeps the DOM sequence intact for screen readers & SEO. */
+  .hero-section .hero-stage-wrap,
+  .portfolio-shell .hero-section .hero-stage-wrap {
+    order: -1;
+  }
+
+  .hero-copy {
+    max-width: 100%;
+  }
+
+  .hero-stage-wrap {
+    --stage-scale: .86;
+    width: 100%;
+    max-width: 560px;
+    margin: 0 auto;
+  }
+
+  .portfolio-hero-stage {
+    margin-top: 0;
+  }
+
+  .portfolio-hero {
+    padding: 92px 0 48px;
+  }
+
+  .skills-anchor {
+    margin-top: 84px;
+  }
+
+  .skills-shell {
+    margin-top: 44px;
+  }
+
+  /* Scale the portfolio avatar down proportionally with the stage */
+  .portfolio-avatar-core .avatar-image-wrap {
+    width: 300px;
+    height: 300px;
+  }
+
+  .portfolio-avatar-core .avatar-badge {
+    font-size: 8px;
+    padding: 4px 11px;
+  }
+
+  .about-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 46px;
+    align-items: start;
+  }
+
+  .about-lede p {
+    max-width: 100%;
+  }
+
+  .skills-layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 40px;
+  }
+
+  /* Skill tabs become a horizontal scroll strip */
+  .skill-tabs {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    padding: 0 4px 4px;
+    margin-inline: -4px;
+  }
+
+  .skill-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .skill-tabs button {
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+
+  .contact-card {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 28px;
+    padding: 40px 34px 32px;
+  }
+
+  .contact-meta {
+    grid-column: 1;
+  }
+
+  .experience-details {
+    padding-left: 0;
+  }
+
+  .site-footer {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 18px;
+    padding-bottom: 28px;
+  }
+
+  /* Stack the footer links top-to-bottom instead of wrapping mid-line */
+  .site-footer-links {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+    width: 100%;
+  }
+
+  .site-footer-links > * {
+    width: 100%;
+  }
+
+  .site-footer-cta {
+    justify-content: center;
+    margin-bottom: 6px;
+  }
+
+  .site-footer-link {
+    display: flex;
+    align-items: center;
+    min-height: 42px;
+    padding: 0 2px;
+    border-bottom: 1px solid var(--line);
+    white-space: normal;
+  }
+
+  .site-footer-links > *:last-child {
+    border-bottom: 0;
+  }
+}
+
+/* ── ≤768px: switch the header to the mobile menu ─────────── */
+@media (max-width: 768px) {
   .header-inner {
     height: 68px;
   }
 
-  .desktop-nav, .motion-toggle {
+  .desktop-nav,
+  .motion-toggle {
     display: none;
   }
 
@@ -1749,238 +2862,124 @@ h1 span, h2 em {
     place-items: center;
   }
 
+  /* The outer .mobile-nav is the animated height container (overflow:hidden is
+     set inline by framer-motion); .mobile-nav-inner holds the visible rows. */
   .mobile-nav {
+    display: block;
+    width: 100%;
+  }
+
+  .mobile-nav-inner {
     display: flex;
     flex-direction: column;
-    gap: 4px;
-    padding: 12px 0 18px;
+    gap: 2px;
+    padding: 10px 0 16px;
     border-top: 1px solid var(--line);
+    max-height: calc(100dvh - 68px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    transform-origin: top center;
   }
 
   .mobile-nav button {
-    padding: 12px 0;
+    /* Comfortable touch target on phones */
+    min-height: 46px;
+    display: flex;
+    align-items: center;
+    padding: 0 4px;
     color: var(--muted);
     border: 0;
     background: transparent;
     text-align: left;
     font: 12px var(--font-mono);
+    transition: color .2s ease, background-color .2s ease;
+    border-radius: 6px;
+  }
+
+  .mobile-nav button:hover,
+  .mobile-nav button:focus-visible {
+    color: var(--text);
+    background: rgba(255, 255, 255, .04);
+  }
+
+  .mobile-nav button.active {
+    color: var(--purple-bright);
   }
 
   .mobile-resume-link {
+    min-height: 46px;
     display: flex;
     align-items: center;
     gap: 8px;
+    padding: 0 4px;
     color: var(--purple-bright) !important;
+    transition: color .2s ease;
   }
 
-  .hero-section {
-    min-height: 0;
-    padding: 72px 0 55px;
+  .mobile-resume-link:hover {
+    color: #fff !important;
   }
 
-  .hero-section h1 {
-    font-size: clamp(3.2rem, 15vw, 5.2rem);
-  }
-
-  .hero-lede {
-    font-size: 14px;
-  }
-
-  .hero-proof {
-    gap: 17px;
-    margin-top: 49px;
-  }
-
-  .hero-proof strong {
-    font-size: 16px;
-  }
-
-  .hero-proof span {
-    font-size: 8px;
-  }
-
-  .hero-stage-wrap {
-    height: 390px;
-    margin-top: 28px;
-    transform: scale(.93);
-  }
-
-  .orbit-one {
-    width: 340px;
-  }
-
-  .orbit-two {
-    width: 290px;
-    height: 260px;
-  }
-
-  .orbit-three {
-    height: 340px;
-  }
-
-  .core-card {
-    width: 220px;
-    height: 235px;
-  }
-
-  .core-symbol {
-    margin-top: 22px;
-    font-size: 55px;
-  }
-
-  .core-title {
-    margin-top: 22px;
-  }
-
-  .tech-badge {
-    padding: 6px 8px 6px 6px;
-    font-size: 8px;
-  }
-
-  .tech-badge-icon {
-    width: 18px;
-    height: 18px;
-  }
-
-  .tech-csharp {
-    left: 2%;
-  }
-
-  .tech-dotnet {
-    right: 10%;
-  }
-
-  .tech-azure {
-    right: -5%;
-  }
-
-  .tech-sql {
-    right: 1%;
-  }
-
-  .tech-react {
-    left: 15%;
-  }
-
-  .tech-docker {
-    left: -7%;
-  }
-
-  .tech-redis {
-    left: 0;
-  }
-
-  .tech-grpc {
-    left: 9%;
-  }
-
-  .stage-caption {
-    bottom: 0;
+  /* Icon wrapper so the rotating span doesn't affect the button's hit area */
+  .mobile-menu-icon {
+    display: grid;
+    place-items: center;
   }
 
   .section {
-    padding-top: 89px;
+    padding-top: 92px;
   }
 
-  .section-heading, .split-heading {
+  .section-heading {
+    margin-bottom: 30px;
+  }
+
+  /* Keep the mobile centring (set at ≤900px) — the heading is a block so
+     the "view all" link drops onto its own centred line below the title. */
+  .section-heading,
+  .split-heading {
     display: block;
+    text-align: center;
   }
 
   .split-heading > div {
     display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .split-heading > a {
+    margin-top: 18px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
   }
 
   .section-note {
-    margin: 19px 0 0 31px;
-    text-align: left;
-  }
-
-  .about-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 37px;
-    margin-top: 44px;
-  }
-
-  .about-lede .large-copy {
-    font-size: 19px;
-  }
-
-  .architecture-card {
-    padding: 18px 14px 20px;
-  }
-
-  .arch-split .arch-node {
-    width: 140px;
-    font-size: 8px;
-  }
-
-  .principles-row {
-    gap: 13px 18px;
-    margin-top: 44px;
-  }
-
-  .skills-layout {
-    display: block;
-    margin-top: 45px;
-  }
-
-  .skill-tabs {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 5px;
-    margin-bottom: 33px;
-  }
-
-  .skill-tabs button {
-    display: block;
-    height: 100%;
-    padding: 10px 8px;
-    font-size: 9px;
+    max-width: 100%;
+    margin: 18px auto 0;
     text-align: center;
   }
 
-  .skill-tabs button svg {
-    display: none;
-  }
-
-  .project-filters {
-    margin-top: 39px;
-    gap: 6px;
-  }
-
-  .project-filters button {
-    font-size: 8px;
-    padding: 7px 9px;
-  }
-
   .projects-grid {
-    grid-template-columns: 1fr;
-    margin-top: 20px;
-  }
-
-  .project-visual {
-    height: 190px;
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .project-description {
     min-height: auto;
   }
 
-  .timeline {
-    margin-top: 47px;
-  }
-
   .timeline-item {
-    grid-template-columns: 41px 1fr;
+    grid-template-columns: 48px minmax(0, 1fr);
   }
 
   .experience-trigger {
-    grid-template-columns: 1fr 20px;
-    gap: 8px;
+    grid-template-columns: minmax(0, 1fr) 22px;
+    gap: 12px;
   }
 
   .experience-period {
+    grid-column: 1;
     grid-row: 2;
     font-size: 9px;
   }
@@ -1988,7 +2987,6 @@ h1 span, h2 em {
   .experience-role {
     grid-column: 1;
     grid-row: 1;
-    font-size: 17px;
   }
 
   .experience-trigger > svg {
@@ -1996,8 +2994,170 @@ h1 span, h2 em {
     grid-row: 1 / span 2;
   }
 
-  .experience-details {
-    padding-left: 0;
+  .contact-section {
+    padding-bottom: 74px;
+  }
+
+  .contact-stamp {
+    margin-bottom: 30px;
+  }
+}
+
+/* ── ≤640px: standard phone sizing ───────────────────────── */
+@media (max-width: 640px) {
+  .shell {
+    width: min(100% - 32px, 560px);
+  }
+
+  .header-inner {
+    height: 64px;
+  }
+
+  .hero-section,
+  .portfolio-shell .hero-section {
+    min-height: 0;
+    padding: 92px 0 58px;
+    gap: 32px;
+  }
+
+  /* Fluid, viewport-relative type so headings never overflow */
+  .portfolio-shell .hero-copy h1,
+  .hero-section h1 {
+    font-size: clamp(2.1rem, 8.4vw, 3.1rem);
+    line-height: 1.06;
+  }
+
+  .hero-lede,
+  .hero-lede-large {
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  .hero-actions {
+    gap: 10px;
+    margin-top: 28px;
+  }
+
+  .hero-actions .button {
+    flex: 1 1 100%;
+  }
+
+  .hero-proof {
+    gap: 14px;
+    margin-top: 40px;
+    flex-wrap: wrap;
+  }
+
+  .hero-proof strong {
+    font-size: 17px;
+  }
+
+  .hero-proof span {
+    font-size: 8px;
+  }
+
+  .hero-stage-wrap {
+    --stage-scale: .8;
+    margin-top: 8px;
+  }
+
+  .portfolio-hero {
+    padding: 88px 0 44px;
+  }
+
+  .portfolio-avatar-core .avatar-image-wrap {
+    width: 290px;
+    height: 290px;
+  }
+
+  .skills-anchor {
+    margin-top: 76px;
+  }
+
+  .stage-caption {
+    bottom: 2%;
+  }
+
+  .section {
+    padding-top: 84px;
+  }
+
+  .section-heading h2 {
+    font-size: clamp(1.6rem, 6.6vw, 2.4rem);
+  }
+
+  .about-grid {
+    margin-top: 40px;
+    gap: 40px;
+  }
+
+  .about-lede .large-copy {
+    font-size: 18px;
+  }
+
+  .architecture-card {
+    padding: 18px 14px 20px;
+  }
+
+  .arch-node {
+    width: 100%;
+    max-width: 200px;
+  }
+
+  .arch-split {
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+  }
+
+  .arch-split .arch-node {
+    width: 100%;
+    max-width: 210px;
+  }
+
+  .principles-row {
+    gap: 12px 18px;
+    margin-top: 44px;
+  }
+
+  .skills-layout {
+    margin-top: 40px;
+  }
+
+  .project-filters {
+    margin-top: 36px;
+  }
+
+  .project-visual {
+    height: 175px;
+  }
+
+  .project-body {
+    padding: 20px 18px 22px;
+  }
+
+  .project-card h3 {
+    font-size: 20px;
+  }
+
+  .timeline {
+    margin-top: 44px;
+  }
+
+  .timeline-item {
+    grid-template-columns: 34px minmax(0, 1fr);
+  }
+
+  .timeline-marker {
+    font-size: 9px;
+  }
+
+  .timeline-marker i {
+    left: 7px;
+  }
+
+  .experience-role {
+    font-size: 16px;
   }
 
   .contact-section {
@@ -2006,26 +3166,372 @@ h1 span, h2 em {
 
   .contact-card {
     display: block;
-    padding: 35px 25px 27px;
+    padding: 32px 22px 26px;
   }
 
   .contact-stamp {
-    margin-bottom: 35px;
+    margin-bottom: 26px;
   }
 
   .contact-copy h2 {
-    font-size: 2.7rem;
+    font-size: clamp(1.6rem, 6.4vw, 2.3rem);
+  }
+
+  .contact-copy > p:not(.eyebrow) {
+    font-size: 13.5px;
+    margin-top: 18px;
+  }
+
+  .contact-actions {
+    gap: 10px;
+    margin-top: 24px;
+  }
+
+  .contact-actions .button {
+    flex: 1 1 100%;
   }
 
   .contact-meta {
-    margin-top: 34px;
-    gap: 13px;
+    margin-top: 28px;
+    gap: 12px;
   }
 
-  .site-footer {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 14px;
-    padding-bottom: 25px;
+  /* Code Vault cards get a slightly taller frame on phones */
+  .store-card {
+    height: 310px;
   }
-}
+
+  .store-card-face,
+  .store-card-panel {
+    padding: 1rem;
+  }
+}
+
+/* ── ≤520px: small phone ─────────────────────────────────── */
+@media (max-width: 520px) {
+  .shell {
+    width: min(100% - 28px, 460px);
+  }
+
+  .brand-name {
+    font-size: 16px;
+  }
+
+  .hero-section,
+  .portfolio-shell .hero-section {
+    padding: 88px 0 50px;
+  }
+
+  .hero-stage-wrap {
+    --stage-scale: .68;
+  }
+
+  /* Compact cards on very small screens */
+  .store-card {
+    height: 280px;
+  }
+
+  .store-card-title {
+    font-size: 15px;
+  }
+
+  .eyebrow {
+    font-size: 9px;
+    letter-spacing: .12em;
+  }
+
+  .section {
+    padding-top: 76px;
+  }
+
+  /* Filters scroll horizontally rather than wrapping into a tall wall */
+  .project-filters {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    padding: 0 16px 4px;
+    margin-inline: -16px;
+  }
+
+  .project-filters::-webkit-scrollbar {
+    display: none;
+  }
+
+  .project-filters button {
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+
+  .project-visual {
+    height: 160px;
+  }
+
+  .skill-row {
+    grid-template-columns: minmax(0, 1fr) 42px;
+  }
+}
+
+/* ── Marquee scaling on small devices ───────────────────────
+   Icons, label sizes, spacing and the edge fades all shrink so
+   the strip stays legible without dominating a narrow screen. */
+@media (max-width: 768px) {
+  .skills-marquee {
+    padding: 32px 0;
+  }
+
+  .marquee-rows {
+    gap: 10px;
+  }
+
+  .marquee-track {
+    padding: 14px 0;
+  }
+
+  .marquee-run {
+    padding-inline: 14px;
+  }
+
+  .skill-pill {
+    gap: 9px;
+    padding: 3px 0;
+  }
+
+  .skill-pill-icon {
+    width: 38px;
+    height: 38px;
+  }
+
+  .skill-pill-svg {
+    width: 17px;
+    height: 17px;
+  }
+
+  .skill-pill-name {
+    font-size: 13px;
+    letter-spacing: -.01em;
+  }
+
+  .marquee-dot {
+    width: 7px;
+    height: 7px;
+    margin: 0 12px;
+  }
+
+  .marquee-fade {
+    width: 64px;
+  }
+}
+
+@media (max-width: 520px) {
+  .skills-marquee {
+    padding: 24px 0;
+  }
+
+  .marquee-rows {
+    gap: 6px;
+  }
+
+  .marquee-track {
+    padding: 10px 0;
+  }
+
+  .marquee-run {
+    padding-inline: 10px;
+  }
+
+  .skill-pill {
+    gap: 7px;
+  }
+
+  .skill-pill-icon {
+    width: 30px;
+    height: 30px;
+  }
+
+  .skill-pill-svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .skill-pill-name {
+    font-size: 11.5px;
+  }
+
+  .marquee-dot {
+    width: 5px;
+    height: 5px;
+    margin: 0 8px;
+  }
+
+  .marquee-fade {
+    width: 40px;
+  }
+}
+
+@media (max-width: 400px) {
+  .skills-marquee {
+    padding: 18px 0;
+  }
+
+  .marquee-track {
+    padding: 8px 0;
+  }
+
+  .skill-pill-icon {
+    width: 26px;
+    height: 26px;
+  }
+
+  .skill-pill-svg {
+    width: 12px;
+    height: 12px;
+  }
+
+  .skill-pill-name {
+    font-size: 10.5px;
+  }
+
+  .marquee-fade {
+    width: 28px;
+  }
+}
+
+/* ── ≤400px: extra small phones ──────────────────────────── */
+@media (max-width: 400px) {
+  .shell {
+    width: min(100% - 24px, 380px);
+  }
+
+  .header-inner {
+    height: 60px;
+  }
+
+  .brand-mark {
+    width: 30px;
+    height: 30px;
+  }
+
+  .brand-name {
+    font-size: 15px;
+  }
+
+  .hero-section,
+  .portfolio-shell .hero-section {
+    padding: 82px 0 44px;
+  }
+
+  .portfolio-shell .hero-copy h1,
+  .hero-section h1 {
+    font-size: clamp(1.75rem, 8.6vw, 2.3rem);
+  }
+
+  .hero-lede,
+  .hero-lede-large {
+    font-size: 14px;
+  }
+
+  .hero-stage-wrap {
+    --stage-scale: .6;
+  }
+
+  .portfolio-hero {
+    padding: 82px 0 40px;
+  }
+
+  .portfolio-avatar-core .avatar-image-wrap {
+    width: 270px;
+    height: 270px;
+  }
+
+  .skills-anchor {
+    margin-top: 68px;
+  }
+
+  .hero-proof {
+    gap: 12px;
+  }
+
+  .section {
+    padding-top: 68px;
+  }
+
+  .section-heading h2 {
+    font-size: clamp(1.45rem, 6.8vw, 1.9rem);
+  }
+
+  .project-visual {
+    height: 145px;
+  }
+
+  .project-card h3 {
+    font-size: 18px;
+  }
+
+  .contact-card {
+    padding: 28px 16px 22px;
+  }
+
+  .timeline-item {
+    grid-template-columns: 26px minmax(0, 1fr);
+  }
+
+  .timeline-marker i {
+    left: 5px;
+  }
+}
+
+/* ── ≤360px: smallest supported width ────────────────────── */
+@media (max-width: 360px) {
+  .shell {
+    width: min(100% - 20px, 340px);
+  }
+
+  .portfolio-shell .hero-copy h1,
+  .hero-section h1 {
+    font-size: clamp(1.6rem, 8.8vw, 2.1rem);
+  }
+
+  .hero-stage-wrap {
+    --stage-scale: .54;
+  }
+
+  .hero-proof strong {
+    font-size: 15px;
+  }
+
+  .hero-proof span {
+    font-size: 7px;
+  }
+
+  .project-visual {
+    height: 132px;
+  }
+
+  .button {
+    font-size: 11.5px;
+  }
+}
+
+/* ── Landscape phones: reclaim vertical space ────────────── */
+@media (max-width: 900px) and (orientation: landscape) and (max-height: 560px) {
+  .hero-section,
+  .portfolio-shell .hero-section {
+    padding-top: 84px;
+    padding-bottom: 36px;
+    gap: 24px;
+  }
+
+  .hero-stage-wrap {
+    --stage-scale: .5;
+  }
+
+  .section {
+    padding-top: 64px;
+  }
+
+  .hero-proof {
+    margin-top: 28px;
+  }
+}
+
+

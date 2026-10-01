@@ -81,20 +81,21 @@ const Notes = () => {
   if (!data) return <div className="min-h-screen bg-dark-bg" />;
 
   return (
-    <div className="bg-transparent min-h-screen text-white flex flex-col justify-between relative overflow-hidden selection:bg-ambient-blue">
-      <div className="flex-1 w-full max-w-6xl mx-auto px-4 sm:px-6 pt-28 sm:pt-36 pb-16 sm:pb-24 relative z-10">
-        
+    /* `.page-stack` fills the 100dvh ancestor and lets the document own
+       the scroll, so no phantom space appears below the footer. */
+    <div className="page-stack">
+      <div className="page-stack-body">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="mb-14"
+          className="mb-10 sm:mb-14"
         >
           <Link to="/" className="inline-flex items-center gap-2 text-ambient-blue hover:text-white transition-colors mb-6 group glass-pill px-4 py-2 rounded-full w-fit">
             <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" /> Back to Home
           </Link>
-          <h1 className="text-4xl sm:text-6xl md:text-7xl font-black tracking-tighter">
+          <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tighter break-words">
             Technical Notes<span className="text-ambient-blue">.</span>
           </h1>
           <p className="text-gray-300 mt-4 max-w-xl text-sm sm:text-base leading-relaxed">
@@ -103,28 +104,30 @@ const Notes = () => {
         </motion.div>
 
         {/* Notes Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 md:gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 lg:gap-8">
           {data.notes.map((note, i) => (
             <TiltCard key={note.id} delay={i * 0.08} className="h-full flex flex-col" maxTilt={3.5}>
-              <div className="p-7 rounded-2xl glass-card border border-white/10 hover:border-ambient-blue/50 flex flex-col justify-between h-full relative group min-h-[320px] shadow-xl">
+              <div className="card-body p-5 sm:p-7 rounded-2xl glass-card border border-white/10 hover:border-ambient-blue/50 flex flex-col justify-between h-full relative group shadow-xl">
                 {/* Tech Icon background float */}
-                <div className="absolute right-4 top-4 opacity-10 group-hover:opacity-25 group-hover:scale-110 transition-all duration-500 pointer-events-none">
+                <div className="absolute right-4 top-4 opacity-10 group-hover:opacity-25 transition-opacity duration-500 pointer-events-none">
                   {getNoteIcon(note.tech)}
                 </div>
-                
-                <div className="mb-6 flex-grow">
-                  <div className="text-xs text-ambient-blue font-mono mb-3 font-semibold">{note.date}</div>
-                  <span className="inline-block px-3 py-1 rounded-md text-[11px] font-bold bg-white/5 border border-white/10 text-gray-300 mb-3">
-                    {note.tech}
-                  </span>
-                  <h3 className="text-xl font-bold text-white mb-3 group-hover:text-ambient-blue transition-colors">
+
+                <div className="mb-5 sm:mb-6 flex-grow min-w-0">
+                  <div className="card-meta-row mb-3">
+                    <div className="text-xs text-ambient-blue font-mono font-semibold">{note.date}</div>
+                    <span className="inline-block px-2.5 sm:px-3 py-1 rounded-md text-[11px] font-bold bg-white/5 border border-white/10 text-gray-300 truncate max-w-full">
+                      {note.tech}
+                    </span>
+                  </div>
+                  <h3 className="card-title text-lg sm:text-xl font-bold text-white mb-2.5 sm:mb-3 group-hover:text-ambient-blue transition-colors">
                     {note.title}
                   </h3>
-                  <p className="text-gray-300 text-sm leading-relaxed">
+                  <p className="card-list text-gray-300 text-[13px] sm:text-sm leading-relaxed">
                     {note.snippet}
                   </p>
                 </div>
-                
+
                 <DownloadButton />
               </div>
             </TiltCard>

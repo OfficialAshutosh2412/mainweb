@@ -5,17 +5,17 @@ import { fetchMainData } from '../api';
 
 import Footer from '../components/Footer';
 import TiltCard from '../components/TiltCard';
-import { ArrowLeft, ShoppingCart, CheckCircle, ExternalLink, Sparkles, Code, FileText, Play, Wrench } from 'lucide-react';
+import { ArrowLeft, ShoppingCart, ExternalLink, Sparkles, Code, FileText, Play, Wrench } from 'lucide-react';
 import { getTechIcon } from './Projects';
 
 const StoreCard = ({ project, delay }) => {
   const [mobileActive, setMobileActive] = useState(false);
 
   return (
-    <TiltCard delay={delay} maxTilt={3.5}>
-      <div 
+    <TiltCard delay={delay} className="h-full" maxTilt={3.5}>
+      <div
         onClick={() => setMobileActive(!mobileActive)}
-        className={`group relative rounded-2xl h-[440px] overflow-hidden border border-white/10 hover:border-ambient-blue/60 transition-all duration-400 ease-out cursor-pointer shadow-xl hover:shadow-[0_20px_40px_rgba(29,78,216,0.35)] hover:-translate-y-1.5 ${
+        className={`store-card group relative rounded-2xl overflow-hidden border border-white/10 hover:border-ambient-blue/60 transition-all duration-400 ease-out cursor-pointer shadow-xl hover:shadow-[0_20px_40px_rgba(29,78,216,0.35)] hover:-translate-y-1.5 ${
           mobileActive ? '-translate-y-1.5 border-ambient-blue/60 shadow-[0_20px_40px_rgba(29,78,216,0.35)]' : ''
         }`}
       >
@@ -33,31 +33,31 @@ const StoreCard = ({ project, delay }) => {
         </div>
 
         {/* 2. Default State Content */}
-        <div className={`absolute inset-0 z-10 p-6 flex flex-col justify-between transition-opacity duration-300 ${
+        <div className={`store-card-face absolute inset-0 z-10 flex flex-col justify-between transition-opacity duration-300 ${
           mobileActive ? 'opacity-0 pointer-events-none' : 'group-hover:opacity-0 group-hover:pointer-events-none'
         }`}>
           {/* Top Badge area */}
-          <div className="flex justify-between items-start">
-            <span className="px-3 py-1 rounded-full text-[11px] font-mono font-bold bg-black/60 text-ambient-blue border border-ambient-blue/30 backdrop-blur-md shadow-sm">
+          <div className="store-card-top flex justify-between items-start gap-2">
+            <span className="store-badge-soft px-3 py-1 rounded-full text-[11px] font-mono font-bold bg-black/60 text-ambient-blue border border-ambient-blue/30 backdrop-blur-md shadow-sm">
               Architecture Code
             </span>
-            <span className="px-3.5 py-1 rounded-full text-xs font-mono font-black text-white bg-ambient-blue shadow-[0_0_15px_rgba(29,78,216,0.5)]">
+            <span className="store-price-pill px-3 py-1 rounded-full text-xs font-mono font-black text-white bg-ambient-blue shadow-[0_0_15px_rgba(29,78,216,0.5)] shrink-0">
               {project.price}
             </span>
           </div>
 
           {/* Bottom Default Info */}
-          <div>
-            <h3 className="text-xl font-bold text-white mb-3 tracking-tight line-clamp-1">
+          <div className="min-w-0">
+            <h3 className="store-card-title text-xl font-bold text-white mb-3 tracking-tight line-clamp-2">
               {project.title}
             </h3>
 
             {project.tech && (
-              <div className="flex items-center gap-1.5 flex-wrap">
+              <div className="store-tech-row flex items-center gap-1.5 flex-wrap">
                 {project.tech.slice(0, 3).map(t => (
-                  <span key={t} className="px-2.5 py-1 rounded-lg bg-black/70 border border-white/10 text-[10px] text-gray-200 font-mono flex items-center gap-1 backdrop-blur-sm shadow-sm">
+                  <span key={t} className="store-tech-pill px-2 py-1 rounded-lg bg-black/70 border border-white/10 text-gray-200 font-mono flex items-center gap-1 backdrop-blur-sm shadow-sm">
                     {getTechIcon(t)}
-                    {t}
+                    <span className="truncate">{t}</span>
                   </span>
                 ))}
                 {project.tech.length > 3 && (
@@ -68,72 +68,58 @@ const StoreCard = ({ project, delay }) => {
           </div>
         </div>
 
-        {/* 3. Hover / Touch Revealed Semi-Transparent Gradient Details Panel (300-450ms Ease-Out) */}
-        <div className={`absolute inset-0 z-20 p-6 bg-[#0a0c14]/90 backdrop-blur-md border-t border-white/15 flex flex-col justify-between transition-all duration-400 ease-out transform ${
-          mobileActive ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0 group-hover:translate-y-0 group-hover:opacity-100'
-        }`}>
-          <div>
+        {/* 3. Hover / Touch Revealed Details Panel.
+            The body scrolls internally and the action bar is pinned, so
+            nothing is ever clipped off the bottom on small screens. */}
+        <div
+          role="region"
+          aria-label={`${project.title} details`}
+          className={`store-card-panel absolute inset-0 z-20 bg-[#0a0c14]/92 backdrop-blur-md border-t border-white/15 flex flex-col transition-all duration-400 ease-out transform ${
+            mobileActive ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0 group-hover:translate-y-0 group-hover:opacity-100'
+          }`}
+        >
+          {/* Scrollable body keeps every line reachable on small screens.
+              Per request the prose description and capability list are
+              removed — the card shows title, price and tech stack only. */}
+          <div className="store-panel-scroll flex-1 min-h-0 overflow-y-auto overscroll-contain">
             {/* Header in Panel */}
-            <div className="flex justify-between items-start mb-2">
-              <h3 className="text-lg font-bold text-white tracking-tight line-clamp-1">
+            <div className="store-panel-head flex justify-between items-start gap-2">
+              <h3 className="store-card-title text-base sm:text-lg font-bold text-white tracking-tight line-clamp-2 min-w-0">
                 {project.title}
               </h3>
-              <span className="px-2.5 py-0.5 rounded-lg text-xs font-mono font-black text-blue-200 bg-ambient-blue/40 border border-ambient-blue/60 shrink-0 ml-2">
+              <span className="px-2.5 py-0.5 rounded-lg text-xs font-mono font-black text-blue-200 bg-ambient-blue/40 border border-ambient-blue/60 shrink-0">
                 {project.price}
               </span>
             </div>
 
-            <p className="text-gray-300 text-xs leading-relaxed mb-4 line-clamp-2">
-              {project.description}
-            </p>
-
-            {/* 3 Key Features */}
-            <div className="space-y-2 mb-4">
-              <div className="text-[10px] font-mono font-bold text-ambient-blue uppercase tracking-wider">Key Capabilities</div>
-              {(project.features || [
-                "Full Source Code & Database Scripts",
-                "Architectural Documentation & Setup Guide",
-                "Academic Thesis Blueprint & Diagrams"
-              ]).slice(0, 3).map((feat, fIdx) => (
-                <div key={fIdx} className="flex items-center gap-2 text-xs text-gray-200">
-                  <CheckCircle className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                  <span className="truncate">{feat}</span>
-                </div>
-              ))}
-            </div>
-
-            {/* Tech Badges */}
+            {/* Tech Badges — horizontal scroll strip on phones */}
             {project.tech && (
-              <div className="flex items-center gap-1.5 flex-wrap mb-3">
+              <div className="store-panel-tech">
                 {project.tech.map(t => (
-                  <span key={t} className="px-2 py-0.5 rounded-md bg-black/60 border border-white/10 text-[10px] text-gray-300 font-mono flex items-center gap-1">
+                  <span key={t} className="store-tech-pill px-2 py-0.5 rounded-md bg-black/60 border border-white/10 text-gray-300 font-mono flex items-center gap-1 shrink-0">
                     {getTechIcon(t)}
-                    {t}
+                    <span className="truncate">{t}</span>
                   </span>
                 ))}
               </div>
             )}
           </div>
 
-          <div>
-            {/* Small note indicating thumbnail is AI generated */}
-            <div className="text-[10px] font-mono text-gray-400/90 italic flex items-center justify-center gap-1 mb-2">
-              <Sparkles className="w-3 h-3 text-ambient-blue shrink-0 animate-pulse" />
-              <span>* Preview thumbnail AI-generated</span>
+          {/* Pinned action bar — always visible, never scrolls out of reach */}
+          <div className="store-panel-actions shrink-0">
+            <div className="store-ai-note text-[10px] font-mono text-gray-400/90 italic flex items-center justify-center gap-1">
+              <Sparkles size={12} className="shrink-0 animate-pulse" />
+              <span className="truncate">* Preview thumbnail AI-generated</span>
             </div>
 
-            {/* Action CTAs */}
-            <div className="flex gap-2.5">
-              <button className="btn-slide-blue flex-[1.4] py-3 px-3 rounded-xl font-bold text-white text-xs flex items-center justify-between gap-1.5 shadow-lg border border-ambient-blue/50 cursor-pointer active:scale-95 transition-all">
-                <div className="flex items-center gap-1.5">
-                  <ShoppingCart size={15} />
-                  <span>Get Bundle</span>
-                </div>
-                <span className="bg-black/25 px-2 py-0.5 rounded text-[11px] font-mono font-black text-blue-100">{project.price}</span>
+            <div className="flex gap-2">
+              <button className="btn-slide-blue store-cta-primary flex-1 py-2.5 sm:py-3 px-2 sm:px-3 rounded-xl font-bold text-white text-xs flex items-center justify-center gap-1.5 shadow-lg border border-ambient-blue/50 cursor-pointer active:scale-95 transition-all min-w-0">
+                <ShoppingCart size={15} className="shrink-0" />
+                <span className="truncate">Get Bundle</span>
               </button>
-              <button className="flex-1 py-3 rounded-xl font-bold text-ambient-blue border border-ambient-blue/40 hover:bg-ambient-blue/15 hover:border-ambient-blue/70 transition-all flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 text-xs">
-                <ExternalLink size={14} />
-                <span>Demo</span>
+              <button className="store-cta-secondary flex-1 py-2.5 sm:py-3 px-2 sm:px-3 rounded-xl font-bold text-ambient-blue border border-ambient-blue/40 hover:bg-ambient-blue/15 hover:border-ambient-blue/70 transition-all flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 text-xs min-w-0">
+                <ExternalLink size={14} className="shrink-0" />
+                <span className="truncate">Demo</span>
               </button>
             </div>
           </div>
@@ -155,8 +141,8 @@ const Store = () => {
   const products = data.storeProjects.minor;
 
   return (
-    <div className="bg-transparent min-h-screen text-white flex flex-col justify-between relative overflow-hidden selection:bg-ambient-blue">
-      <div className="flex-1 w-full max-w-6xl mx-auto px-4 sm:px-6 pt-28 sm:pt-36 pb-16 sm:pb-24 relative z-10">
+    <div className="page-stack">
+      <div className="page-stack-body">
         
         {/* Header */}
         <motion.div
@@ -202,7 +188,7 @@ const Store = () => {
         </motion.div>
 
         {/* Store Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 lg:gap-8">
           {products.map((project, i) => (
             <StoreCard key={project.id} project={project} delay={i * 0.08} />
           ))}

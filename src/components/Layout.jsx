@@ -9,16 +9,32 @@ const Layout = ({ children }) => {
   const [isMobile, setIsMobile] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
 
+  /* Lenis smooth scrolling hijacks touch gestures, so it is disabled on
+     small screens and for users who prefer reduced motion. We track this
+     with matchMedia listeners rather than a resize handler so the
+     breakpoint reacts instantly to orientation changes too. */
   useEffect(() => {
-    const check = () => {
-      setIsMobile(
-        window.innerWidth < 768 || 
-        (typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches)
-      );
+    const narrow = window.matchMedia('(max-width: 768px)');
+    const coarse = window.matchMedia('(pointer: coarse)');
+
+    const update = () => setIsMobile(narrow.matches || coarse.matches);
+
+    update();
+    narrow.addEventListener('change', update);
+    coarse.addEventListener('change', update);
+    return () => {
+      narrow.removeEventListener('change', update);
+      coarse.removeEventListener('change', update);
     };
-    check();
-    window.addEventListener('resize', check);
-    return () => window.removeEventListener('resize', check);
+  }, []);
+
+  /* Respect the OS-level reduced motion preference by default */
+  useEffect(() => {
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+    setReducedMotion(mq.matches);
+    const onChange = (e) => setReducedMotion(e.matches);
+    mq.addEventListener('change', onChange);
+    return () => mq.removeEventListener('change', onChange);
   }, []);
 
   const pageContent = (
@@ -27,7 +43,7 @@ const Layout = ({ children }) => {
       <div className="ambient ambient-two" aria-hidden="true" />
       <ScrollProgress />
       <Navbar reducedMotion={reducedMotion} setReducedMotion={setReducedMotion} />
-      <div className="flex flex-col min-h-screen w-full relative overflow-x-hidden z-10">
+      <div className="app-content flex flex-col w-full relative z-10">
         {children}
       </div>
       <ContactDrawer />
@@ -37,11 +53,25 @@ const Layout = ({ children }) => {
   return (
     <ContactProvider>
       {isMobile || reducedMotion ? (
-        <div className="w-full min-h-screen relative overflow-x-hidden">
-          {pageContent}
-        </div>
+        <div className="app-root w-full relative">{pageContent}</div>
       ) : (
-        <ReactLenis root options={{ lerp: 0.12, duration: 0.85, smoothWheel: true, syncTouch: false, touchMultiplier: 1.5 }}>
+        <ReactLenis
+          root
+          options={{
+            /* Tuned for a smooth but responsive feel: enough smoothing to
+               feel "premium", not so much that input feels laggy. */
+            lerp: 0.1,
+            duration: 1,
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+            smoothWheel: true,
+            wheelMultiplier: 1,
+            touchMultiplier: 1.4,
+            /* Native touch scrolling is faster and more predictable on
+               phones, so Lenis stays out of the way there. */
+            syncTouch: false,
+            infinite: false,
+          }}
+        >
           {pageContent}
         </ReactLenis>
       )}

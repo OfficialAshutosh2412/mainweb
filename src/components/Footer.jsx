@@ -8,17 +8,18 @@ const Footer = () => {
   };
 
   return (
-    <footer className="shell site-footer flex-col sm:flex-row gap-4 py-8 border-t border-line">
-      <div className="text-xs text-muted">
-        ASHUTOSH PRASAD <span className="footer-dot">•</span> LUCKNOW, UP <span className="footer-dot">•</span> C# / .NET DEVELOPER
+    <footer className="shell site-footer border-t border-line">
+      <div className="site-footer-brand">
+        ASHUTOSH PRASAD <span className="footer-dot">•</span> LUCKNOW, UP{' '}
+        <span className="footer-dot">•</span> C# / .NET DEVELOPER
       </div>
 
-      <div className="flex items-center gap-4 flex-wrap">
+      <nav className="site-footer-links" aria-label="Footer navigation">
         <Link
           to="/portfolio"
           onMouseEnter={() => prefetchRoute('/portfolio')}
           onTouchStart={() => prefetchRoute('/portfolio')}
-          className="button button-primary text-xs py-1.5 px-3.5 gap-1.5 cursor-pointer"
+          className="button button-primary site-footer-cta"
         >
           <UserCheck size={14} />
           <span>View Portfolio &amp; Resume</span>
@@ -28,7 +29,7 @@ const Footer = () => {
           href="https://github.com/OfficialAshutosh2412"
           target="_blank"
           rel="noopener noreferrer"
-          className="hover:text-white text-xs text-muted transition-colors"
+          className="site-footer-link"
         >
           GitHub
         </a>
@@ -36,14 +37,14 @@ const Footer = () => {
           href="https://linkedin.com/in/ashutosh-prasad-0449181ba"
           target="_blank"
           rel="noopener noreferrer"
-          className="hover:text-white text-xs text-muted transition-colors"
+          className="site-footer-link"
         >
           LinkedIn
         </a>
-        <button onClick={scrollToTop} className="cursor-pointer text-xs text-muted hover:text-white">
+        <button onClick={scrollToTop} className="site-footer-link cursor-pointer">
           Back to top ↑
         </button>
-      </div>
+      </nav>
     </footer>
   );
 };
