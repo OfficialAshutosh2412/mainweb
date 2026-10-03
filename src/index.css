@@ -59,25 +59,18 @@
 html,
 body {
   max-width: 100%;
-  /* `clip` (not `hidden`) avoids creating a scroll container, which would
-     otherwise break the Lenis root-scroll instance. */
+  /* `clip` (not `hidden`) avoids creating an unintended scroll container */
   overflow-x: clip;
-  overscroll-behavior-x: none;
-  /* Kill rubber-band / scroll chaining that exposes phantom space below
-     the footer, without disabling scrolling itself. */
-  overscroll-behavior-y: none;
 }
 
 html {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
-  /* Only the document scrolls. Every inner element uses `clip`, so there
-     is exactly one scrollbar on the page. */
-  height: 100%;
+  min-height: 100%;
 }
 
 body {
-  height: 100%;
+  min-height: 100%;
   margin: 0;
 }
 
@@ -102,15 +95,7 @@ iframe {
   min-width: 0;
 }
 
-/* ── App height chain (fixes dual scrollbar + footer overscroll) ──
-   `vh` on mobile is measured against the LARGEST viewport, so a 100vh
-   element is taller than the visible area by exactly the browser chrome
-   height — that difference is what produced the phantom scroll below the
-   footer. Every layer now uses dvh (dynamic viewport height) so the
-   document height always matches what the user can actually see.
-
-   dvh is the modern value; vh is kept as a fallback for older browsers
-   and must be declared FIRST so the newer value wins where supported. */
+/* ── App height chain ── */
 .app-root,
 .app-content {
   width: 100%;
@@ -125,6 +110,8 @@ iframe {
 
 .app-content {
   flex: 1 0 auto;
+  display: flex;
+  flex-direction: column;
   min-width: 0;
   overflow-x: clip;
 }
@@ -811,8 +798,10 @@ h1 span, h2 em {
 }
 
 .portfolio-avatar-core .avatar-image-wrap {
-  width: 340px;
-  height: 340px;
+  width: 330px;
+  height: 330px;
+  max-width: 82vw;
+  max-height: 82vw;
   border-radius: 50%;
   overflow: hidden;
   position: relative;
@@ -875,7 +864,9 @@ h1 span, h2 em {
 .hero-stage-wrap {
   /* Scales the whole 3D stage down proportionally on narrow viewports */
   --stage-scale: 1;
-  height: calc(500px * var(--stage-scale));
+  height: 480px;
+  width: 480px;
+  max-width: 100%;
   position: relative;
   perspective: 1300px;
   transform-style: preserve-3d;
@@ -886,7 +877,7 @@ h1 span, h2 em {
   overflow: visible;
   transform: scale(var(--stage-scale));
   transform-origin: center center;
-  max-width: 100%;
+  margin-block: calc((480px * var(--stage-scale) - 480px) / 2);
 }
 
 .hero-stage-grid {
@@ -2001,12 +1992,7 @@ h1 span, h2 em {
    pinned, guaranteeing the CTAs are always reachable. */
 .store-card {
   position: relative;
-  height: 300px;
-}
-
-.store-card-face,
-.store-card-panel {
-  padding: 1.25rem;
+  height: auto;
 }
 
 .store-card-title {
@@ -2266,6 +2252,26 @@ h1 span, h2 em {
   overflow: hidden;
 }
 
+/* ── Playlist card (below each embedded episode) ───────────────────
+   Sits in a 3-column grid where the "View" button and the playlist
+   title compete for width. `min-width: 0` lets the title shrink and
+   truncate instead of forcing the grid track wider than the viewport. */
+.playlist-card {
+  min-width: 0;
+}
+
+/* ── Episode card (/video/<slug>) ────────────────────────────────
+   Each card is a video frame plus its number badge. The frame must
+   clip so the 16:9 embed stays square with the grid track, while the
+   badge is a sibling overlay so it is never sliced. */
+.episode-card {
+  min-width: 0;
+}
+
+.episode-card iframe {
+  display: block;
+}
+
 /* ── Card action buttons: "See more" mirrors "Repository" ──
    Both share identical sizing, padding and icon spacing so the
    two controls in a card footer read as a matched pair. */
@@ -2289,17 +2295,16 @@ h1 span, h2 em {
   display: flex;
   flex-direction: column;
   flex: 1 1 auto;
-  min-height: 0;
+  min-height: 100vh;
+  min-height: 100dvh;
   color: #fff;
   background: transparent;
   position: relative;
-  /* `clip` avoids creating a scroll container (which would trap the
-     document scroll and re-introduce the overscroll bug). */
   overflow-x: clip;
 }
 
 .page-stack-body {
-  flex: 1 0 auto;
+  flex: 1 1 auto;
   width: 100%;
   max-width: 72rem;
   margin-inline: auto;
@@ -3196,14 +3201,8 @@ img {
     gap: 12px;
   }
 
-  /* Code Vault cards get a slightly taller frame on phones */
   .store-card {
-    height: 310px;
-  }
-
-  .store-card-face,
-  .store-card-panel {
-    padding: 1rem;
+    height: auto;
   }
 }
 
@@ -3226,9 +3225,8 @@ img {
     --stage-scale: .68;
   }
 
-  /* Compact cards on very small screens */
   .store-card {
-    height: 280px;
+    height: auto;
   }
 
   .store-card-title {

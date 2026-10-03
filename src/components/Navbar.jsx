@@ -12,6 +12,11 @@ const navItems = [
   ['videos', 'Videos', '/videos'],
 ];
 
+/* A nav item is active on its own path, plus any nested route beneath it
+   — so "Videos" stays lit while browsing /video/<playlist_name>. */
+const isNavActive = (pathname, path) =>
+  path === '/' ? pathname === '/' : pathname.startsWith(path);
+
 /* Shared spring for the mobile drawer — snappy but not abrupt. */
 const drawerSpring = { type: 'spring', stiffness: 380, damping: 34, mass: 0.7 };
 
@@ -140,7 +145,7 @@ const Navbar = ({ reducedMotion, setReducedMotion }) => {
               to={path}
               onMouseEnter={() => prefetchRoute(path)}
               onTouchStart={() => prefetchRoute(path)}
-              className={`cursor-pointer ${location.pathname === path ? 'active' : ''}`}
+              className={`cursor-pointer ${isNavActive(location.pathname, path) ? 'active' : ''}`}
               data-testid={`nav-${id}-link`}
             >
               {label}
@@ -214,8 +219,8 @@ const Navbar = ({ reducedMotion, setReducedMotion }) => {
                   onMouseEnter={() => prefetchRoute(path)}
                   onTouchStart={() => prefetchRoute(path)}
                   onClick={() => goTo(path)}
-                  className={location.pathname === path ? 'active' : ''}
-                  aria-current={location.pathname === path ? 'page' : undefined}
+                  className={isNavActive(location.pathname, path) ? 'active' : ''}
+                  aria-current={isNavActive(location.pathname, path) ? 'page' : undefined}
                   data-testid={`mobile-nav-${id}-button`}
                 >
                   {label}

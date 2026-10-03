@@ -1,7 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { useEffect, lazy, Suspense } from 'react';
 import Layout from './components/Layout';
-import PageRevealer from './components/PageRevealer';
 
 /* ── Code-split routes for instant initial bundle loading ── */
 const MainSite = lazy(() => import('./pages/MainSite'));
@@ -10,26 +9,30 @@ const Projects = lazy(() => import('./pages/Projects'));
 const Notes = lazy(() => import('./pages/Notes'));
 const Videos = lazy(() => import('./pages/Videos'));
 const Store = lazy(() => import('./pages/Store'));
+const PlaylistVideo = lazy(() => import('./pages/PlaylistVideo'));
 
 /* ── Prefetch functions on link hover / interaction for 0ms route transitions ── */
 export const prefetchRoute = (path) => {
-  switch (path) {
-    case '/portfolio':
+  switch (true) {
+    case path.startsWith('/video/'):
+      import('./pages/PlaylistVideo');
+      break;
+    case path === '/portfolio':
       import('./pages/Portfolio');
       break;
-    case '/projects':
+    case path === '/projects':
       import('./pages/Projects');
       break;
-    case '/notes':
+    case path === '/notes':
       import('./pages/Notes');
       break;
-    case '/videos':
+    case path === '/videos':
       import('./pages/Videos');
       break;
-    case '/store':
+    case path === '/store':
       import('./pages/Store');
       break;
-    case '/':
+    case path === '/':
     default:
       import('./pages/MainSite');
       break;
@@ -61,8 +64,6 @@ const ScrollToTop = () => {
 const AppInner = () => (
   <>
     <ScrollToTop />
-    {/* Single persistent overlay — watches location internally */}
-    <PageRevealer />
     <Layout>
       <Suspense fallback={<PageFallback />}>
         <Routes>
@@ -71,6 +72,8 @@ const AppInner = () => (
           <Route path="/projects" element={<Projects />} />
           <Route path="/notes" element={<Notes />} />
           <Route path="/videos" element={<Videos />} />
+          {/* Playlist detail: /video/<playlist_name> */}
+          <Route path="/video/:slug" element={<PlaylistVideo />} />
           <Route path="/store" element={<Store />} />
         </Routes>
       </Suspense>

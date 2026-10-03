@@ -23,10 +23,66 @@ export const mainWebsiteData = {
     { id: 5, title: "Node.js High Performance APIs", snippet: "Optimizing response times, caching strategies, and load balancing...", date: "2024-07-10", tech: "NodeJS" },
     { id: 6, title: "CSS Grid & Subgrid Masterclass", snippet: "Creating complex nested grid card structures without hacks...", date: "2024-07-20", tech: "CSS" }
   ],
-  youtubeVideos: [
-    { id: 1, title: "ASP.NET Core Web API & React.js Integration Tutorial", url: "https://www.youtube.com/embed/dQw4w9WgXcQ" },
-    { id: 2, title: "Building Secure REST APIs with JWT & Entity Framework", url: "https://www.youtube.com/embed/dQw4w9WgXcQ" },
-    { id: 3, title: "Modern C# & .NET Architecture Best Practices 2026", url: "https://www.youtube.com/embed/dQw4w9WgXcQ" }
+  /* Every entry pairs a full YouTube playlist with the first episode of
+     that series. The raw ids/links below are the single source of truth —
+     embed URLs are derived from them via the helpers at the bottom of
+     this file so a link only ever has to be updated in one place. */
+  youtubeShowcase: [
+    {
+      id: 1,
+      slug: "quality-management-system",
+      title: "Quality Management System (QMS)",
+      description: "Full-stack quality management platform walkthrough — ASP.NET Core Web API, React.js front end, JWT role-based auth and SignalR live analytics.",
+      tech: ["ASP.NET Core", "React.js", "C#", "SQL Server", "SignalR"],
+      videoId: "fVX_f-Qq9Ls",
+      videoUrl: "https://youtu.be/fVX_f-Qq9Ls",
+      playlistId: "PLRwgK8_Um5mQ",
+      playlistUrl: "https://youtube.com/playlist?list=PLRwgK8_Um5mQ"
+    },
+    {
+      id: 2,
+      slug: "live-location-tracker-management",
+      title: "Live Location Tracker Management",
+      description: "Real-time fleet and asset tracking portal — live map coordinates, route history and driver/vehicle management modules.",
+      tech: ["ASP.NET Core", "C#", "SQL Server", "JavaScript"],
+      videoId: "lIDUB4KGas4",
+      videoUrl: "https://youtu.be/lIDUB4KGas4",
+      playlistId: "PLup3w_QU8oiasVrjhCvdU6mbJqqOpksJo",
+      playlistUrl: "https://youtube.com/playlist?list=PLup3w_QU8oiasVrjhCvdU6mbJqqOpksJo"
+    },
+    {
+      id: 3,
+      slug: "fusionmart",
+      title: "FusionMart",
+      description: "E-commerce storefront and inventory system — product catalogue, cart and checkout flows backed by a normalised relational schema.",
+      tech: ["ASP.NET MVC", "C#", "Entity Framework", "SQL Server", "Bootstrap"],
+      videoId: "rgtYnIyF1rk",
+      videoUrl: "https://youtu.be/rgtYnIyF1rk",
+      playlistId: "PLup3w_QU8oiY1Jw98YuSHBGisJM6HYsS6",
+      playlistUrl: "https://youtube.com/playlist?list=PLup3w_QU8oiY1Jw98YuSHBGisJM6HYsS6"
+    },
+    {
+      id: 4,
+      slug: "sunrise-infotech-solution",
+      title: "Sunrise Infotech Solution",
+      description: "Project series built during industrial and technology training at Sunrise Infotech Solution, Lucknow — ASP.NET MVC and Python/Flask builds.",
+      tech: ["ASP.NET MVC", "ASP.NET Web Forms", "C#", "Python", "Flask"],
+      videoId: "t5_Lfldbm7g",
+      videoUrl: "https://youtu.be/t5_Lfldbm7g",
+      playlistId: "PLup3w_QU8oiZBsQ1a9qTufiJK_8cpK-Uo",
+      playlistUrl: "https://youtube.com/playlist?list=PLup3w_QU8oiZBsQ1a9qTufiJK_8cpK-Uo"
+    },
+    {
+      id: 5,
+      slug: "crime-tracking-system",
+      title: "Crime Tracking System (CTS)",
+      description: "Role-based crime reporting and investigation portal — FIR/incident records, police station management, AJAX report generation and status notifications.",
+      tech: ["ASP.NET MVC", "C#", "Entity Framework", "SQL Server", "AJAX"],
+      videoId: "cAhKgxAq99M",
+      videoUrl: "https://youtu.be/cAhKgxAq99M",
+      playlistId: "PLup3w_QU8oiY-B5BJ_nNQ1SRfGOEkcKbX",
+      playlistUrl: "https://youtube.com/playlist?list=PLup3w_QU8oiY-B5BJ_nNQ1SRfGOEkcKbX"
+    }
   ],
   showcaseProjects: [
     {
@@ -59,7 +115,8 @@ export const mainWebsiteData = {
         ],
         tech: ["ASP.NET Core", "React.js", "C#", "SQL Server", "SignalR"],
         hasDocumentation: true,
-        hasThesis: true
+        hasThesis: true,
+        youtubeId: 1
       },
       {
         id: 2,
@@ -74,7 +131,8 @@ export const mainWebsiteData = {
         ],
         tech: ["ASP.NET MVC", "C#", "SQL Server", "Bootstrap"],
         hasDocumentation: true,
-        hasThesis: true
+        hasThesis: true,
+        youtubeId: 5
       },
       {
         id: 3,
@@ -241,3 +299,30 @@ export const portfolioData = {
   ]
 };
 
+
+
+/* ── YouTube link helpers ──────────────────────────────────────────
+   Components never build embed URLs by hand: they ask for these so a
+   link change in `youtubeShowcase` propagates everywhere. */
+
+/* Embeddable player URL for a single video id. `rel=0` keeps YouTube's
+   "more video" suggestions off the embedded player. */
+export const videoEmbedUrl = (videoId) =>
+  `https://www.youtube.com/embed/${videoId}?rel=0`;
+
+/* Embeddable playlist player — the `videoseries` list format is the only
+   way YouTube exposes a whole playlist inside an <iframe>. */
+export const playlistEmbedUrl = (playlistId) =>
+  `https://www.youtube.com/embed/videoseries?list=${playlistId}`;
+
+/* Resolve a `youtubeId` reference (used by store/project cards) to its
+   showcase entry. Returns null when a project has no linked series. */
+export const getShowcaseById = (youtubeId) =>
+  mainWebsiteData.youtubeShowcase.find((item) => item.id === youtubeId) ?? null;
+
+/* Resolve the `/video/<slug>` route parameter to its showcase entry.
+   Returns null for an unknown slug so the page can render a 404 state. */
+export const getShowcaseBySlug = (slug) =>
+  mainWebsiteData.youtubeShowcase.find(
+    (item) => item.slug === String(slug).toLowerCase()
+  ) ?? null;

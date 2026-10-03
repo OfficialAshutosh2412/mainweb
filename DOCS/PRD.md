@@ -1,4 +1,4 @@
-<!--
+﻿<!--
   🌙 Dark theme — renders these docs in the portfolio's dark palette.
   Honoured by VS Code preview, Typora, Obsidian, mdBook, VitePress, Docusaurus
   and most dev markdown viewers. GitHub strips style tags, so it falls back to
@@ -122,11 +122,11 @@ img { border-radius: 10px !important; max-width: 100% !important; box-shadow: 0 
 # 📄 Product Requirements Document
 
 > **Product:** `ashutosh.dev` — Software Engineer Portfolio
-> **Version:** 2.0 · **Status:** 🟢 Shipped
-> **Owner:** Ashutosh Prasad · **Updated:** 28 Sep 2026
+> **Version:** 2.1 · **Status:** 🟢 Shipped
+> **Owner:** Ashutosh Prasad · **Updated:** 1 Oct 2026
 
 
-> 📚 **Docs:** [PRD](PRD.md) · [Design](DESIGN.md) · [Architecture](ARCHITECTURE.md) · [Rules](RULES.md) · [Tasks](TASKS.md) · [Tests](TEST.md) · [Memory](MEMORY.md)
+> 📚 **Docs:** [PRD](PRD.md) · [Design](DESIGN.md) · [Architecture](ARCHITECTURE.md) · [Rules](RULES.md) · [Tasks](TASKS.md) · [Tests](TEST.md) · [Memory](MEMORY.md) · [Optimization History](OPTIMIZATION_HISTORY.md) · [History](HISTORY.md)
 
 ---
 
@@ -145,6 +145,9 @@ vault — deployed as a static SPA.
 | 🌍 **Hosting** | Vercel — static build + SPA rewrites |
 | 🔤 **Language** | JavaScript (JSX) — no TypeScript |
 
+> 🌊 Scrolling is **native**. Lenis was removed in v2.1 — the portfolio keeps one
+> scroll owner and lets the browser handle the rest.
+
 ---
 
 ## 😩 Problem
@@ -162,7 +165,8 @@ Most developer portfolios fail on **one of three axes**:
 - 🖼️ **Generic hero** — needs a distinctive, memorable first impression
 - 📐 **Broken layouts** — hard-coded px sizes that overflow on a 360px phone
 - 🌀 **Scroll chaos** — dual scrollbars, rubber-band overscroll below the footer
-- 🕸️ **Dead weight** — unused components and a 1.2 MB image shipped to every visitor
+- 🕸️ **Dead weight** — unused components, an inert scroll library, and a 1.2 MB
+  image shipped to every visitor
 - 🧭 **No path to contact** — visitors can't act on what they just read
 
 ---
@@ -196,13 +200,14 @@ Most developer portfolios fail on **one of three axes**:
 | 3 | **Resume Portfolio** | 🎓 | `/portfolio` | ✅ Live | 🔴 Critical |
 | 4 | **Contact Drawer** | 📬 | all | ✅ Live | 🔴 Critical |
 | 5 | **Animated Mobile Nav** | ☰ | all | ✅ Live | 🔴 Critical |
-| 6 | **Route Transitions** | 🎞️ | all | ✅ Live | 🟡 High |
+| 6 | **Route Transitions** | 🎞️ | all | 🚫 Removed | ⚪ N/A |
 | 7 | **Code Vault** | 🗄️ | `/store` | ✅ Live | 🟡 High |
 | 8 | **Developer Notes** | 📝 | `/notes` | ✅ Live | 🟢 Medium |
 | 9 | **YouTube Showcase** | ▶️ | `/videos` | ✅ Live | 🟢 Medium |
 | 10 | **Skills Marquee** | 🎠 | `/portfolio` | ✅ Live | 🟢 Medium |
 | 11 | **Projects Index** | 📚 | `/projects` | ✅ Live | 🟢 Medium |
-| 12 | **Light/Dark Toggle** | 🌗 | — | ❌ Dropped | ⚪ N/A |
+| 12 | **Playlist Episode Pages** | 🎞️ | `/video/:slug` | ✅ Live | 🟢 Medium |
+| 13 | **Light/Dark Toggle** | 🌗 | — | ❌ Dropped | ⚪ N/A |
 
 ---
 
@@ -246,6 +251,77 @@ The current release. Shipped.
 
 ---
 
+## 🚀 v2.1 Scope — Simplification & Store Redesign
+
+Shipped. Removes decorative overhead and makes Store cards content-first.
+
+### ✂️ Removals
+- [x] 🌊 **Lenis smooth scroll removed** — native scrolling is the single
+      scroll owner; main bundle **411 kB → 389 kB**
+- [x] 🎞️ **Page-reveal curtain removed** — `PageRevealer` disconnected from the
+      render tree; routes swap instantly
+- [x] 🎬 **Page header entrance animations removed** on `/notes`, `/videos`,
+      `/store`
+- [x] 🚫 `overscroll-behavior` removed — no scroll wrapper left to contain
+- [x] 📏 `height: 100%` → `min-height: 100%` on `html`/`body` so tall content
+      is never clipped
+
+### 🗄️ Store redesign
+- [x] 📐 Cards are `height: auto` — they grow with their content instead of a
+      fixed `300px` frame
+- [x] 📝 Description, feature list and tech badges are **always visible**
+- [x] 🔘 CTAs sit permanently below a divider — no hover-reveal, nothing hidden
+
+### 📐 Layout refinements
+- [x] 🌀 3D hero stage is a fixed `480px` box with negative `margin-block`
+      compensating for the scale
+- [x] 🖼️ Portfolio avatar `340px` → `330px`, capped at `82vw`
+
+> ⚠️ **Exit Criteria** — builds clean · 0 lint errors. Lint warnings rose
+> `28 → 30`: removing the header animations left `motion` imported-but-unused
+> in `Notes.jsx`, `Videos.jsx` and `Store.jsx`. Harmless, but worth a sweep.
+
+---
+
+## 🚀 v2.2 Scope — YouTube Series Integration
+
+Shipped. Replaces demonstrative video content with the owner's real project
+walkthroughs and adds on-site playlist browsing.
+
+### 🎥 Content
+- [x] 🎥 Replaced 3 placeholder embeds (`dQw4w9WgXcQ`) with **5 real project series**
+- [x] 📺 Episode 1 of every series plays inline on `/videos`
+- [x] 🎞️ `/video/<playlist_name>` lists every episode as a **numbered** embed card
+- [x] 📚 **27 episodes** across all 5 playlists (QMS 1 · Location 3 · FusionMart 5 · Sunrise 5 · CTS 13)
+- [x] 🔗 Every episode links out to YouTube as a fallback
+
+### 🧭 Navigation
+- [x] 🧭 **View** button routes internally instead of leaving the site
+- [x] ⚡ `prefetchRoute()` extended to `/video/*` — chunk preloads on hover
+- [x] 🧭 Navbar `isNavActive()` keeps the Videos tab lit on nested routes
+- [x] ♿ Unknown slugs render a proper not-found state, never a blank page
+
+### 🗄️ Commerce linkage
+- [x] 🗄️ Dead "Demo" button on Store cards now opens the real playlist
+- [x] 📚 "Watch Playlist" link on purchasable Projects
+- [x] 🚫 Projects with no series show an inert slot, not a broken button
+
+### 📦 Performance
+- [x] ✂️ `PlaylistVideo` lazy-loaded — own 5.80 kB chunk (1.92 kB gzip)
+- [x] ✂️ `playlistEpisodes` isolated — 3.88 kB, loads only on video routes
+- [x] 📦 **Main bundle unchanged** at `389.61 kB` despite 27 new records
+- [x] 📉 Lint warnings **30 → 28**, zero new
+
+> ✅ **Exit Criteria** — builds clean · 0 lint errors · 27/27 episodes verified
+> in the *shipped bundle* · all 5 slugs resolve · no orphaned indexes
+>
+> ⚠️ **Accepted limitation** — episode data is baked static. YouTube's playlist
+> RSS sends no CORS header, so browsers cannot read it, and this static SPA has
+> no backend. New uploads require a data refresh. See
+> [`HISTORY.md`](HISTORY.md#️-v22--youtube-series-integration).
+
+---
+
 ## 🚫 Out of Scope
 
 | ❌ Excluded | 💭 Why |
@@ -256,6 +332,8 @@ The current release. Shipped.
 | 🗄️ Real database | Content is bundled via `mockData.js` |
 | 🧪 Test runner | No runner configured; build + lint is the gate |
 | 🔍 SEO blog engine | SPA — static metadata is sufficient |
+| 🔌 YouTube Data API | Requires a key; `RULES.md` bans keys in client code |
+| 🖥️ Runtime playlist fetch | RSS has no CORS header and there is no backend |
 
 ---
 
@@ -312,9 +390,10 @@ The current release. Shipped.
 |---|---|---|
 | **v1.0** | Initial portfolio, routes, 3D hero | Baseline |
 | **v1.5** | Skills marquee, certificate carousel | Content depth |
-| **v2.0** | ✅ Full responsive overhaul | Current |
-| **v2.1** | Image optimisation (WebP/AVIF, `srcset`) | Perf |
-| **v2.2** | Remove dead components, add lint budget | Hygiene |
+| **v2.0** | ✅ Full responsive overhaul | Shipped |
+| **v2.1** | ✅ Remove Lenis, simplify motion, Store redesign | Shipped |
+| **v2.2** | Image optimisation (WebP/AVIF, `srcset`), dead-code sweep | Perf |
+| **v2.3** | Test runner (Vitest + Playwright), lint budget | Quality |
 | **v3.0** | Light theme, blog index, analytics | Growth |
 
 ---
@@ -322,7 +401,9 @@ The current release. Shipped.
 ## ❓ Open Questions
 
 - ❓ WebP/AVIF conversion to cut the 1.2 MB hero payload?
-- ❓ Delete the 4 unused components or wire them in?
+- ❓ Delete the 6 unused components (incl. `PageRevealer`) or wire them in?
+- ❓ Drop `lenis` from `package.json` and the `data-lenis-prevent*` attributes?
+- ❓ Strip the now-unused `motion` imports to get back under 28 warnings?
 - ❓ Add a test runner, or keep build + lint as the gate?
 - ❓ Light theme — still off the table?
 

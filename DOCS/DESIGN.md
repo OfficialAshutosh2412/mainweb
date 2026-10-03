@@ -1,4 +1,4 @@
-<!--
+﻿<!--
   🌙 Dark theme — renders these docs in the portfolio's dark palette.
   Honoured by VS Code preview, Typora, Obsidian, mdBook, VitePress, Docusaurus
   and most dev markdown viewers. GitHub strips style tags, so it falls back to
@@ -123,10 +123,10 @@ img { border-radius: 10px !important; max-width: 100% !important; box-shadow: 0 
 > **Project:** `ashutosh.dev` Portfolio
 > **Mode:** 🌙 Dark mode only — dark-first, no light variant
 > **Source of truth:** `src/index.css` (`:root` + `@theme`)
-> **Last updated:** 28 Sep 2026
+> **Last updated:** 1 Oct 2026
 
 
-> 📚 **Docs:** [PRD](PRD.md) · [Design](DESIGN.md) · [Architecture](ARCHITECTURE.md) · [Rules](RULES.md) · [Tasks](TASKS.md) · [Tests](TEST.md) · [Memory](MEMORY.md)
+> 📚 **Docs:** [PRD](PRD.md) · [Design](DESIGN.md) · [Architecture](ARCHITECTURE.md) · [Rules](RULES.md) · [Tasks](TASKS.md) · [Tests](TEST.md) · [Memory](MEMORY.md) · [Optimization History](OPTIMIZATION_HISTORY.md) · [History](HISTORY.md)
 
 ---
 
@@ -207,7 +207,7 @@ Three families, each with a distinct job.
 | 🃏 Card | `12 – 16px` | ▢ | `--card` fill + `--line` border |
 | 🔘 Button | `7 – 8px` | 🔵 | 44px min touch height |
 | 🏷️ Pill / Badge | `100px` pill | 💊 | Mono, uppercase, letter-spaced |
-| 🗄️ Vault card | `16px` | 🗃️ | Fixed frame, scrollable panel |
+| 🗄️ Vault card | `16px` | 🗃️ | Auto height — content flows, CTAs pinned to the bottom |
 | 📜 Certificate | `11px` | 🖼️ | 3D carousel, spring-driven |
 | 🪟 Drawer | `0` (edge) | 📬 | Slides from right, `z-50` |
 | 🧭 Mobile drawer | `0` | ☰ | Height-animated, staggered rows |
@@ -229,14 +229,17 @@ Three families, each with a distinct job.
 | ⏱️ Duration | `0.18 – 0.4s` | ⏳ |
 | 🌊 Easing | `cubic-bezier(.16, 1, .3, 1)` | 📈 |
 | 🍔 Drawer spring | `stiffness 380, damping 34` | 🌀 |
-| 🎞️ Page reveal | `~260ms` curtain | 🎬 |
-| ♿ Reduced motion | Opacity fade only | 🪫 |
+| 🎞️ Route transition | 🚫 **Removed** — pages swap instantly | 🚫 |
+| 🪫 Reduced motion | Opacity fade only | 🪫 |
 
 ### Rules
 - 🚫 Nothing animates longer than `400ms`
 - 🚫 Content is never hidden behind an animation
 - ✅ Every loop pauses when off-screen (`IntersectionObserver`)
 - ✅ `prefers-reduced-motion` disables all decorative loops globally
+- 🚫 **Page headers no longer fade/slide in.** The `motion.div` entrance on
+  `/notes`, `/videos` and `/store` was removed — a visible entrance animation
+  delays content the visitor came to read.
 
 ---
 
@@ -256,7 +259,9 @@ Three families, each with a distinct job.
 
 ### 🌀 The 3D stage ladder
 
-The stage scales as a whole via a single custom property.
+The stage is a fixed `480px × 480px` box that scales as a whole via a single
+custom property. A negative `margin-block` reclaims the space the scale leaves
+behind, so the scaled stage stays centred instead of floating in dead space.
 
 | Breakpoint | `--stage-scale` | Icon |
 |---|---|---|
@@ -271,6 +276,9 @@ The stage scales as a whole via a single custom property.
 
 > 💡 One variable scales orbits, avatar and badges together — no per-element
 > repositioning needed at each breakpoint.
+>
+> 🖼️ The portfolio avatar is `330px` square, capped at `82vw` so it can never
+> exceed a narrow viewport.
 
 ---
 

@@ -1,4 +1,4 @@
-<!--
+﻿<!--
   🌙 Dark theme — renders these docs in the portfolio's dark palette.
   Honoured by VS Code preview, Typora, Obsidian, mdBook, VitePress, Docusaurus
   and most dev markdown viewers. GitHub strips style tags, so it falls back to
@@ -122,10 +122,10 @@ img { border-radius: 10px !important; max-width: 100% !important; box-shadow: 0 
 
 > **Project:** `ashutosh.dev` Portfolio
 > **Type:** Single-page application (SPA) — static, no backend
-> **Last updated:** 28 Sep 2026
+> **Last updated:** 1 Oct 2026
 
 
-> 📚 **Docs:** [PRD](PRD.md) · [Design](DESIGN.md) · [Architecture](ARCHITECTURE.md) · [Rules](RULES.md) · [Tasks](TASKS.md) · [Tests](TEST.md) · [Memory](MEMORY.md)
+> 📚 **Docs:** [PRD](PRD.md) · [Design](DESIGN.md) · [Architecture](ARCHITECTURE.md) · [Rules](RULES.md) · [Tasks](TASKS.md) · [Tests](TEST.md) · [Memory](MEMORY.md) · [Optimization History](OPTIMIZATION_HISTORY.md) · [History](HISTORY.md)
 
 ---
 
@@ -138,7 +138,7 @@ img { border-radius: 10px !important; max-width: 100% !important; box-shadow: 0 
 | **Styling** | Tailwind CSS v4 | 🎨 | CSS-first `@theme`, no JS config |
 | **Animation** | Framer Motion | 🎞️ | `AnimatePresence`, springs, layout |
 | **Routing** | React Router 7 | 🧭 | Nested + lazy routes |
-| **Smooth scroll** | Lenis | 🌊 | Desktop-only, disabled on touch |
+| **Smooth scroll** | Native | 🌊 | Lenis removed — the document is the single scroll owner |
 | **Icons** | Lucide React | 🎭 | Tree-shaken, consistent stroke |
 | **Lint** | Oxlint | 🔎 | Rust-native, instant |
 | **Hosting** | Vercel | ▲ | Static + SPA rewrite |
@@ -155,11 +155,36 @@ img { border-radius: 10px !important; max-width: 100% !important; box-shadow: 0 
 | `/portfolio` | `Portfolio` | 33.76 kB | 🎓 |
 | `/projects` | `Projects` | 7.31 kB | 📚 |
 | `/notes` | `Notes` | 5.11 kB | 📝 |
-| `/videos` | `Videos` | 3.24 kB | ▶️ |
+| `/videos` | `Videos` | 5.30 kB | ▶️ |
+| `/video/:slug` | `PlaylistVideo` | 5.80 kB | 🎞️ |
 | `/store` | `Store` | 8.41 kB | 🗄️ |
 
 All pages are `React.lazy` code-split and prefetched on link hover/touch via
 `prefetchRoute()` in `App.jsx`, so navigation feels instant.
+
+### 🎞️ YouTube series
+
+`/videos` shows one card per project series with episode 1 embedded. Its
+**View** button routes to `/video/<playlist_name>` (`PlaylistVideo.jsx`),
+which lists every episode as a numbered embed card.
+
+| Slug | Series | Episodes |
+|---|---|---|
+| `quality-management-system` | QMS | 1 |
+| `live-location-tracker-management` | Live Location Tracker | 3 |
+| `fusionmart` | FusionMart | 5 |
+| `sunrise-infotech-solution` | Sunrise Infotech Solution | 5 |
+| `crime-tracking-system` | Crime Tracking System | 13 |
+
+**Why the episode list is static.** YouTube's only key-free public listing of
+a playlist is its RSS feed (`/feeds/videos.xml?playlist_id=…`), and it sends
+**no `Access-Control-Allow-Origin` header** — a browser cannot call it. There
+is no backend here (`vercel.json` rewrites every path to `index.html`) and
+`RULES.md` forbids API keys in client code, so the feeds were read once at
+authoring time and baked into `src/api/playlistEpisodes.js`. The site stays a
+pure static build, costs no quota, and cannot break at runtime. Re-run the
+feeds to refresh. Ordering pins each series' `videoId` to `EP 01` and sorts the
+rest oldest-first, because the feed returns newest-first.
 
 ---
 
@@ -201,7 +226,7 @@ public/
    ↓
 🎨 Render + Framer Motion
    ↓
-🌀 Lenis (desktop only) → smooth scroll
+📜 Native document scroll (no hijacking)
 ```
 
 ### ⏳ Boot sequence
@@ -209,7 +234,7 @@ public/
 | # | Step | Detail | Icon |
 |---|---|---|---|
 | 1 | 🚀 `main.jsx` | Mounts `<App/>` in `StrictMode` | 📦 |
-| 2 | 🧭 `App.jsx` | Router, `ScrollToTop`, `PageRevealer` | 🗺️ |
+| 2 | 🧭 `App.jsx` | Router, `ScrollToTop` | 🗺️ |
 | 3 | 🏗️ `Layout.jsx` | Navbar, ambient layers, scroll progress | 🏗️ |
 | 4 | ⏳ `Suspense` | `PageFallback` spinner while chunk loads | 🔄 |
 | 5 | 🎨 `index.css` | Tailwind v4 `@theme` → CSS variables | 🎨 |
@@ -220,12 +245,14 @@ public/
 
 | Decision | Rationale | Icon |
 |---|---|---|
-| Lenis only when `pointer: fine` | Hijacks touch gestures; native scroll is better on phones | 📱 |
+| Lenis removed — native scroll | The wrapper broke the single-scroll-owner rule and cost ~22 kB for marginal polish | 🧹 |
 | `matchMedia` over `resize` | Fires correctly on orientation change, cheaper | 🔄 |
-| `overflow-x: clip` not `hidden` | `hidden` creates a scroll container and breaks Lenis | ✂️ |
-| `100dvh` over `100vh` | `vh` overflows by the browser-chrome height on mobile | 📏 |
+| `overflow-x: clip` not `hidden` | `hidden` creates a scroll container and would re-introduce the overscroll bug | ✂️ |
+| `min-height: 100dvh`, not `height` | A fixed height on `html`/`body` clips overflowing content; `dvh` also tracks browser chrome | 📏 |
+| `overscroll-behavior` removed | With no scroll wrapper there is nothing to contain — it only suppressed iOS rubber-banding | 🚫 |
 | Inline styles removed from pages | They overrode every media query | 🚫 |
 | `--stage-scale` custom property | One knob scales the entire 3D stage | 🎛️ |
+| `margin-block` on the stage wrap | Reclaims the whitespace left by `transform: scale()` so the hero does not float | 📐 |
 | `content-visibility: auto` | Skips render work for off-screen sections | 👁️ |
 
 ---
@@ -260,10 +287,14 @@ routing survives a hard refresh on `/portfolio`, `/store`, etc.
 
 | Asset | Raw | Gzip | Icon |
 |---|---|---|---|
-| Main JS | 411 kB | 131 kB | 📦 |
-| CSS | 95 kB | 18 kB | 🎨 |
-| Portfolio chunk | 34 kB | 8.5 kB | 🎓 |
+| Main JS | 389 kB | 125 kB | 📦 |
+| CSS | 91.7 kB | 17.9 kB | 🎨 |
+| Portfolio chunk | 33.8 kB | 8.5 kB | 🎓 |
+| MainSite chunk | 11.8 kB | 3.5 kB | 🏠 |
+| Store chunk | 6.4 kB | 2.0 kB | 🗄️ |
 
+> ✅ Removing Lenis cut the main bundle **411 kB → 389 kB** (131 → 125 kB gzip).
+>
 > ⚠️ Largest remaining cost is imagery — `photo_one.png` alone is 1.2 MB.
 
 ---
@@ -272,24 +303,29 @@ routing survives a hard refresh on `/portfolio`, `/store`, etc.
 
 | Component | Responsibility | Status | Icon |
 |---|---|---|---|
-| `Layout` | Shell, Lenis gate, ambient layers | ✅ Active | 🏗️ |
+| `Layout` | Shell, ambient layers, reduced-motion gate | ✅ Active | 🏗️ |
 | `Navbar` | Desktop nav + animated mobile drawer | ✅ Active | ☰ |
 | `HeroSection` | Copy, CTAs, 3D orbit stage | ✅ Active | 🌀 |
 | `Footer` | Brand, links, scroll-to-top | ✅ Active | 🔻 |
 | `ContactDrawer` | Slide-in contact form | ✅ Active | 📬 |
 | `SkillsMarquee` | Infinite skill ticker | ✅ Active | 🎠 |
-| `PageRevealer` | Curtain transition between routes | ✅ Active | 🎞️ |
 | `ScrollProgress` | Top scroll bar | ✅ Active | 📊 |
 | `TiltCard` | Card wrapper (currently no tilt) | ✅ Active | 🃏 |
 | `ContactContext` | Drawer open/close state | ✅ Active | 🧠 |
+| `PageRevealer` | Curtain transition between routes | ⚫ Removed from tree | 🎞️ |
 | `RoleDial` | Wave-text role cycler | ⚫ Unused | 💬 |
 | `ParallaxBackground` | Mouse-parallax shapes | ⚫ Unused | 🌌 |
 | `SVGRope` | Scroll-linked rope path | ⚫ Unused | 🪢 |
 | `TypingText` | Typewriter effect | ⚫ Unused | ⌨️ |
 | `ContactSection` | Inline contact block | ⚫ Unused | ✉️ |
 
-> ⚠️ Four components are imported nowhere. They cost nothing at runtime
-> (tree-shaken) but they are dead code — delete or wire in.
+> ⚠️ **Six** components are now imported nowhere. `PageRevealer.jsx` was
+> disconnected from `App.jsx` this cycle (route transitions removed); the other
+> five are pre-existing dead code. All are tree-shaken, so they cost nothing at
+> runtime — but they are dead files.
+>
+> ⚠️ `ContactDrawer` still carries `data-lenis-prevent*` attributes and `lenis`
+> remains a `package.json` dependency, both now inert.
 
 ---
 

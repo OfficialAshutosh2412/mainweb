@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import HeroSection from '../components/HeroSection';
 import Footer from '../components/Footer';
 import { useContactDrawer } from '../context/ContactContext';
-import { portfolioData, mainWebsiteData } from '../api/mockData';
+import { portfolioData, mainWebsiteData, videoEmbedUrl } from '../api/mockData';
 import {
   ArrowRight, ArrowUpRight, Check, Copy, Mail,
   MapPin, Phone, Code2, ExternalLink, ShoppingCart
@@ -205,19 +205,29 @@ const MainSite = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10">
-            {mainWebsiteData.youtubeVideos.map((video) => (
-              <div key={video.id} className="project-card overflow-hidden">
+            {mainWebsiteData.youtubeShowcase.slice(0, 3).map((item) => (
+              <div key={item.id} className="project-card overflow-hidden">
                 <div className="aspect-video w-full">
                   <iframe
-                    src={video.url}
-                    title={video.title}
+                    src={videoEmbedUrl(item.videoId)}
+                    title={`${item.title} — episode 1`}
+                    loading="lazy"
                     className="w-full h-full border-0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    referrerPolicy="strict-origin-when-cross-origin"
                     allowFullScreen
                   />
                 </div>
                 <div className="p-4">
-                  <h4 className="text-sm font-bold text-white line-clamp-2">{video.title}</h4>
+                  <h4 className="text-sm font-bold text-white line-clamp-2">{item.title}</h4>
+                  <a
+                    href={item.playlistUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-2 inline-flex items-center gap-1 text-xs text-purple-bright hover:underline"
+                  >
+                    View full playlist <ArrowUpRight size={13} />
+                  </a>
                 </div>
               </div>
             ))}

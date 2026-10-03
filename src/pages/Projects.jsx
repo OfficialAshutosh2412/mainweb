@@ -2,11 +2,12 @@ import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useLocation } from 'react-router-dom';
 import { fetchMainData } from '../api';
+import { getShowcaseById } from '../api/mockData';
 
 import Footer from '../components/Footer';
 import TiltCard from '../components/TiltCard';
 import { 
-  ArrowLeft, ArrowRight, Code, Layers, Atom, CheckCircle, Database, ShieldCheck, Radio, FileCode, Terminal, Globe, ShoppingCart 
+  ArrowLeft, ArrowRight, Code, Layers, Atom, CheckCircle, Database, ShieldCheck, Radio, FileCode, Terminal, Globe, ShoppingCart, ListVideo 
 } from 'lucide-react';
 
 export const getTechIcon = (techName) => {
@@ -54,8 +55,15 @@ const Projects = () => {
     })),
   ];
 
+  /* Attach each project's YouTube series here, alongside the other
+     derived fields, so the render tree stays free of lookup logic. */
+  const projectsWithSeries = allProjects.map(p => ({
+    ...p,
+    series: getShowcaseById(p.youtubeId)
+  }));
+
   const tabs = ['all', 'showcase', 'minor'];
-  const filteredProjects = allProjects.filter(p => filter === 'all' || p.category === filter);
+  const filteredProjects = projectsWithSeries.filter(p => filter === 'all' || p.category === filter);
 
   return (
     <div className="page-stack">
@@ -176,6 +184,18 @@ const Projects = () => {
                           <span>Explore Project Details</span>
                           <ArrowRight size={14} className="group-hover/link:translate-x-1 transition-transform" />
                         </div>
+                      )}
+
+                      {/* Watch the build series before buying */}
+                      {project.series && (
+                        <a
+                          href={project.series.playlistUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="mt-3 w-full py-3 rounded-xl font-semibold text-ambient-blue border border-ambient-blue/40 hover:bg-ambient-blue/15 hover:border-ambient-blue/70 transition-all flex items-center justify-center gap-2 active:scale-95 text-xs"
+                        >
+                          <ListVideo size={15} /> Watch Playlist
+                        </a>
                       )}
                     </div>
                   </div>

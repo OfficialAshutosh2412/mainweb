@@ -1,4 +1,4 @@
-<!--
+﻿<!--
   🌙 Dark theme — renders these docs in the portfolio's dark palette.
   Honoured by VS Code preview, Typora, Obsidian, mdBook, VitePress, Docusaurus
   and most dev markdown viewers. GitHub strips style tags, so it falls back to
@@ -122,10 +122,10 @@ img { border-radius: 10px !important; max-width: 100% !important; box-shadow: 0 
 
 > **Project:** `ashutosh.dev` Portfolio
 > **Enforcement:** `npm run lint` (Oxlint) + `npm run build`
-> **Last updated:** 28 Sep 2026
+> **Last updated:** 1 Oct 2026
 
 
-> 📚 **Docs:** [PRD](PRD.md) · [Design](DESIGN.md) · [Architecture](ARCHITECTURE.md) · [Rules](RULES.md) · [Tasks](TASKS.md) · [Tests](TEST.md) · [Memory](MEMORY.md)
+> 📚 **Docs:** [PRD](PRD.md) · [Design](DESIGN.md) · [Architecture](ARCHITECTURE.md) · [Rules](RULES.md) · [Tasks](TASKS.md) · [Tests](TEST.md) · [Memory](MEMORY.md) · [Optimization History](OPTIMIZATION_HISTORY.md) · [History](HISTORY.md)
 
 ---
 
@@ -185,6 +185,15 @@ img { border-radius: 10px !important; max-width: 100% !important; box-shadow: 0 
 - ✅ Pause loops when off-screen
 - 🚫 Nothing over 400ms
 - 🚫 Scroll-hijacking on touch devices
+- 🚫 **No entrance animations on page headers** — they delay the content the
+  visitor navigated to read
+- 🚫 **No route-transition overlays** — a curtain hides the page it is covering
+
+### 🧹 Dead code
+- ✅ Removing a feature means removing its dependency, wrapper and attributes
+  with it (e.g. dropping Lenis also meant dropping `data-lenis-prevent*`)
+- ✅ Deleting an import that a removal made unused
+- 🚫 Don't leave a library in `package.json` that nothing imports
 
 ---
 

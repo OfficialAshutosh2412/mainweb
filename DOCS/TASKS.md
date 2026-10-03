@@ -1,4 +1,4 @@
-<!--
+﻿<!--
   🌙 Dark theme — renders these docs in the portfolio's dark palette.
   Honoured by VS Code preview, Typora, Obsidian, mdBook, VitePress, Docusaurus
   and most dev markdown viewers. GitHub strips style tags, so it falls back to
@@ -121,11 +121,11 @@ img { border-radius: 10px !important; max-width: 100% !important; box-shadow: 0 
 # ✅ Tasks
 
 > **Project:** `ashutosh.dev` Portfolio
-> **Last updated:** 28 Sep 2026
+> **Last updated:** 1 Oct 2026
 > **Legend:** 🔴 blocker · 🟡 should · 🟢 could · ⚫ done
 
 
-> 📚 **Docs:** [PRD](PRD.md) · [Design](DESIGN.md) · [Architecture](ARCHITECTURE.md) · [Rules](RULES.md) · [Tasks](TASKS.md) · [Tests](TEST.md) · [Memory](MEMORY.md)
+> 📚 **Docs:** [PRD](PRD.md) · [Design](DESIGN.md) · [Architecture](ARCHITECTURE.md) · [Rules](RULES.md) · [Tasks](TASKS.md) · [Tests](TEST.md) · [Memory](MEMORY.md) · [Optimization History](OPTIMIZATION_HISTORY.md) · [History](HISTORY.md)
 
 ---
 
@@ -135,7 +135,7 @@ img { border-radius: 10px !important; max-width: 100% !important; box-shadow: 0 
 - [x] ⚫ 🎨 Wire Tailwind CSS v4 via `@tailwindcss/vite`
 - [x] ⚫ 🎞️ Add Framer Motion
 - [x] ⚫ 🧭 Add React Router with lazy routes
-- [x] ⚫ 🌊 Add Lenis smooth scroll
+- [x] ⚫ 🌊 Add Lenis smooth scroll — *removed again in Phase 2.5*
 - [x] ⚫ 🎭 Add Lucide icons
 - [x] ⚫ 🔎 Add Oxlint
 - [x] ⚫ 🔧 Configure Vercel SPA rewrites
@@ -154,7 +154,7 @@ img { border-radius: 10px !important; max-width: 100% !important; box-shadow: 0 
 - [x] ⚫ 📚 Projects index
 - [x] ⚫ 🔻 Footer with portfolio CTA
 - [x] ⚫ 📬 Contact drawer with form
-- [x] ⚫ 🎞️ Page-reveal route transitions
+- [x] ⚫ 🎞️ Page-reveal route transitions — *removed again in Phase 2.5*
 
 ---
 
@@ -191,6 +191,68 @@ img { border-radius: 10px !important; max-width: 100% !important; box-shadow: 0 
 
 ---
 
+## ✅ Phase 2.5 — Simplification *(complete)*
+
+### ✂️ Removals
+- [x] ⚫ 🌊 Removed Lenis from `Layout.jsx` — native scroll is the single owner
+- [x] ⚫ 📉 Main bundle dropped 411 kB → 389 kB (131 → 125 kB gzip)
+- [x] ⚫ 🎞️ Removed `PageRevealer` from the render tree in `App.jsx`
+- [x] ⚫ 🎬 Removed header entrance animations — `Notes`, `Videos`, `Store`
+- [x] ⚫ 🚫 Removed `overscroll-behavior-x/y` from `html`/`body`
+- [x] ⚫ 📏 `height: 100%` → `min-height: 100%` on `html`/`body`
+- [x] ⚫ 🧹 Deleted the CSS comments that referenced the removed Lenis gate
+
+### 🗄️ Store redesign
+- [x] ⚫ 📐 `height: 300px` → `auto` — cards grow with their content
+- [x] ⚫ 📝 Description + features + tech badges always visible
+- [x] ⚫ 🔘 CTAs permanently below a divider — no hover-reveal
+
+### 📐 Layout
+- [x] ⚫ 🌀 Hero stage is a fixed `480px` box with scale-compensating `margin-block`
+- [x] ⚫ 🖼️ Portfolio avatar `340px` → `330px`, capped at `82vw`
+
+### 📚 Documentation
+- [x] ⚫ 🌙 Dark theme applied to `README.md` content and all `DOCS/*.md`
+- [x] ⚫ 📖 Replaced the Vite boilerplate README with a real project README
+- [x] ⚫ 🔄 Synced all 7 docs to the v2.1 code state
+
+---
+
+## ✅ Phase 2.7 — YouTube Series Integration *(complete)*
+
+Replaced demonstrative video content with the owner's real project walkthroughs.
+
+### 🎥 Content
+- [x] ⚫ 🎥 3 placeholder `dQw4w9WgXcQ` embeds → **5 real project series**
+- [x] ⚫ 🎞️ `/video/:slug` — numbered `EP 01…EP 13` embed cards
+- [x] ⚫ 📚 27 episodes baked into `src/api/playlistEpisodes.js`
+- [x] ⚫ 🔗 Per-episode "Watch on YouTube" fallback link
+
+### 🧭 Navigation
+- [x] ⚫ 🧭 **View** button routes internally, prefetched on hover
+- [x] ⚫ 🧭 Navbar `isNavActive()` keeps Videos lit on `/video/*`
+- [x] ⚫ ♿ Unknown-slug not-found state (never a blank page)
+
+### 🗄️ Commerce
+- [x] ⚫ 🗄️ Store "Demo" button now opens a real playlist
+- [x] ⚫ 📚 "Watch Playlist" link on purchasable Projects
+- [x] ⚫ 🚫 Projects without a series show an inert slot, not a broken button
+
+### 🧹 Dead-code sweep
+- [x] ⚫ 🧹 Removed unused `getShowcaseById` import from `Videos.jsx`
+- [x] ⚫ 🧹 Removed unused `motion` import from `Store.jsx`
+- [x] ⚫ ♻️ `playlistEmbedUrl` repurposed as the no-index fallback player
+- [x] ⚫ 🔢 Lint warnings **30 → 28**
+
+### 📚 Documentation
+- [x] ⚫ 📜 Added `DOCS/HISTORY.md` — full changelog of every shipped change
+- [x] ⚫ ⚡ Added `DOCS/OPTIMIZATION_HISTORY.md` — every optimisation, with numbers
+- [x] ⚫ 🔄 Synced all 9 docs to the v2.2 code state
+
+> 📌 Narrative: [HISTORY.md](HISTORY.md) · Numbers: [OPTIMIZATION_HISTORY.md](OPTIMIZATION_HISTORY.md)
+
+---
+
 ## 🚧 Phase 3 — Performance & Testing *(in progress)*
 
 ### 📦 Performance
@@ -198,10 +260,22 @@ img { border-radius: 10px !important; max-width: 100% !important; box-shadow: 0 
 - [ ] 🔴 📦 Convert 3 vault thumbnails → WebP/AVIF
 - [ ] 🟡 🖼️ Add responsive `srcset` + `sizes` to hero images
 - [ ] 🟡 📏 Add explicit `width`/`height` to kill CLS
-- [ ] 🟢 🧹 Delete 4 unused components
+- [ ] 🟢 🧹 Delete 6 unused components (incl. `PageRevealer`)
 - [ ] 🟢 🕸️ Remove unused `RevealingCard` import
 - [ ] 🟢 📦 Rename `package.json` → real project name
 - [ ] 🟢 🔢 Add a bundle-size budget to CI
+
+### 🧹 Dead-code sweep *(raised by v2.1)*
+- [ ] 🔴 📦 Remove `lenis` from `package.json` — nothing imports it
+- [ ] 🔴 🌊 Remove `data-lenis-prevent*` attributes from `ContactDrawer`
+- [ ] 🟡 🎬 Strip the last unused `motion` import from `Notes.jsx`
+- [x] ⚫ 🔢 Lint warnings back to ≤ 28 — **reached in v2.2**
+
+### 🎞️ Video series *(new in v2.2)*
+- [ ] 🔴 🔄 Add a script to refresh `playlistEpisodes.js` from the RSS feeds
+- [ ] 🟡 🎞️ Click-to-load facade for `/video/:slug` iframes (CTS mounts 13)
+- [ ] 🟡 📺 Decide whether *Live Location Tracker* / *FusionMart* become store bundles
+- [ ] 🟢 ♿ Add `aria-label` to episode-number badges for screen readers
 
 ### 🧪 Testing
 - [x] ⚫ 🏗️ Test 1 — Build & Lint Gate
@@ -276,5 +350,5 @@ img { border-radius: 10px !important; max-width: 100% !important; box-shadow: 0 
 | `[ ] 🟢` | Could do when idle | 🟢 |
 | `[x] ⚫` | Complete | ⚫ |
 
-**Current task:** `TASK-024` — image optimisation
+**Current task:** `TASK-025` — dead-code sweep (drop `lenis`, delete `PageRevealer`, strip unused `motion` imports)
 
