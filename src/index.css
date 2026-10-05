@@ -160,8 +160,10 @@ a {
   background: radial-gradient(ellipse 70% 45% at 82% 9%, rgba(81, 43, 212, .12), transparent 65%), var(--void);
 }
 
+/* The right column must be able to hold the square 560px stage without
+   capping it, otherwise the badges bunch back up against the edge. */
 .portfolio-shell .hero-section {
-  grid-template-columns: minmax(0, 1.18fr) minmax(360px, 0.82fr);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
   gap: 40px;
 }
 
@@ -854,8 +856,11 @@ h1 span, h2 em {
   animation: pulse-dot 2s ease-in-out infinite;
 }
 
-/* ── Portfolio hero stage: top-align to match left eyebrow label height ── */
-.portfolio-hero-stage {
+/* ── Portfolio hero stage: top-align to match left eyebrow label height ──
+   Written as a compound selector so this `margin-top` outranks the
+   `margin-block` on `.hero-stage-wrap` (same specificity, but that rule
+   is declared later in the file and would otherwise win). */
+.hero-stage-wrap.portfolio-hero-stage {
   align-self: flex-start;
   margin-top: -30px;
 }
@@ -864,8 +869,19 @@ h1 span, h2 em {
 .hero-stage-wrap {
   /* Scales the whole 3D stage down proportionally on narrow viewports */
   --stage-scale: 1;
-  height: 480px;
-  width: 480px;
+  /* Single knob for the stage box. The floating tech badges are pinned at
+     percentage offsets around the centre, so a bigger box buys them
+     breathing room instead of letting them sit on the edges. Height is
+     derived from `aspect-ratio`, so the box stays square even where a
+     narrower grid column caps the width. */
+  --stage-size: 560px;
+  /* The box is square, so the real rendered size is the width the grid
+     column actually allows. Folding that `min()` into a variable keeps
+     the scale-compensating `margin-block` below exact instead of
+     assuming the full `--stage-size` was always available. */
+  --stage-box: min(var(--stage-size), 100%);
+  width: var(--stage-box);
+  aspect-ratio: 1 / 1;
   max-width: 100%;
   position: relative;
   perspective: 1300px;
@@ -877,7 +893,8 @@ h1 span, h2 em {
   overflow: visible;
   transform: scale(var(--stage-scale));
   transform-origin: center center;
-  margin-block: calc((480px * var(--stage-scale) - 480px) / 2);
+  /* Reclaims the vertical whitespace `transform: scale()` leaves behind */
+  margin-block: calc((var(--stage-box) * var(--stage-scale) - var(--stage-box)) / 2);
 }
 
 .hero-stage-grid {
@@ -1019,39 +1036,44 @@ h1 span, h2 em {
   background: rgba(34,211,238,.1);
 }
 
+/* ── Floating tech badge placement ─────────────────────────────────
+   Offsets are percentages of the stage box so they re-balance at every
+   breakpoint. None of them may sit flush against, or outside, an edge —
+   `.hero-stage-wrap` no longer clips, but a badge straddling the edge
+   still reads as a cut-off element rather than a floating one. */
 .tech-csharp {
   top: 10%;
-  left: 11%;
+  left: 12%;
 }
 
 .tech-dotnet {
-  top: 3%;
+  top: 4%;
   right: 22%;
 }
 
 .tech-azure {
   top: 43%;
-  right: 0%;
+  right: 3%;
 }
 
 .tech-sql {
-  bottom: 8%;
+  bottom: 9%;
   right: 13%;
 }
 
 .tech-react {
-  bottom: 2%;
+  bottom: 4%;
   left: 27%;
 }
 
 .tech-docker {
   top: 50%;
-  left: -3%;
+  left: 1.5%;
 }
 
 .tech-redis {
   bottom: 26%;
-  left: 2%;
+  left: 2.5%;
 }
 
 .tech-grpc {
@@ -2466,11 +2488,14 @@ h1 span, h2 em {
   will-change: transform;
 }
 
-/* The 3D stage is the heaviest thing on the page — contain its
-   layout/paint work so scrolling never re-rasterises the orbits.
-   `layout paint` (not `strict`) because the stage has no fixed size. */
+/* The 3D stage is the heaviest thing on the page, so isolate its layout
+   work so scrolling never re-rasterises the orbits.
+   `layout` ONLY — adding `paint` clips descendants to the stage box
+   (exactly like `overflow: hidden`) and slices the floating tech badges
+   that intentionally reach past the centre. Paint containment is
+   deliberately omitted here. */
 .hero-stage-wrap {
-  contain: layout paint;
+  contain: layout;
 }
 
 /* Images inside cards decode off the main thread where supported */
@@ -2658,7 +2683,7 @@ img {
   }
 
   .portfolio-shell .hero-section {
-    grid-template-columns: minmax(0, 1fr) minmax(0, .82fr);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   }
 
   .hero-stage-wrap {
@@ -2732,12 +2757,14 @@ img {
 
   .hero-stage-wrap {
     --stage-scale: .86;
-    width: 100%;
-    max-width: 560px;
+    /* One column here, so the stage owns the full track width. Override
+       the size knob, not `width`, so `--stage-box` (and therefore the
+       scale-compensating `margin-block`) stays consistent. */
+    --stage-size: 520px;
     margin: 0 auto;
   }
 
-  .portfolio-hero-stage {
+  .hero-stage-wrap.portfolio-hero-stage {
     margin-top: 0;
   }
 
