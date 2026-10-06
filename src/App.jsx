@@ -11,33 +11,8 @@ const Videos = lazy(() => import('./pages/Videos'));
 const Store = lazy(() => import('./pages/Store'));
 const PlaylistVideo = lazy(() => import('./pages/PlaylistVideo'));
 
-/* ── Prefetch functions on link hover / interaction for 0ms route transitions ── */
-export const prefetchRoute = (path) => {
-  switch (true) {
-    case path.startsWith('/video/'):
-      import('./pages/PlaylistVideo');
-      break;
-    case path === '/portfolio':
-      import('./pages/Portfolio');
-      break;
-    case path === '/projects':
-      import('./pages/Projects');
-      break;
-    case path === '/notes':
-      import('./pages/Notes');
-      break;
-    case path === '/videos':
-      import('./pages/Videos');
-      break;
-    case path === '/store':
-      import('./pages/Store');
-      break;
-    case path === '/':
-    default:
-      import('./pages/MainSite');
-      break;
-  }
-};
+/* ── Route prefetching lives in ../prefetchRoute.js (own module so no one
+   has to import App.jsx and recreate the Layout → Navbar cycle). ── */
 
 /* Sleek Cyber Suspense Fallback (Zero CLS) */
 const PageFallback = () => (

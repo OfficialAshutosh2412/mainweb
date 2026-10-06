@@ -1,13 +1,9 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import {
   motion,
   AnimatePresence,
-  useTransform,
-  useMotionValue,
-  useSpring,
 } from "framer-motion";
 import { Link, useLocation } from "react-router-dom";
-import { fetchPortfolioData } from "../api";
 import {
   ArrowLeft,
   GraduationCap,
@@ -15,7 +11,6 @@ import {
   Briefcase,
   BookOpen,
   Layers,
-  Sparkles,
   School,
   Building2,
   Library,
@@ -23,7 +18,6 @@ import {
   ChevronRight,
   ChevronDown,
   ChevronUp,
-  UserCheck,
   Code2,
   Terminal,
   Database,
@@ -34,23 +28,20 @@ import {
   CheckCircle2,
   Atom,
   ShieldCheck,
-  Radio,
   FileCode,
-  GitBranch,
-  Cloud,
   Globe,
-  Download,
-  ExternalLink,
   ArrowUpRight,
 } from "lucide-react";
 
 import Footer from "../components/Footer";
-import RevealingCard from "../components/RevealingCard";
-import TiltCard from "../components/TiltCard";
 import SkillsMarquee from "../components/SkillsMarquee";
-import { useContactDrawer } from "../context/ContactContext";
+import { useContactActions } from "../context/ContactContext";
 import { portfolioData } from "../api/mockData";
 import avatarPhoto from "../assets/photo_one.png";
+import avatarPhoto640avif from "../assets/photo_one-640.avif";
+import avatarPhoto1280avif from "../assets/photo_one-1280.avif";
+import avatarPhoto640webp from "../assets/photo_one-640.webp";
+import avatarPhoto1280webp from "../assets/photo_one-1280.webp";
 
 /* ── Random gradient pool for academic project cards ── */
 const projectGradients = [
@@ -81,74 +72,11 @@ const projectGradients = [
 ];
 
 /* ── Social Icon SVG Helpers ── */
-const LinkedInIcon = ({ className = "w-4 h-4" }) => (
-  <svg className={className} fill="currentColor" viewBox="0 0 24 24">
-    <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z" />
-  </svg>
-);
-
 const GitHubIcon = ({ className = "w-4 h-4" }) => (
   <svg className={className} fill="currentColor" viewBox="0 0 24 24">
     <path d="M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.1-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2z" />
   </svg>
 );
-
-/* ── Theme-Colour Skill Icon (Lucide-based) ── */
-const SkillIcon = ({ name, className = "w-4 h-4" }) => {
-  const n = (name || "").toLowerCase();
-  if (n.includes("react")) return <Atom className={className} />;
-  if (
-    n.includes("sql") ||
-    n.includes("database") ||
-    n.includes("postgres") ||
-    n.includes("mysql") ||
-    n.includes("pgadmin") ||
-    n.includes("ssms")
-  )
-    return <Database className={className} />;
-  if (n.includes("jwt") || n.includes("identity") || n.includes("auth"))
-    return <ShieldCheck className={className} />;
-  if (n.includes("signalr")) return <Radio className={className} />;
-  if (
-    n.includes("html") ||
-    n.includes("css") ||
-    n.includes("bootstrap") ||
-    n.includes("tailwind")
-  )
-    return <FileCode className={className} />;
-  if (n.includes("jquery") || n.includes("ajax") || n.includes("javascript"))
-    return <Code2 className={className} />;
-  if (n.includes("git")) return <GitBranch className={className} />;
-  if (n.includes("python") || n.includes("flask") || n.includes("jinja"))
-    return <Terminal className={className} />;
-  if (
-    n.includes("c#") ||
-    n.includes("c++") ||
-    n.includes(".net") ||
-    n.includes("asp") ||
-    n.includes("linq") ||
-    n.includes("ado") ||
-    n.includes("entity")
-  )
-    return <Code2 className={className} />;
-  if (
-    n.includes("vercel") ||
-    n.includes("render") ||
-    n.includes("supabase") ||
-    n.includes("cloud")
-  )
-    return <Cloud className={className} />;
-  if (
-    n.includes("postman") ||
-    n.includes("swagger") ||
-    n.includes("studio") ||
-    n.includes("visual")
-  )
-    return <Wrench className={className} />;
-  if (n.includes("restful") || n.includes("api"))
-    return <Globe className={className} />;
-  return <Layers className={className} />;
-};
 
 /* ── Animated Icon ── */
 const AnimatedIcon = ({ Icon, className }) => (
@@ -160,22 +88,6 @@ const AnimatedIcon = ({ Icon, className }) => (
   >
     <Icon className={className} />
   </motion.div>
-);
-
-/* ── JSX-bracket section heading ── */
-const SectionHeading = ({ icon: Icon, title, id }) => (
-  <div id={id} className="flex items-center gap-3 mb-8 md:mb-12 scroll-mt-28">
-    {Icon && (
-      <div className="p-2.5 rounded-2xl bg-ambient-blue/10 border border-ambient-blue/30 shadow-[0_0_15px_rgba(59,130,246,0.3)] text-ambient-blue shrink-0">
-        <AnimatedIcon Icon={Icon} className="w-6 h-6 md:w-8 md:h-8" />
-      </div>
-    )}
-    <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight">
-      <span className="text-ambient-blue font-black">&lt;</span>
-      <span className="text-white">{title}</span>
-      <span className="text-ambient-blue font-black ml-1">/&gt;</span>
-    </h2>
-  </div>
 );
 
 /* ── Helper to resolve School/College Icon component ── */
@@ -618,24 +530,26 @@ const AcademicProjectCard = ({ item, index }) => {
             </ul>
           )}
 
-          {/* Smooth animated extra bullets */}
+          {/* Smooth animated extra bullets — grid 0fr/1fr, no per-frame measuring */}
           <AnimatePresence initial={false}>
             {isExpanded && (
               <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
+                initial={{ opacity: 0, gridTemplateRows: "0fr" }}
+                animate={{ opacity: 1, gridTemplateRows: "1fr" }}
+                exit={{ opacity: 0, gridTemplateRows: "0fr" }}
                 transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-                className="overflow-hidden"
+                className="grid overflow-hidden"
               >
-                <ul className="card-list space-y-2.5 text-xs md:text-sm text-gray-300 leading-relaxed pt-1 pb-3">
-                  {remainingBullets.map((bullet, bIdx) => (
-                    <li key={bIdx} className="flex items-start gap-2">
-                      <CheckCircle2 size={14} className="shrink-0 mt-0.5" style={{ color: gStyle.accent }} />
-                      <span className="min-w-0">{bullet}</span>
-                    </li>
-                  ))}
-                </ul>
+                <div className="overflow-hidden min-h-0">
+                  <ul className="card-list space-y-2.5 text-xs md:text-sm text-gray-300 leading-relaxed pt-1 pb-3">
+                    {remainingBullets.map((bullet, bIdx) => (
+                      <li key={bIdx} className="flex items-start gap-2">
+                        <CheckCircle2 size={14} className="shrink-0 mt-0.5" style={{ color: gStyle.accent }} />
+                        <span className="min-w-0">{bullet}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </motion.div>
             )}
           </AnimatePresence>
@@ -741,24 +655,26 @@ const ExperienceCard = ({ item, index }) => {
             </ul>
           )}
 
-          {/* Smooth animated extra bullets */}
+          {/* Smooth animated extra bullets — grid 0fr/1fr, no per-frame measuring */}
           <AnimatePresence initial={false}>
             {isExpanded && (
               <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
+                initial={{ opacity: 0, gridTemplateRows: "0fr" }}
+                animate={{ opacity: 1, gridTemplateRows: "1fr" }}
+                exit={{ opacity: 0, gridTemplateRows: "0fr" }}
                 transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-                className="overflow-hidden"
+                className="grid overflow-hidden"
               >
-                <ul className="card-list space-y-2.5 text-xs md:text-sm text-gray-300 leading-relaxed pt-1 pb-3">
-                  {remainingBullets.map((bullet, bIdx) => (
-                    <li key={bIdx} className="flex items-start gap-2">
-                      <CheckCircle2 size={14} className="shrink-0 mt-0.5" style={{ color: gStyle.accent }} />
-                      <span className="min-w-0">{bullet}</span>
-                    </li>
-                  ))}
-                </ul>
+                <div className="overflow-hidden min-h-0">
+                  <ul className="card-list space-y-2.5 text-xs md:text-sm text-gray-300 leading-relaxed pt-1 pb-3">
+                    {remainingBullets.map((bullet, bIdx) => (
+                      <li key={bIdx} className="flex items-start gap-2">
+                        <CheckCircle2 size={14} className="shrink-0 mt-0.5" style={{ color: gStyle.accent }} />
+                        <span className="min-w-0">{bullet}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </motion.div>
             )}
           </AnimatePresence>
@@ -795,28 +711,9 @@ const ExperienceCard = ({ item, index }) => {
 
 /* ══════════════════════════════════════════════ */
 const Portfolio = () => {
-  const [data, setData] = useState(portfolioData);
+  const data = portfolioData;
   const location = useLocation();
-  const { openContactDrawer } = useContactDrawer();
-
-  // Mouse Parallax for Header
-  const headerRef = useRef(null);
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-  const headerRotateX = useSpring(useTransform(mouseY, [-200, 200], [5, -5]), {
-    stiffness: 100,
-    damping: 20,
-  });
-  const headerRotateY = useSpring(useTransform(mouseX, [-400, 400], [-5, 5]), {
-    stiffness: 100,
-    damping: 20,
-  });
-
-  useEffect(() => {
-    fetchPortfolioData().then((res) => {
-      if (res?.data) setData(res.data);
-    });
-  }, []);
+  const { openContactDrawer } = useContactActions();
 
   useEffect(() => {
     if (location.hash) {
@@ -830,34 +727,7 @@ const Portfolio = () => {
     }
   }, [location, openContactDrawer]);
 
-  const rafId = useRef(null);
-  const handleHeaderMouseMove = (e) => {
-    if (!headerRef.current) return;
-    if (typeof window !== 'undefined' && !window.matchMedia('(pointer: fine)').matches) return;
-    if (rafId.current) return;
-    const clientX = e.clientX;
-    const clientY = e.clientY;
-    rafId.current = requestAnimationFrame(() => {
-      if (headerRef.current) {
-        const rect = headerRef.current.getBoundingClientRect();
-        mouseX.set(clientX - (rect.left + rect.width / 2));
-        mouseY.set(clientY - (rect.top + rect.height / 2));
-      }
-      rafId.current = null;
-    });
-  };
-
-  const handleHeaderMouseLeave = () => {
-    if (rafId.current) {
-      cancelAnimationFrame(rafId.current);
-      rafId.current = null;
-    }
-    mouseX.set(0);
-    mouseY.set(0);
-  };
-
   const activeData = data || portfolioData;
-  const headerInfo = activeData.header || {};
   const skillsData = activeData.technicalSkills || {};
 
   const skillCategories = [
@@ -929,14 +799,27 @@ const Portfolio = () => {
           {/* Central Floating Avatar (replaces core-card) */}
           <div className="portfolio-avatar-core">
             <div className="avatar-image-wrap">
-              <img
-                src={avatarPhoto}
-                alt="Ashutosh Prasad"
-                width={340}
-                height={340}
-                fetchPriority="high"
-                decoding="async"
-              />
+              {/* AVIF → WebP → PNG: ~1.2 MB PNG now loads as ~20 KB AVIF at 2x */}
+              <picture>
+                <source
+                  type="image/avif"
+                  srcSet={`${avatarPhoto640avif} 640w, ${avatarPhoto1280avif} 1280w`}
+                  sizes="(max-width: 900px) 300px, 340px"
+                />
+                <source
+                  type="image/webp"
+                  srcSet={`${avatarPhoto640webp} 640w, ${avatarPhoto1280webp} 1280w`}
+                  sizes="(max-width: 900px) 300px, 340px"
+                />
+                <img
+                  src={avatarPhoto}
+                  alt="Ashutosh Prasad"
+                  width={340}
+                  height={340}
+                  fetchPriority="high"
+                  decoding="async"
+                />
+              </picture>
             </div>
           </div>
 

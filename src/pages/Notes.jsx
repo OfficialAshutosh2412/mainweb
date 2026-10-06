@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { fetchMainData } from '../api';
+import { mainWebsiteData } from '../api/mockData';
 
 import Footer from '../components/Footer';
 import TiltCard from '../components/TiltCard';
@@ -50,8 +50,8 @@ const DownloadButton = () => {
         <>
           <span className="relative z-10 text-ambient-blue font-semibold">Generating PDF...</span>
           <motion.div
-            initial={{ left: '-100%' }}
-            animate={{ left: '0%' }}
+            initial={{ x: '-100%' }}
+            animate={{ x: '0%' }}
             transition={{ duration: 2, ease: "easeInOut" }}
             className="absolute top-0 bottom-0 left-0 bg-ambient-blue/30 w-full z-0"
           />
@@ -72,13 +72,7 @@ const DownloadButton = () => {
 };
 
 const Notes = () => {
-  const [data, setData] = useState(null);
-
-  useEffect(() => {
-    fetchMainData().then((res) => setData(res.data));
-  }, []);
-
-  if (!data) return <div className="min-h-screen bg-dark-bg" />;
+  const data = mainWebsiteData;
 
   return (
     /* `.page-stack` fills the 100dvh ancestor and lets the document own

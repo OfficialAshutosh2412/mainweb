@@ -5,12 +5,12 @@
 const TiltCard = ({
   children,
   className = '',
-  delay = 0,
-  maxTilt,
-  glareOpacity,
-  scale,
-  perspective,
-  glowColor,
+  delay: _delay = 0,
+  maxTilt: _maxTilt,
+  glareOpacity: _glareOpacity,
+  scale: _scale,
+  perspective: _perspective,
+  glowColor: _glowColor,
   style = {},
   ...props
 }) => {

@@ -1,4 +1,4 @@
-import { ArrowUpRight, Download, Code2, Database, Cloud, Terminal, ShieldCheck, Cpu, Layers, Sparkles } from 'lucide-react';
+import { ArrowUpRight, Code2, Database, Cloud, Terminal, ShieldCheck, Cpu, Layers, Sparkles } from 'lucide-react';
 
 const orbitTech = [
   { name: 'C#', class: 'tech-csharp', icon: Code2, index: 0 },

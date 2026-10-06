@@ -1,9 +1,7 @@
-import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { fetchMainData } from '../api';
-import { videoEmbedUrl } from '../api/mockData';
+import { mainWebsiteData, videoEmbedUrl } from '../api/mockData';
 import { playlistEpisodes } from '../api/playlistEpisodes';
-import { prefetchRoute } from '../App';
+import { prefetchRoute } from '../prefetchRoute';
 
 import Footer from '../components/Footer';
 import TiltCard from '../components/TiltCard';
@@ -92,13 +90,7 @@ const ShowcaseCard = ({ item, delay }) => {
 };
 
 const Videos = () => {
-  const [data, setData] = useState(null);
-
-  useEffect(() => {
-    fetchMainData().then((res) => setData(res.data));
-  }, []);
-
-  if (!data) return <div className="min-h-screen bg-dark-bg" />;
+  const data = mainWebsiteData;
 
   const showcase = data.youtubeShowcase;
 

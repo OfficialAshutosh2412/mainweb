@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { UserCheck, ArrowUpRight } from 'lucide-react';
-import { prefetchRoute } from '../App';
+import { prefetchRoute } from '../prefetchRoute';
 
 const Footer = () => {
   const scrollToTop = () => {

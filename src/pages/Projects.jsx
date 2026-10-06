@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useLocation } from 'react-router-dom';
-import { fetchMainData } from '../api';
-import { getShowcaseById } from '../api/mockData';
+import { mainWebsiteData, getShowcaseById } from '../api/mockData';
 
 import Footer from '../components/Footer';
 import TiltCard from '../components/TiltCard';
@@ -31,22 +30,18 @@ export const getTechIcon = (techName) => {
 };
 
 const Projects = () => {
-  const [data, setData] = useState(null);
+  const data = mainWebsiteData;
   const [filter, setFilter] = useState('all');
   const location = useLocation();
 
+  /* Hash deep-links (#...) — data is bundled, so scroll as soon as the
+     route mounts instead of waiting for a fake fetch. */
   useEffect(() => {
-    fetchMainData().then((res) => setData(res.data));
-  }, []);
-
-  useEffect(() => {
-    if (data && location.hash) {
+    if (location.hash) {
       const el = document.querySelector(location.hash);
       if (el) setTimeout(() => el.scrollIntoView({ behavior: 'smooth' }), 100);
     }
-  }, [location, data]);
-
-  if (!data) return <div className="min-h-screen bg-dark-bg" />;
+  }, [location]);
 
   const allProjects = [
     ...data.showcaseProjects.map(p => ({ ...p, category: 'showcase' })),
@@ -69,13 +64,8 @@ const Projects = () => {
     <div className="page-stack">
       <div className="page-stack-body">
         
-        {/* Page header */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="mb-14"
-        >
+        {/* Page header — no entrance animation (per RULES: headers paint instantly) */}
+        <div className="mb-14">
           <Link to="/" className="inline-flex items-center gap-2 text-ambient-blue hover:text-white transition-colors mb-6 group glass-pill px-4 py-2 rounded-full w-fit">
             <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" /> Back to Home
           </Link>
@@ -87,7 +77,7 @@ const Projects = () => {
           <p className="text-gray-300 mt-4 max-w-xl text-sm sm:text-base leading-relaxed">
             Explore my entire collection of projects — from production showcase applications to downloadable premium source code blueprints.
           </p>
-        </motion.div>
+        </div>
 
         {/* Filters */}
         <div className="flex flex-wrap gap-3 mb-12 border-b border-white/10 pb-6">

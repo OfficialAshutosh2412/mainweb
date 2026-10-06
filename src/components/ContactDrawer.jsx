@@ -64,9 +64,6 @@ const ContactDrawer = () => {
 
           {/* Sliding Form Panel with Glassmorphic styling */}
           <motion.div
-            data-lenis-prevent
-            data-lenis-prevent-wheel
-            data-lenis-prevent-touch
             initial={{ x: '100%' }}
             animate={{ x: 0 }}
             exit={{ x: '100%' }}

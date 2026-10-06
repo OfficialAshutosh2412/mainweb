@@ -1,7 +1,5 @@
-import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { fetchMainData } from '../api';
-import { getShowcaseById } from '../api/mockData';
+import { mainWebsiteData, getShowcaseById } from '../api/mockData';
 
 import Footer from '../components/Footer';
 import TiltCard from '../components/TiltCard';
@@ -103,13 +101,7 @@ const StoreCard = ({ project, delay }) => {
 };
 
 const Store = () => {
-  const [data, setData] = useState(null);
-
-  useEffect(() => {
-    fetchMainData().then((res) => setData(res.data));
-  }, []);
-
-  if (!data) return <div className="min-h-screen bg-dark-bg" />;
+  const data = mainWebsiteData;
 
   const products = data.storeProjects.minor;
 

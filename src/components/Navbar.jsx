@@ -2,8 +2,8 @@ import { useState, useEffect, useCallback } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Braces, Menu, X, Download } from 'lucide-react';
-import { useContactDrawer } from '../context/ContactContext';
-import { prefetchRoute } from '../App';
+import { useContactActions } from '../context/ContactContext';
+import { prefetchRoute } from '../prefetchRoute';
 
 const navItems = [
   ['home', 'Main Site', '/'],
@@ -20,11 +20,14 @@ const isNavActive = (pathname, path) =>
 /* Shared spring for the mobile drawer — snappy but not abrupt. */
 const drawerSpring = { type: 'spring', stiffness: 380, damping: 34, mass: 0.7 };
 
-/* Staggered entrance for each drawer row. */
+/* Staggered entrance for each drawer row. The height is animated as a
+   grid track (0fr → 1fr) instead of `height: auto` — the browser handles
+   the interpolation without framer measuring the DOM every frame. */
 const rowVariants = {
-  hidden: {},
+  hidden: { gridTemplateRows: '0fr', transition: drawerSpring },
   show: {
-    transition: { staggerChildren: 0.045, delayChildren: 0.04 },
+    gridTemplateRows: '1fr',
+    transition: { ...drawerSpring, staggerChildren: 0.045, delayChildren: 0.04 },
   },
 };
 
@@ -41,7 +44,7 @@ const Navbar = ({ reducedMotion, setReducedMotion }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const { openContactDrawer } = useContactDrawer();
+  const { openContactDrawer } = useContactActions();
 
   /* Close the mobile menu whenever the route changes */
   useEffect(() => {
@@ -104,9 +107,9 @@ const Navbar = ({ reducedMotion, setReducedMotion }) => {
         transition: { duration: 0.15 },
       }
     : {
-        initial: { opacity: 0, height: 0, y: -10 },
-        animate: { opacity: 1, height: 'auto', y: 0 },
-        exit: { opacity: 0, height: 0, y: -10 },
+        initial: { opacity: 0, y: -10 },
+        animate: { opacity: 1, y: 0 },
+        exit: { opacity: 0, y: -10 },
         transition: drawerSpring,
       };
 
@@ -208,7 +211,7 @@ const Navbar = ({ reducedMotion, setReducedMotion }) => {
             variants={reducedMotion ? undefined : rowVariants}
             initial="hidden"
             animate="show"
-            exit={reducedMotion ? { opacity: 0 } : undefined}
+            exit={reducedMotion ? { opacity: 0 } : 'hidden'}
             style={{ overflow: 'hidden' }}
           >
             <motion.div {...variants} className="mobile-nav-inner">

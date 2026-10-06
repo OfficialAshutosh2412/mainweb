@@ -1,32 +1,45 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useCallback, useContext, useMemo, useState } from 'react';
 
-const ContactContext = createContext();
+/* Split into two contexts so opening the drawer re-renders ONLY ContactDrawer:
+   - Actions are memoized once → Navbar/MainSite/Portfolio never re-render on toggle.
+   - isOpen lives in its own context → only the drawer subscribes to it. */
+const ContactActionsContext = createContext(null);
+const ContactIsOpenContext = createContext(false);
 
 export const ContactProvider = ({ children }) => {
   const [isOpen, setIsOpen] = useState(false);
 
-  const openContactDrawer = () => setIsOpen(true);
-  const closeContactDrawer = () => setIsOpen(false);
-  const toggleContactDrawer = () => setIsOpen((prev) => !prev);
+  const openContactDrawer = useCallback(() => setIsOpen(true), []);
+  const closeContactDrawer = useCallback(() => setIsOpen(false), []);
+  const toggleContactDrawer = useCallback(() => setIsOpen((prev) => !prev), []);
+
+  const actions = useMemo(
+    () => ({ openContactDrawer, closeContactDrawer, toggleContactDrawer }),
+    [openContactDrawer, closeContactDrawer, toggleContactDrawer]
+  );
 
   return (
-    <ContactContext.Provider
-      value={{
-        isOpen,
-        openContactDrawer,
-        closeContactDrawer,
-        toggleContactDrawer,
-      }}
-    >
-      {children}
-    </ContactContext.Provider>
+    <ContactActionsContext.Provider value={actions}>
+      <ContactIsOpenContext.Provider value={isOpen}>
+        {children}
+      </ContactIsOpenContext.Provider>
+    </ContactActionsContext.Provider>
   );
 };
 
-export const useContactDrawer = () => {
-  const context = useContext(ContactContext);
+/* Stable actions only — safe for components that just trigger the drawer. */
+export const useContactActions = () => {
+  const context = useContext(ContactActionsContext);
   if (!context) {
-    throw new Error('useContactDrawer must be used within a ContactProvider');
+    throw new Error('useContactActions must be used within a ContactProvider');
   }
   return context;
+};
+
+/* Full hook (actions + isOpen) — only the drawer itself needs isOpen. */
+export const useContactDrawer = () => {
+  const { openContactDrawer, closeContactDrawer, toggleContactDrawer } =
+    useContactActions();
+  const isOpen = useContext(ContactIsOpenContext);
+  return { isOpen, openContactDrawer, closeContactDrawer, toggleContactDrawer };
 };

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import HeroSection from '../components/HeroSection';
 import Footer from '../components/Footer';
-import { useContactDrawer } from '../context/ContactContext';
+import { useContactActions } from '../context/ContactContext';
 import { portfolioData, mainWebsiteData, videoEmbedUrl } from '../api/mockData';
 import {
   ArrowRight, ArrowUpRight, Check, Copy, Mail,
@@ -41,7 +41,7 @@ const cardGradients = [
 
 const MainSite = () => {
   const [copied, setCopied] = useState(false);
-  const { openContactDrawer } = useContactDrawer();
+  const { openContactDrawer } = useContactActions();
   const location = useLocation();
 
   useEffect(() => {
