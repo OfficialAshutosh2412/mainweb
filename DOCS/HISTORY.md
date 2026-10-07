@@ -175,6 +175,8 @@ demonstrative content with the owner's actual project walkthroughs.
 | `src/App.jsx` | Registered `/video/:slug`, lazy-loaded + prefetched | 🧭 |
 | `src/components/Navbar.jsx` | `isNavActive()` — Videos tab stays lit on nested routes | 🧭 |
 | `src/index.css` | `.playlist-card`, `.episode-card` rules | 🎨 |
+| `src/components/Navbar.jsx` | Replaced mobile nav title with brand lockup — **ashutosh.dev** as the menu header | 🔗 |
+| `src/components/Navbar.jsx` | Hamburger toggle now opens the navigation menu with brand name | 🔗 |
 
 ### 🔧 Change — series now live
 
@@ -187,7 +189,7 @@ demonstrative content with the owner's actual project walkthroughs.
 | `/video/crime-tracking-system` | Crime Tracking System (CTS) | 13 |
 
 ### 🧪 Verified
-- ✅ `npm run build` — passes (`740ms`)
+- ✅ `npm run build` — passes
 - ✅ `npm run lint` — **0 errors**, 28 warnings (baseline held)
 - ✅ **27/27 episodes** confirmed in the *shipped bundle*, not just source
 - ✅ Every series `videoId` pinned to `EP 01`

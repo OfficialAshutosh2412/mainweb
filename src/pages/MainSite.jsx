@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import HeroSection from '../components/HeroSection';
+import SkillRibbon from '../components/SkillRibbon';
 import Footer from '../components/Footer';
 import { useContactActions } from '../context/ContactContext';
 import { portfolioData, mainWebsiteData, videoEmbedUrl } from '../api/mockData';
@@ -72,6 +73,9 @@ const MainSite = () => {
 
       {/* ── 3D Interactive Canvas Hero Section (Contained Shell Width) ── */}
       <HeroSection />
+
+      {/* ── Scroll-Direction Interactive Skill Ribbon ── */}
+      <SkillRibbon />
 
       {/* ── Main Content Container ── */}
       <div className="shell page-content">

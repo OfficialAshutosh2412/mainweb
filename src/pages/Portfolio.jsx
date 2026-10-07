@@ -246,7 +246,7 @@ const SkillsSlider = ({ categories = [] }) => {
   );
 };
 
-/* ── Redesigned 3D Showcase Carousel for Certifications (Theme Card Design) ── */
+/* ── Simple CSS Transition Carousel for Certifications ── */
 const CertificateCarousel = ({ certificates = [] }) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
@@ -276,13 +276,9 @@ const CertificateCarousel = ({ certificates = [] }) => {
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
-      {/* 3D Track Stage with Smooth Edge Fading.
-          `cert-track` has vertical padding so the scaled card isn't
-          clipped at the top when it animates in. The horizontal fade
-          is defined in CSS (.cert-track-mask) so it can be softened
-          on narrow screens. */}
+      {/* Track */}
       <div className="cert-track cert-track-mask relative w-full h-[400px] sm:h-[380px] flex items-center justify-center overflow-hidden">
-        {/* Left & Right Soft Fade Overlays for Smooth Ending */}
+        {/* Left & Right Fade Overlays */}
         <div
           className="absolute left-0 top-0 bottom-0 w-20 sm:w-36 z-30 pointer-events-none"
           style={{
@@ -307,49 +303,37 @@ const CertificateCarousel = ({ certificates = [] }) => {
 
           const gStyle = projectGradients[idx % projectGradients.length];
 
-          // Compute animation styles
-          let x = "0%";
+          // Compute CSS transform values
+          let translateX = "0%";
           let scale = 1;
           let opacity = 1;
           let zIndex = 20;
 
           if (isActive) {
-            x = "0%";
+            translateX = "0%";
             scale = 1;
             opacity = 1;
             zIndex = 25;
           } else if (isPrev) {
-            x = "-74%";
+            translateX = "-74%";
             scale = 0.92;
             opacity = 0.38;
             zIndex = 10;
           } else if (isNext) {
-            x = "74%";
+            translateX = "74%";
             scale = 0.92;
             opacity = 0.38;
             zIndex = 10;
           } else {
-            x = diff > 0 ? "150%" : "-150%";
+            translateX = diff > 0 ? "150%" : "-150%";
             scale = 0.8;
             opacity = 0;
             zIndex = 1;
           }
 
           return (
-            <motion.div
+            <div
               key={cert.id}
-              initial={false}
-              animate={{
-                x,
-                scale,
-                opacity,
-                zIndex,
-              }}
-              transition={{
-                type: "spring",
-                stiffness: 260,
-                damping: 28,
-              }}
               onClick={() => {
                 if (isPrev) prevSlide();
                 if (isNext) nextSlide();
@@ -358,7 +342,10 @@ const CertificateCarousel = ({ certificates = [] }) => {
                 isActive ? "pointer-events-auto" : isVisible ? "pointer-events-auto cursor-pointer" : "pointer-events-none"
               }`}
               style={{
-                filter: "none", // STRICTLY NO BLUR, per user request: "littlle low opcaity but not blur"
+                transform: `translateX(${translateX}) scale(${scale})`,
+                opacity,
+                zIndex,
+                transition: "transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1)",
               }}
             >
               <article
@@ -373,7 +360,7 @@ const CertificateCarousel = ({ certificates = [] }) => {
                     : "0 10px 30px rgba(0,0,0,0.35)",
                 }}
               >
-                {/* Visual Header Strip — Theme Card Design */}
+                {/* Visual Header Strip */}
                 <div className="project-visual card-visual" style={{ height: "98px" }}>
                   <span className="project-index">CERT · 0{idx + 1}</span>
                   <div
@@ -394,7 +381,7 @@ const CertificateCarousel = ({ certificates = [] }) => {
                   <div className="visual-connector" />
                 </div>
 
-                {/* Body — Theme Card Design */}
+                {/* Body */}
                 <div className="project-body card-body flex-1 flex flex-col justify-between py-4 px-6">
                   <div className="min-w-0">
                     <div className="card-meta-row mb-1.5">
@@ -422,7 +409,7 @@ const CertificateCarousel = ({ certificates = [] }) => {
                   </div>
                 </div>
               </article>
-            </motion.div>
+            </div>
           );
         })}
       </div>

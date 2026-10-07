@@ -1,78 +1,49 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Braces, Menu, X, Download } from 'lucide-react';
+import {
+  Braces,
+  Menu,
+  X,
+  ChevronRight,
+  Home,
+  Briefcase,
+  Code2,
+  BookOpen,
+  Film,
+  Mail,
+} from 'lucide-react';
 import { useContactActions } from '../context/ContactContext';
 import { prefetchRoute } from '../prefetchRoute';
 
 const navItems = [
-  ['home', 'Main Site', '/'],
-  ['store', 'Code Vault', '/store'],
-  ['notes', 'Notes', '/notes'],
-  ['videos', 'Videos', '/videos'],
+  ['home', 'Main Site', '/', Home],
+  ['store', 'Code Vault', '/store', Code2],
+  ['notes', 'Notes', '/notes', BookOpen],
+  ['videos', 'Videos', '/videos', Film],
+  ['portfolio', 'Visit Portfolio', '/portfolio', Briefcase],
 ];
 
-/* A nav item is active on its own path, plus any nested route beneath it
-   — so "Videos" stays lit while browsing /video/<playlist_name>. */
 const isNavActive = (pathname, path) =>
   path === '/' ? pathname === '/' : pathname.startsWith(path);
 
-/* Shared spring for the mobile drawer — snappy but not abrupt. */
-const drawerSpring = { type: 'spring', stiffness: 380, damping: 34, mass: 0.7 };
-
-/* Staggered entrance for each drawer row. The height is animated as a
-   grid track (0fr → 1fr) instead of `height: auto` — the browser handles
-   the interpolation without framer measuring the DOM every frame. */
-const rowVariants = {
-  hidden: { gridTemplateRows: '0fr', transition: drawerSpring },
-  show: {
-    gridTemplateRows: '1fr',
-    transition: { ...drawerSpring, staggerChildren: 0.045, delayChildren: 0.04 },
-  },
-};
-
-const rowItem = {
-  hidden: { opacity: 0, x: -14 },
-  show: {
-    opacity: 1,
-    x: 0,
-    transition: { duration: 0.28, ease: [0.16, 1, 0.3, 1] },
-  },
-};
-
 const Navbar = ({ reducedMotion, setReducedMotion }) => {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const { openContactDrawer } = useContactActions();
 
-  /* Close the mobile menu whenever the route changes */
-  useEffect(() => {
-    setMobileMenuOpen(false);
-  }, [location.pathname]);
+  useEffect(() => { setDrawerOpen(false); }, [location.pathname]);
 
-  /* Close the mobile menu when the viewport grows past the mobile breakpoint,
-     otherwise the overlay would stay stuck open on rotate / resize. */
   useEffect(() => {
-    if (!mobileMenuOpen) return;
-    const mq = window.matchMedia('(min-width: 769px)');
-    const handleChange = (e) => { if (e.matches) setMobileMenuOpen(false); };
-    mq.addEventListener('change', handleChange);
-    return () => mq.removeEventListener('change', handleChange);
-  }, [mobileMenuOpen]);
-
-  /* Close on Escape for keyboard users */
-  useEffect(() => {
-    if (!mobileMenuOpen) return;
-    const onKey = (e) => { if (e.key === 'Escape') setMobileMenuOpen(false); };
+    if (!drawerOpen) return;
+    const onKey = (e) => { if (e.key === 'Escape') setDrawerOpen(false); };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [mobileMenuOpen]);
+  }, [drawerOpen]);
 
-  /* Prevent background scroll while the mobile menu is open.
-     Both html and body are locked — on iOS Safari body alone leaks. */
   useEffect(() => {
-    if (!mobileMenuOpen) return;
+    if (!drawerOpen) return;
     const prevHtml = document.documentElement.style.overflow;
     const prevBody = document.body.style.overflow;
     document.documentElement.style.overflow = 'hidden';
@@ -81,179 +52,219 @@ const Navbar = ({ reducedMotion, setReducedMotion }) => {
       document.documentElement.style.overflow = prevHtml;
       document.body.style.overflow = prevBody;
     };
-  }, [mobileMenuOpen]);
+  }, [drawerOpen]);
 
-  /* Navigate + close. The mobile drawer uses this so taps actually route —
-     previously the buttons only closed the menu. */
   const goTo = useCallback((path) => {
-    setMobileMenuOpen(false);
-    if (path === '/') {
-      if (window.location.pathname === '/') {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      } else {
-        navigate('/');
-      }
+    setDrawerOpen(false);
+    if (path === '/' && window.location.pathname === '/') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
       navigate(path);
     }
   }, [navigate]);
 
-  /* Honour the user's motion preference: skip the slide/scale, keep a fade. */
-  const variants = reducedMotion
-    ? {
-        initial: { opacity: 0 },
-        animate: { opacity: 1 },
-        exit: { opacity: 0 },
-        transition: { duration: 0.15 },
-      }
-    : {
-        initial: { opacity: 0, y: -10 },
-        animate: { opacity: 1, y: 0 },
-        exit: { opacity: 0, y: -10 },
-        transition: drawerSpring,
-      };
-
   return (
-    <header className="site-header" data-testid="site-header">
-      <div className="shell header-inner">
-        {/* Brand Lockup */}
-        <button
-          className="brand-lockup cursor-pointer"
-          onClick={() => {
-            if (location.pathname !== '/') navigate('/');
-            else window.scrollTo({ top: 0, behavior: 'smooth' });
-          }}
-          data-testid="brand-home-button"
-          aria-label="Go to homepage"
-        >
-          <span className="brand-mark">
-            <Braces size={19} strokeWidth={2.5} />
-          </span>
-          <span className="brand-name">
-            ashutosh<span>.dev</span>
-          </span>
-        </button>
-
-        {/* Live Status Chip */}
-        <div className="status-chip" data-testid="api-status-indicator">
-          <span className="status-dot" />
-          <span>Available for .NET &amp; Full-Stack roles</span>
-        </div>
-
-        {/* Desktop Nav */}
-        <nav className="desktop-nav" aria-label="Primary navigation" data-testid="desktop-navigation">
-          {navItems.map(([id, label, path]) => (
-            <Link
-              key={id}
-              to={path}
-              onMouseEnter={() => prefetchRoute(path)}
-              onTouchStart={() => prefetchRoute(path)}
-              className={`cursor-pointer ${isNavActive(location.pathname, path) ? 'active' : ''}`}
-              data-testid={`nav-${id}-link`}
-            >
-              {label}
-            </Link>
-          ))}
+    <>
+      <header className="site-header" data-testid="site-header">
+        <div className="shell header-inner">
+          {/* Brand Lockup — left */}
           <button
-            onClick={openContactDrawer}
-            className="cursor-pointer"
-            data-testid="nav-contact-button"
+            className="brand-lockup cursor-pointer"
+            onClick={() => {
+              if (location.pathname !== '/') navigate('/');
+              else window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+            data-testid="brand-home-button"
+            aria-label="Go to homepage"
           >
-            Contact
+            <span className="brand-mark">
+              <Braces size={19} strokeWidth={2.5} />
+            </span>
+            <span className="brand-name">
+              ashutosh<span>.dev</span>
+            </span>
           </button>
-        </nav>
 
-        {/* Motion Toggle */}
-        <button
-          className="motion-toggle cursor-pointer"
-          onClick={() => setReducedMotion && setReducedMotion(v => !v)}
-          aria-pressed={reducedMotion}
-          data-testid="motion-toggle-button"
-          title="Toggle 3D Stage Motion"
-        >
-          <span className={`toggle-indicator ${reducedMotion ? 'is-on' : ''}`} />
-          <span>{reducedMotion ? 'Still mode' : 'Motion on'}</span>
-        </button>
+          {/* Live Status Chip */}
+          <div className="status-chip" data-testid="api-status-indicator">
+            <span className="status-dot" />
+            <span>Available for .NET &amp; Full-Stack roles</span>
+          </div>
 
-        {/* Mobile Menu Button */}
-        <button
-          className="mobile-menu-button cursor-pointer"
-          onClick={() => setMobileMenuOpen(v => !v)}
-          aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
-          aria-expanded={mobileMenuOpen}
-          aria-controls="mobile-navigation"
-          data-testid="mobile-menu-toggle-button"
-        >
-          {/* Morphing hamburger ⇄ X, driven by the same open state */}
-          <AnimatePresence mode="wait" initial={false}>
-            <motion.span
-              key={mobileMenuOpen ? 'close' : 'open'}
-              className="mobile-menu-icon"
-              initial={{ opacity: 0, rotate: -90, scale: 0.6 }}
-              animate={{ opacity: 1, rotate: 0, scale: 1 }}
-              exit={{ opacity: 0, rotate: 90, scale: 0.6 }}
-              transition={{ duration: 0.18, ease: 'easeOut' }}
-            >
-              {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
-            </motion.span>
-          </AnimatePresence>
-        </button>
-      </div>
+          {/* Spacer pushes hamburger to the right */}
+          <div style={{ flex: 1 }} />
 
-      {/* Mobile Nav Drawer — animated open/close */}
-      <AnimatePresence>
-        {mobileMenuOpen && (
-          <motion.div
-            key="mobile-nav"
-            id="mobile-navigation"
-            className="mobile-nav shell"
-            data-testid="mobile-navigation"
-            variants={reducedMotion ? undefined : rowVariants}
-            initial="hidden"
-            animate="show"
-            exit={reducedMotion ? { opacity: 0 } : 'hidden'}
-            style={{ overflow: 'hidden' }}
+          {/* Hamburger — always visible, far right */}
+          <button
+            className="nav-hamburger cursor-pointer"
+            onClick={() => setDrawerOpen(v => !v)}
+            aria-label={drawerOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={drawerOpen}
+            data-testid="nav-hamburger-button"
           >
-            <motion.div {...variants} className="mobile-nav-inner">
-              {navItems.map(([id, label, path]) => (
-                <motion.button
-                  key={id}
-                  variants={reducedMotion ? undefined : rowItem}
-                  onMouseEnter={() => prefetchRoute(path)}
-                  onTouchStart={() => prefetchRoute(path)}
-                  onClick={() => goTo(path)}
-                  className={isNavActive(location.pathname, path) ? 'active' : ''}
-                  aria-current={isNavActive(location.pathname, path) ? 'page' : undefined}
-                  data-testid={`mobile-nav-${id}-button`}
-                >
-                  {label}
-                </motion.button>
-              ))}
-              <motion.button
-                variants={reducedMotion ? undefined : rowItem}
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  openContactDrawer();
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.span
+                key={drawerOpen ? 'close' : 'open'}
+                style={{ display: 'grid', placeItems: 'center' }}
+                initial={{ opacity: 0, rotate: -90, scale: 0.6 }}
+                animate={{ opacity: 1, rotate: 0, scale: 1 }}
+                exit={{ opacity: 0, rotate: 90, scale: 0.6 }}
+                transition={{ duration: 0.18, ease: 'easeOut' }}
+              >
+                {drawerOpen ? <X size={22} /> : <Menu size={22} />}
+              </motion.span>
+            </AnimatePresence>
+          </button>
+        </div>
+      </header>
+
+      {/* ── Sliding Nav Drawer (right side) ── */}
+      <AnimatePresence>
+        {drawerOpen && (
+          <>
+            {/* Backdrop */}
+            <motion.div
+              key="nav-backdrop"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.5, ease: 'easeOut' }}
+              onClick={() => setDrawerOpen(false)}
+              className="fixed inset-0 z-[60] cursor-pointer"
+              style={{
+                background: 'rgba(5, 6, 12, 0.75)',
+                backdropFilter: 'blur(10px)',
+                WebkitBackdropFilter: 'blur(10px)',
+              }}
+            />
+
+            {/* Panel — single solid dark color, no gradient */}
+            <motion.nav
+              key="nav-panel"
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+              className="fixed top-0 right-0 h-full z-[60] flex flex-col justify-between overflow-x-hidden overflow-y-auto no-scrollbar"
+              style={{
+                width: '100%',
+                maxWidth: '420px',
+                background: '#090a0f',
+                boxShadow: '-10px 0 40px rgba(0, 0, 0, 0.85)',
+                borderLeft: '1px solid rgba(255, 255, 255, 0.08)',
+                overflowX: 'hidden',
+                overflowY: 'auto',
+                overscrollBehavior: 'contain',
+                scrollbarWidth: 'none',
+                msOverflowStyle: 'none',
+              }}
+              onWheel={(e) => e.stopPropagation()}
+              onTouchMove={(e) => e.stopPropagation()}
+              aria-label="Main navigation"
+            >
+              {/* Top Bar with Stable, Non-Flickering Close Button */}
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'flex-end',
+                  alignItems: 'center',
+                  padding: '24px 28px',
                 }}
               >
-                Contact
-              </motion.button>
-              <motion.a
-                variants={reducedMotion ? undefined : rowItem}
-                href="/resume.pdf"
-                download
-                className="mobile-resume-link cursor-pointer"
+                <button
+                  type="button"
+                  onClick={() => setDrawerOpen(false)}
+                  className="flex items-center justify-center w-10 h-10 rounded-xl bg-white/5 hover:bg-red-500/20 text-gray-400 hover:text-white border border-white/10 hover:border-red-500/30 transition-all duration-200 cursor-pointer"
+                  aria-label="Close Navigation"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+
+              {/* Navigation container - NO padding, strictly clipped horizontally */}
+              <motion.div
+                variants={{
+                  open: {
+                    transition: { staggerChildren: 0.08, delayChildren: 0.15 },
+                  },
+                  closed: {
+                    transition: { staggerChildren: 0.05, staggerDirection: -1 },
+                  },
+                }}
+                initial="closed"
+                animate="open"
+                exit="closed"
+                style={{
+                  padding: 0,
+                  margin: 0,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  width: '100%',
+                  overflow: 'hidden',
+                }}
               >
-                <Download size={14} />
-                Download Resume
-              </motion.a>
-            </motion.div>
-          </motion.div>
+                {navItems.map(([id, label, path, Icon]) => {
+                  const active = isNavActive(location.pathname, path);
+                  return (
+                    <motion.button
+                      key={id}
+                      variants={{
+                        open: { opacity: 1, x: 0, filter: 'blur(0px)' },
+                        closed: { opacity: 0, x: 40, filter: 'blur(5px)' },
+                      }}
+                      transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+                      onMouseEnter={() => prefetchRoute(path)}
+                      onTouchStart={() => prefetchRoute(path)}
+                      onClick={() => goTo(path)}
+                      className={`nav-drawer-item group cursor-pointer ${active ? 'is-active' : ''}`}
+                      aria-current={active ? 'page' : undefined}
+                      data-testid={`nav-drawer-${id}-link`}
+                    >
+                      <span className="nav-drawer-fill" />
+                      <span className="nav-drawer-label flex items-center gap-3">
+                        <Icon
+                          size={18}
+                          className="text-purple-400 group-hover:text-white transition-colors duration-200 shrink-0"
+                        />
+                        <span>{label}</span>
+                      </span>
+                      <ChevronRight
+                        size={18}
+                        className="nav-drawer-icon"
+                        style={{
+                          color: active ? '#ffffff' : 'rgba(255,255,255,0.4)',
+                        }}
+                      />
+                    </motion.button>
+                  );
+                })}
+
+              </motion.div>
+
+              {/* Contact Button at the end — styled as a prominent CTA button */}
+              <div style={{ padding: '24px 28px 32px' }}>
+                <motion.button
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 16 }}
+                  transition={{ duration: 0.45, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                  onClick={() => {
+                    setDrawerOpen(false);
+                    openContactDrawer();
+                  }}
+                  className="w-full flex items-center justify-center gap-2.5 py-4 px-6 rounded-xl font-semibold text-[15px] text-white bg-gradient-to-r from-purple-600 to-indigo-500 hover:from-purple-500 hover:to-indigo-400 shadow-[0_8px_24px_rgba(118,84,232,0.35)] hover:shadow-[0_12px_32px_rgba(156,135,255,0.55)] hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 cursor-pointer group"
+                  data-testid="nav-drawer-contact-button"
+                >
+                  <Mail size={18} className="group-hover:scale-110 transition-transform duration-200" />
+                  <span>Contact Me</span>
+                </motion.button>
+              </div>
+            </motion.nav>
+          </>
         )}
       </AnimatePresence>
-    </header>
+    </>
   );
 };
 
 export default Navbar;
-

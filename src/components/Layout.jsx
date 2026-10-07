@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import ScrollProgress from './ScrollProgress';
 import Navbar from './Navbar';
 import ContactDrawer from './ContactDrawer';
 import { ContactProvider } from '../context/ContactContext';
@@ -20,7 +19,7 @@ const Layout = ({ children }) => {
     <div className={`portfolio-shell ${reducedMotion ? 'motion-reduced' : ''}`}>
       <div className="ambient ambient-one" aria-hidden="true" />
       <div className="ambient ambient-two" aria-hidden="true" />
-      <ScrollProgress />
+
       <Navbar reducedMotion={reducedMotion} setReducedMotion={setReducedMotion} />
       <div className="app-content flex flex-col w-full relative z-10">
         {children}
