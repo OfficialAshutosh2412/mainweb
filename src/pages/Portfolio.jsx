@@ -246,7 +246,7 @@ const SkillsSlider = ({ categories = [] }) => {
   );
 };
 
-/* ── Simple CSS Transition Carousel for Certifications ── */
+/* ── Simple Sliding Carousel for Certifications ── */
 const CertificateCarousel = ({ certificates = [] }) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
@@ -272,150 +272,85 @@ const CertificateCarousel = ({ certificates = [] }) => {
 
   return (
     <div
-      className="relative w-full"
+      className="relative w-full max-w-2xl mx-auto"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
-      {/* Track */}
-      <div className="cert-track cert-track-mask relative w-full h-[400px] sm:h-[380px] flex items-center justify-center overflow-hidden">
-        {/* Left & Right Fade Overlays */}
+      {/* Sliding Viewport */}
+      <div className="overflow-hidden rounded-2xl w-full">
         <div
-          className="absolute left-0 top-0 bottom-0 w-20 sm:w-36 z-30 pointer-events-none"
-          style={{
-            background: "linear-gradient(to right, rgba(9, 10, 15, 0.95) 0%, transparent 100%)",
-          }}
-        />
-        <div
-          className="absolute right-0 top-0 bottom-0 w-20 sm:w-36 z-30 pointer-events-none"
-          style={{
-            background: "linear-gradient(to left, rgba(9, 10, 15, 0.95) 0%, transparent 100%)",
-          }}
-        />
-        {certificates.map((cert, idx) => {
-          let diff = (idx - activeIndex) % total;
-          if (diff > total / 2) diff -= total;
-          if (diff < -total / 2) diff += total;
-
-          const isActive = diff === 0;
-          const isPrev = diff === -1;
-          const isNext = diff === 1;
-          const isVisible = isActive || isPrev || isNext;
-
-          const gStyle = projectGradients[idx % projectGradients.length];
-
-          // Compute CSS transform values
-          let translateX = "0%";
-          let scale = 1;
-          let opacity = 1;
-          let zIndex = 20;
-
-          if (isActive) {
-            translateX = "0%";
-            scale = 1;
-            opacity = 1;
-            zIndex = 25;
-          } else if (isPrev) {
-            translateX = "-74%";
-            scale = 0.92;
-            opacity = 0.38;
-            zIndex = 10;
-          } else if (isNext) {
-            translateX = "74%";
-            scale = 0.92;
-            opacity = 0.38;
-            zIndex = 10;
-          } else {
-            translateX = diff > 0 ? "150%" : "-150%";
-            scale = 0.8;
-            opacity = 0;
-            zIndex = 1;
-          }
-
-          return (
-            <div
-              key={cert.id}
-              onClick={() => {
-                if (isPrev) prevSlide();
-                if (isNext) nextSlide();
-              }}
-              className={`absolute top-0 bottom-0 m-auto w-[88%] sm:w-[480px] md:w-[540px] max-w-[560px] h-[315px] select-none ${
-                isActive ? "pointer-events-auto" : isVisible ? "pointer-events-auto cursor-pointer" : "pointer-events-none"
-              }`}
-              style={{
-                transform: `translateX(${translateX}) scale(${scale})`,
-                opacity,
-                zIndex,
-                transition: "transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1)",
-              }}
-            >
-              <article
-                className="project-card academic-project-card w-full h-full flex flex-col justify-between"
-                style={{
-                  background: gStyle.bg,
-                  backgroundColor: '#0c101c',
-                  border: isActive ? `1.5px solid ${gStyle.accent}` : gStyle.border,
-                  opacity: isActive ? 1 : 0.95,
-                  boxShadow: isActive
-                    ? `0 24px 50px rgba(0,0,0,0.7), 0 0 35px ${gStyle.eyebrowColor}40`
-                    : "0 10px 30px rgba(0,0,0,0.35)",
-                }}
-              >
-                {/* Visual Header Strip */}
-                <div className="project-visual card-visual" style={{ height: "98px" }}>
-                  <span className="project-index">CERT · 0{idx + 1}</span>
-                  <div
-                    className="project-open"
-                    style={{ borderColor: gStyle.accent + "60", color: gStyle.accent }}
-                  >
-                    <AnimatedIcon
-                      Icon={cert.type === "Bootcamp" ? BookOpen : Award}
-                      className="w-4 h-4"
-                    />
+          className="flex transition-transform duration-500 ease-out"
+          style={{ transform: `translateX(-${activeIndex * 100}%)` }}
+        >
+          {certificates.map((cert, idx) => {
+            const gStyle = projectGradients[idx % projectGradients.length];
+            return (
+              <div key={cert.id} className="w-full shrink-0 p-1">
+                <article
+                  className="project-card academic-project-card w-full flex flex-col justify-between rounded-2xl"
+                  style={{
+                    background: gStyle.bg,
+                    backgroundColor: '#0c101c',
+                    border: gStyle.border,
+                  }}
+                >
+                  {/* Visual Header Strip */}
+                  <div className="project-visual card-visual" style={{ height: "98px" }}>
+                    <span className="project-index">CERT · 0{idx + 1}</span>
+                    <div
+                      className="project-open"
+                      style={{ borderColor: gStyle.accent + "60", color: gStyle.accent }}
+                    >
+                      <AnimatedIcon
+                        Icon={cert.type === "Bootcamp" ? BookOpen : Award}
+                        className="w-4 h-4"
+                      />
+                    </div>
+                    <div className="visual-window">
+                      <div className="window-bar"><span /><span /><span /></div>
+                      <div className="visual-lines"><i /><i /><i /><i /><i /></div>
+                    </div>
+                    <div className="visual-node node-a" />
+                    <div className="visual-node node-b" />
+                    <div className="visual-connector" />
                   </div>
-                  <div className="visual-window">
-                    <div className="window-bar"><span /><span /><span /></div>
-                    <div className="visual-lines"><i /><i /><i /><i /><i /></div>
-                  </div>
-                  <div className="visual-node node-a" />
-                  <div className="visual-node node-b" />
-                  <div className="visual-connector" />
-                </div>
 
-                {/* Body */}
-                <div className="project-body card-body flex-1 flex flex-col justify-between py-4 px-6">
-                  <div className="min-w-0">
-                    <div className="card-meta-row mb-1.5">
-                      <div className="project-eyebrow" style={{ color: gStyle.eyebrowColor }}>
-                        {cert.type.toUpperCase()}
+                  {/* Body */}
+                  <div className="project-body card-body flex-1 flex flex-col justify-between py-5 px-6">
+                    <div className="min-w-0">
+                      <div className="card-meta-row mb-2">
+                        <div className="project-eyebrow" style={{ color: gStyle.eyebrowColor }}>
+                          {cert.type.toUpperCase()}
+                        </div>
+                        <span className="text-xs font-mono" style={{ color: gStyle.accent }}>
+                          {cert.year}
+                        </span>
                       </div>
-                      <span className="text-xs font-mono" style={{ color: gStyle.accent }}>
-                        {cert.year}
-                      </span>
+
+                      <h3 className="card-title text-lg sm:text-xl font-bold text-white mb-3 leading-snug">
+                        {cert.title}
+                      </h3>
                     </div>
 
-                    <h3 className="card-title text-base sm:text-lg sm:font-bold font-bold text-white mb-2 leading-snug">
-                      {cert.title}
-                    </h3>
+                    <div className="project-footer card-footer mt-auto pt-3 flex items-center justify-between gap-2">
+                      <span className="flex items-center gap-1.5 text-xs text-gray-300 font-medium min-w-0">
+                        <Award className="w-3.5 h-3.5 shrink-0" style={{ color: gStyle.accent }} />
+                        <span className="truncate">{cert.issuer}</span>
+                      </span>
+                      <span className="text-xs text-emerald-400 font-mono flex items-center gap-1 shrink-0">
+                        <CheckCircle2 size={12} className="shrink-0" /> Verified Credential
+                      </span>
+                    </div>
                   </div>
-
-                  <div className="project-footer card-footer mt-auto pt-3 flex items-center justify-between gap-2">
-                    <span className="flex items-center gap-1.5 text-xs text-gray-300 font-medium min-w-0">
-                      <Award className="w-3.5 h-3.5 shrink-0" style={{ color: gStyle.accent }} />
-                      <span className="truncate">{cert.issuer}</span>
-                    </span>
-                    <span className="text-xs text-emerald-400 font-mono flex items-center gap-1 shrink-0">
-                      <CheckCircle2 size={12} className="shrink-0" /> Verified
-                    </span>
-                  </div>
-                </div>
-              </article>
-            </div>
-          );
-        })}
+                </article>
+              </div>
+            );
+          })}
+        </div>
       </div>
 
       {/* Navigation Controls */}
-      <div className="flex items-center justify-between mt-6 px-2 max-w-xl mx-auto">
+      <div className="flex items-center justify-between mt-6 px-2">
         <div className="flex gap-2">
           <button
             onClick={prevSlide}
@@ -914,26 +849,29 @@ const Portfolio = () => {
             ))}
           </div>
         </section>
+      </div>
 
-        {/* ─────────────────────────────────────────────────────────────
-           SECTION 02: TECHNICAL SKILLS MATRIX
-        ─────────────────────────────────────────────────────────────── */}
-        {/* Full-width marquee OUTSIDE shell — bleeds edge to edge */}
-        <div id="skills" className="skills-anchor scroll-mt-28">
-          <SkillsMarquee />
+      {/* ─────────────────────────────────────────────────────────────
+         SECTION 02: TECHNICAL SKILLS MATRIX
+      ─────────────────────────────────────────────────────────────── */}
+      {/* Full-width marquee OUTSIDE shell — bleeds edge to edge */}
+      <div id="skills" className="skills-anchor scroll-mt-28 w-full my-12">
+        <SkillsMarquee />
 
-          {/* Title + Slider inside shell, BELOW the marquee */}
-          <div className="shell skills-shell">
-            <div className="section-heading split-heading mb-10 md:mb-12">
-              <div>
-                <span className="section-number">02</span>
-                <h2>Technical <em>Skills Matrix</em></h2>
-              </div>
+        {/* Title + Slider inside shell, BELOW the marquee */}
+        <div className="shell skills-shell mt-10 md:mt-12">
+          <div className="section-heading split-heading mb-10 md:mb-12">
+            <div>
+              <span className="section-number">02</span>
+              <h2>Technical <em>Skills Matrix</em></h2>
             </div>
-            <SkillsSlider categories={skillCategories} />
           </div>
+          <SkillsSlider categories={skillCategories} />
         </div>
+      </div>
 
+      {/* ── Main Content Container Part 2 ── */}
+      <div className="shell page-content space-y-16">
         {/* ─────────────────────────────────────────────────────────────
            SECTION 03: INTERNSHIP & INDUSTRIAL TRAINING (THEME CARDS)
         ─────────────────────────────────────────────────────────────── */}

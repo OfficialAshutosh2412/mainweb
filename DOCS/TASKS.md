@@ -1,4 +1,4 @@
-﻿<!--
+<!--
   🌙 Dark theme — renders these docs in the portfolio's dark palette.
   Honoured by VS Code preview, Typora, Obsidian, mdBook, VitePress, Docusaurus
   and most dev markdown viewers. GitHub strips style tags, so it falls back to
@@ -276,6 +276,12 @@ Replaced demonstrative video content with the owner's real project walkthroughs.
 - [ ] 🟡 🎞️ Click-to-load facade for `/video/:slug` iframes (CTS mounts 13)
 - [ ] 🟡 📺 Decide whether *Live Location Tracker* / *FusionMart* become store bundles
 - [ ] 🟢 ♿ Add `aria-label` to episode-number badges for screen readers
+
+### 🛠️ Layout & Portfolio Refinements *(completed)*
+- [x] ⚫ 📜 Fix footer overscroll / phantom space on Store ("The Code Forge"), Notes, and Videos by isolating ambient background orbs inside an overflow-hidden wrapper
+- [x] ⚫ 🎨 Remove icon box-shadow glow effect from SkillsMarquee pills
+- [x] ⚫ ✂️ Fix marquee side cutting edge by un-nesting SkillsMarquee from `.shell` (full viewport bleed) and adding CSS `mask-image` edge fade
+- [x] ⚫ 🎠 Simplify Training & Certification carousel from 3D coverflow into a clean, smooth, responsive sliding carousel
 
 ### 🧪 Testing
 - [x] ⚫ 🏗️ Test 1 — Build & Lint Gate

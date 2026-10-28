@@ -17,8 +17,10 @@ const Layout = ({ children }) => {
 
   const pageContent = (
     <div className={`portfolio-shell ${reducedMotion ? 'motion-reduced' : ''}`}>
-      <div className="ambient ambient-one" aria-hidden="true" />
-      <div className="ambient ambient-two" aria-hidden="true" />
+      <div className="ambient-container pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
+        <div className="ambient ambient-one" />
+        <div className="ambient ambient-two" />
+      </div>
 
       <Navbar reducedMotion={reducedMotion} setReducedMotion={setReducedMotion} />
       <div className="app-content flex flex-col w-full relative z-10">

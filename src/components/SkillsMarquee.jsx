@@ -41,12 +41,11 @@ const SkillPill = ({ skill }) => {
       <div
         className="skill-pill-icon"
         style={{
-          background: `radial-gradient(circle, ${skill.color}30 0%, ${skill.color}0a 100%)`,
-          boxShadow: `0 0 20px ${skill.color}45`,
-          border: `1px solid ${skill.color}25`,
+          background: `${skill.color}15`,
+          border: `1px solid ${skill.color}35`,
         }}
       >
-        <Icon className="skill-pill-svg" size={22} style={{ color: skill.color }} />
+        <Icon className="skill-pill-svg" size={20} style={{ color: skill.color }} />
       </div>
       <span className="skill-pill-name">{skill.name}</span>
     </div>

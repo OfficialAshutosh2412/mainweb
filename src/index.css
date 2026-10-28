@@ -194,6 +194,14 @@ a {
   z-index: 3;
 }
 
+.ambient-container {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
 .ambient {
   position: absolute;
   border-radius: 999px;
@@ -587,11 +595,12 @@ h1 span, h2 em {
 .skills-marquee {
   position: relative;
   width: 100%;
-  padding: 48px 0;
+  padding: 36px 0;
   overflow: hidden;
-  overflow-x: clip;
   background: linear-gradient(180deg, transparent 0%, rgba(118, 84, 232, .04) 50%, transparent 100%);
   max-width: 100%;
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
 }
 
 .marquee-rows {
@@ -605,8 +614,7 @@ h1 span, h2 em {
   overflow: hidden;
   width: 100%;
   user-select: none;
-  /* Room for the 48px icon glow (20px blur) without clipping */
-  padding: 22px 0;
+  padding: 14px 0;
 }
 
 .marquee-run {
@@ -627,31 +635,16 @@ h1 span, h2 em {
 .marquee-dot {
   display: inline-block;
   flex-shrink: 0;
-  width: 10px;
-  height: 10px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
   margin: 0 22px;
-  background: radial-gradient(circle, rgba(156, 135, 255, 1) 0%, rgba(34, 211, 238, .7) 55%, transparent 100%);
-  box-shadow: 0 0 10px rgba(156, 135, 255, .9), 0 0 22px rgba(156, 135, 255, .4);
+  background: radial-gradient(circle, rgba(156, 135, 255, 0.9) 0%, rgba(34, 211, 238, .5) 55%, transparent 100%);
+  opacity: 0.7;
 }
 
 .marquee-fade {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 200px;
-  z-index: 10;
-  pointer-events: none;
-}
-
-.marquee-fade-left {
-  left: 0;
-  background: linear-gradient(to right, var(--void) 0%, transparent 100%);
-}
-
-.marquee-fade-right {
-  right: 0;
-  background: linear-gradient(to left, var(--void) 0%, transparent 100%);
+  display: none;
 }
 
 .skill-pill {

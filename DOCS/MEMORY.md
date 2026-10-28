@@ -1,4 +1,4 @@
-﻿<!--
+<!--
   🌙 Dark theme — renders these docs in the portfolio's dark palette.
   Honoured by VS Code preview, Typora, Obsidian, mdBook, VitePress, Docusaurus
   and most dev markdown viewers. GitHub strips style tags, so it falls back to
@@ -214,8 +214,13 @@ header, so a browser cannot fetch it, and this is a static SPA with no backend.
 - [x] 🗄️ Vault hover panel → scrollable body + pinned CTA bar
 - [x] 🗑️ Removed descriptions/features from landing + vault cards
 - [x] 🔘 Unified "See more" with the "Repository" button
-- [x] 📜 Certificate carousel — no top-edge clipping
+- [x] 📜 Certificate carousel — simplified from 3D coverflow stack to responsive sliding carousel
 - [x] ▶️ Video play badge no longer clipped by `overflow: hidden`
+
+### 🛠️ Layout & Portfolio Refinements
+- [x] 📜 **Fixed Footer Scroll Bug on Store, Notes & Videos**: Ambient background orbs (`.ambient-two` at `1940px`) were stretching the document height past the footer. Contained them within `.ambient-container` (`absolute inset-0 overflow-hidden`), eliminating empty scroll space below footers.
+- [x] 🎨 **Removed Icon Glowing Effect in SkillsMarquee**: Stripped heavy `boxShadow` glows and radial gradients from `SkillPill` icons for crisp, modern iconography.
+- [x] ✂️ **Fixed Side Sharp Cutting Edge in SkillsMarquee**: Un-nested the skills marquee from `.shell` (allowing it to bleed full-width across the viewport) and replaced hard solid fade blocks with a fluid CSS `mask-image` alpha fade.
 
 ### 🎨 Centring
 - [x] ✨ Hero copy, stat row and all section titles centred ≤900px
